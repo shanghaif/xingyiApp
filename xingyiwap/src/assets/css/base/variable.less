@@ -1,0 +1,138 @@
+/**颜色值，或者标准边框设置的定义，用于风格切换**/
+
+/********************************* 蓝色主题风格 mint ui   vux *********************************/
+
+//@theme-color: #26A2FF;        // 主题颜色， 头部主题， 按钮主题等等
+//@theme-bg-color: #FFFFFF;     // bg color  一般背景色，或者激活背景色
+//@theme-cbg-color: #EAEAEA;    // activited bg color   一般是内容的的背景颜色
+//@theme-bbg-color: #26a2ff;    // button bg color 一般按钮的背景颜色
+//@theme-babg-color: darken(@theme-bbg-color, 5%);    // button bg color 一般按钮激活的背景颜色
+//
+//
+//@theme-font-color:#fff;  // title font   一般主题色的按钮字体颜色
+//@theme-tfont-color: #000;  // title font   一般内容标题类别的颜色
+//@theme-cfont-color: #656b79;  // content font   一般正文的颜色
+//@theme-bfont-color:#fff;  // button font   一般按钮，或者标题的字体颜色
+//@theme-bafont-color: darken(@theme-bfont-color, 2%);  // activited font  选中的字体颜色
+//
+//@theme-border-color: #e3e3e3;  // border 一般边框的颜色
+//@theme-bborder-color: #26A2FF;  // button border 按钮边框颜色
+
+/********************************* 白色主题风格 美信3.0 *********************************/
+ @theme-color: #FDFDFD;        // 主题颜色， 头部主题， 按钮主题等等
+ @theme-bg-color: #EAEAEA;     // bg color  一般背景色，或者激活背景色
+ @theme-cbg-color: #EBF0F4;    // activited bg color   一般是内容的的背景颜色
+ @theme-bbg-color: #EAEAEA;    // button bg color 一般按钮的背景颜色
+ @theme-babg-color: darken(@theme-bbg-color, 10%);    // button bg color 一般按钮激活的背景颜色
+
+ @theme-font-color:#333333;  // title font   一般主题色的按钮字体颜色
+ @theme-tfont-color: #333333;  // title font   一般内容标题类别的颜色
+ @theme-cfont-color: #5C5C5C;  // content font   一般正文的颜色
+ @theme-bfont-color: #5C5C5C;  // button font   一般按钮，或者标题的字体颜色
+ @theme-bafont-color: lighten(@theme-bfont-color, 2%);  // activited font  选中的字体颜色
+
+ @theme-border-color: #d9d9d9;  // 一般边框的颜色
+ @theme-bborder-color: #EAEAEA;  // button border 按钮边框颜色
+
+// 背景颜色
+@background-color: #EDF1F5;
+// 首页第一屏背景图片
+@background-image: url("../../img/home/bg.png") no-repeat top;
+@background-size: 100% 100%;
+// 首页第一屏动画背景
+@animate-background: url("../../img/home/mott.png") no-repeat top;
+// 顶部navbar高度
+@navHeight: 46px;
+// 底部导航高度
+@bottomNavHeight: 50px;
+// 首页第一屏宽度
+@screenWidth: 100vw;
+// 首页第一屏高度
+@screenHeight: calc(100vh - @bottomNavHeight);
+// 首页第一屏中间部分高度
+@sceenCenterHeight: calc(100vh - (@navHeight + @bottomNavHeight));
+// 第一屏底部高度
+@firstScreenBottomHeight: 96px;
+// 定义颜色值 ， 根据等级 空气
+@colorsLevels: {
+ level1: #00E400;
+ level2: #FFFF00;
+ level3: #FF7E00;
+ level4: #FF0000;
+ level5: #99004C;
+ level6: #7E0023;
+};
+// 定义颜色值 ， 根据等级 水质
+@colorsWaterLevels: {
+ level1: #CCFFFF;
+ level2: #00CCFF;
+ level3: #00FF00;
+ level4: #FFFF00;
+ level5: #FF9B00;
+ level6: #FF0000;
+};
+// 定义首页因子颜色值
+@colorsYz: {
+ pm25: #FFCF3F;
+ pm10: #5CDFD5;
+ so2: #D2F13C;
+ o3: #55DE38;
+ no2: #FF7840;
+ co: #3E9AF7;
+};
+
+@colorsPollute: {
+ level1: #1FBC53;
+ level2: #FF7E00;
+ level3: #12A2FF;
+ level4: #E55530;
+ level5: #7E30E6;
+};
+
+@colorsVoice: {
+ voice0: #FFFF99;
+ voice1: #62FA61;
+ voice2: #6799FC;
+ voice3: #EF7031;
+ voice4a: #FF0000;
+ voice4b: #EB22EB;
+};
+
+// flex布局传参数
+.flexDisplayContent(@display: flex, @alignItems: center, @justifyContent: center, @direction: row){
+ display: @display;
+ flex-direction: @direction;
+ align-items: @alignItems;
+ justify-content: @justifyContent;
+}
+
+// poistion布局传参数
+.positionDisplayContent(@position: absolute, @top: initial, @right: initial, @bottom: initial, @left: initial){
+ position: @position;
+ top: @top;
+ right: @right;
+ bottom: @bottom;
+ left: @left;
+}
+
+// 设置宽度，高度
+.setWidthAndHeight(@width: auto, @height: auto){
+ width: @width;
+ height: @height;
+}
+
+// 设置margin，padding
+.setPaddingMargin(@margin: initial, @padding: initial){
+ margin: @margin;
+ padding: @padding;
+}
+
+// 下拉箭头
+.setTriangleDown(@color:#1E73D8, @borderWidth:5px, @borderTop: 5px, @marginLeft: 5px){
+ .setWidthAndHeight(0, 0);
+ border-left: @borderWidth solid transparent;
+ border-right: @borderWidth solid transparent;
+ border-top: @borderTop solid @color;
+ margin-left: @marginLeft;
+}
+

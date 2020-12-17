@@ -1,0 +1,71 @@
+@import "./variable";
+/*浏览器默认样式清清除或者设置*/
+html {
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+p {
+  margin: 0;
+  padding: 0;
+}
+
+a img {
+  border: 0;
+}
+
+a {
+  text-decoration: none;
+  // .setTapColor();
+}
+
+ol, ul {
+  list-style: none;
+}
+
+iframe {
+  border: 0;
+}
+
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+  /* WebKit browsers */
+  color: #999999;
+  font-family: PingFangSC-Medium, sans-serif;
+  font-size: 14px;
+}
+
+input:-moz-placeholder, textarea:-moz-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  color: #999999;
+  font-family: PingFangSC-Medium, sans-serif;
+  font-size: 14px;
+}
+
+input::-moz-placeholder, textarea::-moz-placeholder {
+  /* Mozilla Firefox 19+ */
+  color: #999999;
+  font-family: PingFangSC-Medium, sans-serif;
+  font-size: 14px;
+}
+
+input:-ms-input-placeholder, textarea:-ms-input-placeholder {
+  /* Internet Explorer 10+ */
+  color: #999999;
+  font-family: PingFangSC-Medium, sans-serif;
+  font-size: 14px;
+}
+
+/*vux UI 框架复写*/
+
+.router-view {
+  display: flex;
+  flex-direction: column;
+  background-color: @theme-cbg-color;
+  font-family: "PingFang SC", sans-serif;
+  color: @theme-font-color;
+}

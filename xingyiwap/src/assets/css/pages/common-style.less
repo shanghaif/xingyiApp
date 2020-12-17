@@ -1,0 +1,212 @@
+@import "../base/variable";
+/********************************* 公共样式 *********************************/
+@font-size-twenty-three: 23px;
+@font-size-twenty: 20px;
+@font-size-eighteen: 18px;
+@font-size-seventeen: 17px;
+@font-size-sixteen: 16px;
+@font-size-fifteen: 15px;
+@font-size-fourteen: 14px;
+@font-size-thirteen: 13px;
+@font-size-twelve: 12px;
+@font-size-eleven: 11px;
+@font-size-ten: 10px;
+
+@font-dark-gray-color: #757575;
+@font-gray-color: #666666;
+@font-common-color: #333333;
+@font-light-gray-color: #f2f2f2;
+@font-dark-color: #1a1a1a;
+@font-blue-color-light: #166BCF;
+@font-blue-color-dark: #0078EB;
+@font-blue-color: #548EFF;
+@font-title-color: #111111;
+@font-placeholder-color: #999999;
+@font-danger-color: #FF0018;
+@btn-active-color: #386DD6;
+@btn-inactive-color: #999999;
+@btn-bg-color: #DDECF8;
+@common-bg-color: #EBF0F4;
+@common-warn-color: #FF790E;
+@common-finished-color: #20B55E;
+@common-unfinished-color: #FF9100;
+@common-undo-color: #CCCCCC;
+@common-nav-color-dark: #0171DD;
+@common-nav-color-light: #1988F2;
+@common-border-color: #ebedf0;
+
+
+
+//tabbar
+@tabbar-border-color: #ffffff;
+@tabbar-active-color: #26A2FF;
+@background-image: url("../../img/home/bg.png") no-repeat top;
+// 底部按钮下沉1像素
+.van-tabbar--fixed{
+  bottom: -1px !important;
+}
+.common-font-color-class {
+  color: @font-dark-color;
+}
+.cell-box-content {
+  padding: 14px 16px 14px 0;
+}
+.weui-cell {
+  padding: 14px 15px;
+}
+.bscroll {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.popup-cell-container {
+  width: 100%;
+  text-align: center;
+  font-size: @font-size-fourteen;
+  color: @theme-font-color;
+}
+.asterisk-cell-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  font-size: @font-size-fourteen;
+  color: @font-gray-color;
+  .left {
+    font-size: 0;
+    padding-right: 5px;
+    width: 100px;
+    span {
+      font-size: @font-size-fourteen;
+    }
+    .asterisk {
+      color: #FF0018;
+      padding-right: 1px;
+    }
+  }
+}
+
+.placeholder-color {
+  color: @font-placeholder-color;
+}
+.theme-font-color {
+  color: @theme-font-color;
+}
+.btn-active-color {
+  color: @btn-active-color !important
+}
+.btn-inactive-color {
+  color: @btn-inactive-color !important
+}
+
+
+.view-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.view-scroll-content {
+  width: 100%;
+  flex: 1;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  overflow-scrolling: touch;
+}
+
+.common-nav-bar {
+  background: @background-image;
+  background-color: transparent !important;
+  .van-icon {
+    color: white !important;
+  }
+  .van-nav-bar__left {
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+  .van-nav-bar__right {
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+  .van-nav-bar__title {
+    color: #ffffff;
+  }
+  .van-nav-bar__text{
+    color: #ffffff;
+  }
+}
+.van-hairline--bottom::after {
+  border-bottom-width: 0 !important;
+}
+.van-tabs__nav--card {
+  margin: 0;
+  border: none;
+}
+.van-hairline--top-bottom::after, .van-hairline-unset--top-bottom::after {
+  border: none;
+}
+.van-cell {
+  color: @font-common-color;
+}
+.van-divider {
+  margin: 0;
+}
+.collapse-title-container {
+  .collapse-title {
+    color: #888888;
+    font-size: @font-size-fifteen;
+    font-weight: bold;
+  }
+}
+.collapse-title-container > .van-cell {
+  background-color: #f4f4f4;
+}
+.van-collapse-item__content {
+  padding: 0;
+  background-color: transparent;
+}
+.van-field__label {
+  width: 100px;
+}
+.margin-span {
+  &.span-1 {
+    margin-top: 1px;
+  }
+  &.span-5 {
+    margin-top: 5px;
+  }
+  &.span-10 {
+    margin-top: 10px;
+  }
+}
+.underline {
+  border-bottom: solid #DEDEDE;
+  &.width-1 {
+    border-width: 1px;
+  }
+  &.width-5 {
+    border-width: 1px;
+  }
+  &.width-10 {
+    border-width: 10px;
+  }
+}
+.btn-inactive-class {
+  background-color: @btn-inactive-color;
+}
+.btn-active-class {
+  background-color: @btn-active-color;
+}
+.label-class {
+  color: @font-gray-color;
+  font-size: @font-size-fourteen;
+}
+//分组标题样式
+.group-header-title {
+  color: #888888;
+  font-size: @font-size-fifteen;
+  font-weight: bold;
+  background-color: #f4f4f4;
+  padding: 10px 0 10px 16px;
+}
