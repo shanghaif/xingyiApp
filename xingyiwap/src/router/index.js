@@ -65,10 +65,18 @@ const router = new VueRouter({
       name: "stationList",
       meta: {
         tabShow: false,
-        activeId: "",
         keepAlive: true,
       },
       component: () => import("@/pages/water/stationList.vue")
+    },
+    {
+      path: "/assessmentWater",
+      name: "assessmentWater",
+      meta: {
+        tabShow: false,
+        keepAlive: true,
+      },
+      component: () => import("@/pages/water/assessment.vue")
     },
   ]
 })

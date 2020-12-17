@@ -21,7 +21,7 @@
                 <li><img src="../../assets/img/desc.png" style="max-width: 15.5px" />说明</li>
                 <li @click="refresh"><img src="../../assets/img/refresh.png" style="max-width: 16px" />刷新</li>
                 <li @click="$router.push('/stationList')"><img src="../../assets/img/station.png" style="max-width: 12.5px" />站点<br />列表</li>
-                <li><img src="../../assets/img/kaohe.png" style="max-width: 11.5px" />考核<br />分析</li>
+                <li @click="$router.push('/assessmentWater')"><img src="../../assets/img/kaohe.png" style="max-width: 11.5px" />考核<br />分析</li>
             </ul>
         </div>
         <baidu-map class="map" ref="map" :center="options.center" :zoom="options.zoom" center="兴义市" @ready="initMap">

@@ -1,0 +1,39 @@
+@import "../base/variable";
+
+.contentAssessment{
+  margin-top: 46px;
+  background: #fff;
+  .right{
+    .flexDisplayContent;
+    span{
+      border:1px solid rgba(30,115,216,1);
+      border-radius:4px;
+      font-size: 13px;
+      padding: 3px 8px;
+      color: #1E73D8;
+      &.active{
+        background:linear-gradient(180deg,rgba(85,150,242,1) 0%,rgba(33,108,213,1) 100%);
+        color: #fff;
+        border: 0;
+      }
+      &.selectStation{
+        .flexDisplayContent();
+      }
+      &.triangleDownStation{
+        border: 0;
+        margin-right: 0 !important;
+        padding: 0 !important;
+        .setTriangleDown(#fff);
+      }
+      &.triangleDownStationToggle{
+        border: 0;
+        margin-right: 0 !important;
+        padding: 0 !important;
+        .setTriangleDown(#1E73D8);
+      }
+    }
+    span:nth-child(1) {
+      margin-right: 10px;
+    }
+  }
+}
