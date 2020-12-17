@@ -2,9 +2,11 @@
 
 .contentAssessment{
   margin-top: 46px;
-  background: #fff;
-  .right{
-    .flexDisplayContent;
+  .title_content{
+    .flexDisplayContent(@justifyContent: flex-start);
+    background: #fff;
+    margin-bottom: 10px;
+    padding: 10px;
     span{
       border:1px solid rgba(30,115,216,1);
       border-radius:4px;
@@ -34,6 +36,84 @@
     }
     span:nth-child(1) {
       margin-right: 10px;
+    }
+  }
+  .items{
+    .setWidthAndHeight(calc(100% - 20px), auto);
+    padding: 10px;
+    &:not(:last-child){
+      margin-bottom: 10px;
+    }
+    background: #fff;
+    .echarts{
+      .setWidthAndHeight(calc(100% - 20px), 200px);
+    }
+    .title{
+      color: #1A1A1A;
+      font-size: 15px;
+      .flexDisplayContent(@justifyContent: flex-start);
+      .waterIcon{
+        .setWidthAndHeight(4px, 4px);
+        border-radius: 4px;
+        background: #2376D8;
+        display: inline-block;
+        margin-right: 5px;
+      }
+    }
+    .legend{
+      .setPaddingMargin(0, 0);
+      .flexDisplayContent;
+      margin: 10px 0;
+      width: calc(100% - 20px);
+      li{
+        flex: 1;
+        .flexDisplayContent;
+        padding: 5px 0;
+        each(@colorsWaterLevels, {
+          &.@{key} {
+            background: @value;
+          }
+        })
+      }
+    }
+    .getGift{
+      .flexDisplayContent;
+      .setPaddingMargin(10px 0, 10px 0);
+      background: #EDF1F5;
+      padding: 10px 0;
+      border-radius: 4px;
+      li{
+        flex: 1;
+        .flexDisplayContent(@justifyContent: flex-start);
+        font-size: 12px;
+        color: #1a1a1a;
+        padding-left: 10px;
+        font{
+          font-size: 16px;
+          color: #1581EB;
+        }
+      }
+    }
+    table{
+      margin-top: 10px;
+      width: 100%;
+      border-collapse: collapse;
+      td{
+        border: 1px solid #DDDDDD;
+        padding: 7px 0;
+        text-align: center;
+        font-size: 13px;
+        color: #1A1A1A;
+        span{
+          color: #fff;
+          padding: 3px 5px;
+          each(@colorsWaterLevels, {
+            &.@{key} {
+              background: @value;
+            }
+          })
+        }
+      }
     }
   }
 }
