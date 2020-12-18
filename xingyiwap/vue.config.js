@@ -1,5 +1,6 @@
 const path = require('path')
 const webpack = require("webpack")
+const baseUrl = "http://192.168.171.42:30233"
 module.exports = {
   publicPath: './',
   outputDir: '../www',  // 生成静态文件路径
@@ -28,5 +29,16 @@ module.exports = {
         "windows.jQuery":"jquery"
       })
     ]
+  },
+  devServer: {
+    proxy: {
+      '/AirAppXY-Service' : {
+        target: baseUrl + "/AirAppXY-Service",
+        changeOrigin: true,
+        pathRewrite: {
+          '^/AirAppXY-Service': '/'
+        }
+      }
+    }
   },
 }

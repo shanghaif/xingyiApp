@@ -5,7 +5,7 @@
                 <img src="../../assets/img/user_icon.png" @click="$router.push({path: '/mine'})" style="height: 18px; width: 18px" alt="">
             </template>
             <template #title>
-                兴义市
+                {{$store.state.vuex.stationData.text || '兴义市'}} <span class="navBarxl" @click="$router.push('/stationListSelect')"></span>
             </template>
             <template #right>
                 <img src="../../assets/img/message.png" @click="$router.push({path: '/mine'})" style="height: 17.5px; width: 19.5px" alt="">
@@ -16,7 +16,7 @@
                 <img src="../../assets/img/home/yun.png" class="yun" alt="">
                 <img src="../../assets/img/home/yun1.png" class="yun1" alt="">
             </div>
-            <p class="update">更新：2020-01-10 10:00</p>
+            <p class="update">更新：{{realTimeData.spt}}</p>
             <div class="menu_list">
                 <ul>
                     <li @click="goto(1)"><img src="../../assets/img/home/wrrl.png" style="width: 43.2px; height: 43.8px" alt=""><br>污染日历</li>
@@ -26,11 +26,11 @@
                 </ul>
             </div>
             <div class="svgCanvas">
-                <circleCom :options="options" :value="0.4" pollutionLevel="轻度污染"></circleCom>
+                <circleCom v-if="showYBP" :options="options" :value="realTimeData.percent" :pollutionLevel="realTimeData.airQuality"></circleCom>
                 <div class="svgContent">
                     <span class="aqi">AQI</span>
-                    <span class="aqiValue">112</span>
-                    <span class="waste">首页污染物：<font>SO2</font></span>
+                    <span class="aqiValue">{{realTimeData.aqi || '--'}}</span>
+                    <span class="waste">首页污染物：<font>{{realTimeData.primaryPollution || '--'}}</font></span>
                 </div>
                 <div class="svgDesc">
                     <ul>
@@ -44,14 +44,14 @@
                     <img src="../../assets/img/home/lingling.png" style="width: 71.5px; height: 111px;margin-top: 145px; margin-left: 60px" alt="">
                 </div>
                 <div class="aqiContent">
-                    <p class="aqiTitle">今日累计AQI <font>56</font>, 首页污染物 <font>PM2.5</font></p>
-                    <ul>
-                        <li>34</li>
-                        <li>52</li>
-                        <li>8.12</li>
-                        <li>15</li>
-                        <li>110</li>
-                        <li>0.6</li>
+<!--                    <p class="aqiTitle">今日累计AQI <font>56</font>, 首页污染物 <font>PM2.5</font></p>-->
+                    <ul style="margin-top: 20px">
+                        <li>{{realTimeData.pm25 || '--'}}</li>
+                        <li>{{realTimeData.pm10 || '--'}}</li>
+                        <li>{{realTimeData.so2 || '--'}}</li>
+                        <li>{{realTimeData.o3 || '--'}}</li>
+                        <li>{{realTimeData.no2 || '--'}}</li>
+                        <li>{{realTimeData.co || '--'}}</li>
                         <li class="level1">PM <sub>2.5</sub></li>
                         <li class="level2">PM <sub>10</sub></li>
                         <li class="level3">SO <sub>2</sub></li>
@@ -65,7 +65,7 @@
         <div class="chartsFormData">
             <div class="item">
                 <div class="title">
-                    <div class="left"><span></span> 最近24小时趋势</div>
+                    <div class="left"><span></span> 最{{recentText}}趋势</div>
                     <div class="right"><span :class="selectActive[0][0]" @click="changeItem(0,0)">近24小时</span> <span :class="selectActive[0][1]" @click="changeItem(0,1)">近30天</span></div>
                 </div>
                 <div class="content">
@@ -74,13 +74,13 @@
                     </div>
                     <div class="e_select">
                         <ul>
-                            <li :class="factorActive[0]" @click="changeFactor(0, 'AQI')">AQI</li>
-                            <li :class="factorActive[1]" @click="changeFactor(1, 'PM25')">PM2.5</li>
-                            <li :class="factorActive[2]" @click="changeFactor(2, 'PM10')">PM10</li>
-                            <li :class="factorActive[3]" @click="changeFactor(3, 'SO2')">SO2</li>
-                            <li :class="factorActive[4]" @click="changeFactor(4, 'O3')">O3</li>
-                            <li :class="factorActive[5]" @click="changeFactor(5, 'NO2')">NO2</li>
-                            <li :class="factorActive[6]" @click="changeFactor(6, 'CO')">CO</li>
+                            <li :class="factorActive[0]" @click="changeFactor(0, 'aqi')">AQI</li>
+                            <li :class="factorActive[1]" @click="changeFactor(1, 'pm25')">PM2.5</li>
+                            <li :class="factorActive[2]" @click="changeFactor(2, 'pm10')">PM10</li>
+                            <li :class="factorActive[3]" @click="changeFactor(3, 'so2')">SO2</li>
+                            <li :class="factorActive[4]" @click="changeFactor(4, 'o3')">O3</li>
+                            <li :class="factorActive[5]" @click="changeFactor(5, 'no2')">NO2</li>
+                            <li :class="factorActive[6]" @click="changeFactor(6, 'co')">CO</li>
                         </ul>
                     </div>
                 </div>
@@ -386,6 +386,17 @@
             options: {
               srtokeWidth: 2.4  // svg线宽度
             },
+            realTimeData: {}, // 实时数据
+            recentText: "近24小时",
+            recentlyTime: {
+              startTime: '',
+              endTime: '',
+              timeType: '小时',
+              factor: 'aqi',
+              mnType: "city"
+            },
+            recentData: {},
+            showYBP: false,
             selectActive: [["active"],["active"],["active"],["active"],["active"],["active"]],
             factorActive: ["active"],
             lineHoursEcharts: {}, // 近24小时趋势
@@ -402,9 +413,17 @@
             factorColumns: ["AQI", 'PM2.5', 'PM10', 'SO2', 'O3', 'NO2', 'CO'], // 因子列表
           }
         },
-        mounted() {
-            // 近24小时趋势
-            this.drawLineHoursData();
+      activated() {
+        // 获取实时空气质量
+        this.getRealTimeAirQuality();
+        // 近24小时趋势
+        this.getRecentlyRealData();
+      },
+      mounted() {
+            let date = new Date()
+            this.recentlyTime.endTime   = date.format("yyyyMMddhh")
+            date.setTime(date.getTime()-24*60*60*1000) // 近24小时
+            this.recentlyTime.startTime = date.format("yyyyMMddhh")
             // 2020年优良天数统计
             this.drawPieCountDay();
             // 2020年度综合指数贡献比
@@ -419,10 +438,19 @@
         methods: {
           // 顶部菜单跳转
           goto(number){
-            console.log(number, "123")
+            if( number == 1 ) {
+                this.$router.push('/calendar')
+            } else if( number == 2 ) {
+                this.$router.push('/standard')
+            } else if( number == 3 ) {
+                this.$router.push('/peakvalue')
+            } else if( number == 4 ) {
+
+            }
           },
           // 近24小时趋势
           drawLineHoursData(){
+            let that = this
             this.lineHoursEcharts = this.$echarts.init(document.getElementById("echarts"))
             let option  = {
               color: "#E5CE10",
@@ -442,7 +470,7 @@
                   rotate: 40,
                   color: "#666"
                 },
-                data: ['13日1时','13日2时','13日3时','13日4时','13日5时','13日6时']
+                data: this.recentData.time
               },
               tooltip: {
                 trigger: 'axis'
@@ -472,35 +500,33 @@
                 interval: 60,
               },
               series: [{
-                data: [67, 89, 123, 256, 200, 111],
+                data: this.recentData.data,
                 type: 'bar',
                 barWidth: 7,
                 itemStyle: {
                   normal: {
                     //每根柱子颜色设置
                     color: function(params) {
-                      console.log(params)
-                      return "#24C768";
-                      // switch (that.dataItem.LEVEL[params.dataIndex]) {
-                      //   case "优":
-                      //     return "#24C768"
-                      //     break;
-                      //   case "良":
-                      //     return "#E5CE10"
-                      //     break;
-                      //   case "轻度污染":
-                      //     return "#FF7E00"
-                      //     break;
-                      //   case "中度污染":
-                      //     return "#FF0000"
-                      //     break;
-                      //   case "重度污染":
-                      //     return "#990000"
-                      //     break;
-                      //   case "严重污染":
-                      //     return "#7E0000"
-                      //     break;
-                      // }
+                      switch (that.recentData.level[params.dataIndex]) {
+                        case 0:
+                          return "#24C768"
+                          break;
+                        case 1:
+                          return "#E5CE10"
+                          break;
+                        case 2:
+                          return "#FF7E00"
+                          break;
+                        case 3:
+                          return "#FF0000"
+                          break;
+                        case 4:
+                          return "#990000"
+                          break;
+                        case 5:
+                          return "#7E0000"
+                          break;
+                      }
                     }
                   }
                 },
@@ -929,12 +955,65 @@
           changeItem(key, index){
             this.$set(this.selectActive, key, [])
             this.$set(this.selectActive[key], index, "active")
+            if( key == 0 ) {
+              let date = new Date()
+              if( index == 0 ) {
+                this.recentText = "近24小时"
+                date.setTime(date.getTime()-24*60*60*1000) // 近24小时
+                this.recentlyTime.startTime = date.format("yyyyMMddhh")
+                this.recentlyTime.timeType  = "小时"
+              } else {
+                this.recentText = "近30天"
+                date.setTime(date.getTime()-30*24*60*60*1000) // 近24小时
+                this.recentlyTime.startTime = date.format("yyyyMMddhh")
+                this.recentlyTime.timeType  = "日"
+              }
+              this.getRecentlyRealData()
+            }
           },
           // 切换因子
           changeFactor(key, name) {
-            this.factorActive      = []
-            this.factorActive[key] = "active"
-            console.log(name, "因子名称")
+            this.factorActive        = []
+            this.factorActive[key]   = "active"
+            this.recentlyTime.factor = name
+            this.getRecentlyRealData()
+          },
+          // 获取实时空气质量
+          getRealTimeAirQuality(){
+            let params = {}
+            if( this.$store.state.vuex.stationData.id ) {
+              params.mns = this.$store.state.vuex.stationData.id
+            } else {
+              params.mns = ""
+            }
+            this.showYBP = false
+            this.$http.get("/AirAppXY-Service/air/queryRealXingYiAQI", {params: params}).then(res=>{
+              if( res.data.code == 200 ) {
+                this.realTimeData = res.data.content.info.hasOwnProperty('spt') ? res.data.content.info : res.data.content.info[0]
+                if( this.realTimeData.aqi ) {
+                  let percent = Number(( this.realTimeData.aqi / 300 ).toFixed(1))
+                  this.$set(this.realTimeData, "percent", percent)
+                }
+                this.showYBP = true
+              }
+            })
+          },
+          // 最近24小时趋势
+          getRecentlyRealData(){
+            if( this.$store.state.vuex.stationData.id ) {
+              this.recentlyTime.mns = this.$store.state.vuex.stationData.id
+              this.recentlyTime.mnType = "station"
+            } else {
+              this.recentlyTime.mns = ""
+              this.recentlyTime.mnType = "city"
+            }
+            this.$http.get("/AirAppXY-Service/air/airLineData", {params:this.recentlyTime}).then(res=>{
+              if( res.data.code == 200 ) {
+                this.recentData = res.data.content.info
+                // 近24小时趋势图表
+                this.drawLineHoursData();
+              }
+            })
           }
         }
     }

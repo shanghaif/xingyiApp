@@ -46,7 +46,7 @@
     }
     background: #fff;
     .echarts{
-      .setWidthAndHeight(calc(100% - 20px), 200px);
+      .setWidthAndHeight(100%, 200px);
     }
     .title{
       color: #1A1A1A;
@@ -64,11 +64,13 @@
       .setPaddingMargin(0, 0);
       .flexDisplayContent;
       margin: 10px 0;
-      width: calc(100% - 20px);
+      width: 100%;
       li{
         flex: 1;
         .flexDisplayContent;
         padding: 5px 0;
+        color: #fff;
+        font-size: 12px;
         each(@colorsWaterLevels, {
           &.@{key} {
             background: @value;

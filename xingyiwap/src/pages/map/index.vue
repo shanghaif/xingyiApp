@@ -20,13 +20,25 @@
             <ul>
                 <li><img src="../../assets/img/desc.png" style="max-width: 15.5px" />说明</li>
                 <li @click="refresh"><img src="../../assets/img/refresh.png" style="max-width: 16px" />刷新</li>
-                <li @click="$router.push('/stationList')"><img src="../../assets/img/station.png" style="max-width: 12.5px" />站点<br />列表</li>
-                <li @click="$router.push('/assessmentWater')"><img src="../../assets/img/kaohe.png" style="max-width: 11.5px" />考核<br />分析</li>
+                <li @click="jumpUrl(1)"><img src="../../assets/img/station.png" style="max-width: 12.5px" />站点<br />列表</li>
+                <li @click="jumpUrl(2)"><img src="../../assets/img/kaohe.png" style="max-width: 11.5px" />考核<br />分析</li>
             </ul>
         </div>
-        <baidu-map class="map" ref="map" :center="options.center" :zoom="options.zoom" center="兴义市" @ready="initMap">
-            <template v-for="(item,index) in pointList" v-if="pointList.length > 0 && navActive == 0">
-                <bm-label :content="levelText[item.level]" :position="item.point" :labelStyle="Object.assign(label[item.level], baseStyle)" @click="showStationInfo(item)" />
+        <baidu-map class="map" @click="hideInfo" ref="map" :center="options.center" :zoom="options.zoom" center="兴义市" @ready="initMap">
+                <bm-label v-for="(item,index) in pointList" :key="index" v-if="pointList.length > 0 && navActive == 0" :content="levelText[item.level]" :position="item.point" :labelStyle="Object.assign(label[item.level], baseStyle)" @click="showStationInfo(item)" />
+            <template v-for="(item,index) in pointList">
+                <bm-overlay
+                    pane="labelPane"
+                    :class="'level'+item.level+' sample '+active[index]"
+                    @draw="({el, BMap, map})=>{draw({el, BMap, map}, item)}"
+                    @touchstart.native="showStationInfo(item,index)"
+                    v-show="(item.type == type) && pointList.length > 0 && navActive == 1"
+                   >
+                    <div class="airPoint">
+                        <img :src="fxImg[item.fx]" style="max-width: 21px" alt="">
+                        <span class="airNumber">{{item.fl}}</span><span class="airText">{{item.typeName}}</span>
+                    </div>
+                </bm-overlay>
             </template>
         </baidu-map>
         <div class="stationInfo" v-if="navActive == 0 && show">
@@ -61,6 +73,45 @@
                 <li>溶解氧</li>
             </ul>
         </div>
+        <div class="airStationType" v-if="navActive == 1 && !show">
+            <ul>
+                <li :class="typeClass[0]" @click="changeType(0)">国控站（6）</li>
+                <li :class="typeClass[1]" @click="changeType(1)">省控站（6）</li>
+                <li :class="typeClass[2]" @click="changeType(2)">常规站（6）</li>
+                <li :class="typeClass[3]" @click="changeType(3)">微型站（6）</li>
+            </ul>
+        </div>
+        <div class="stationInfo" v-if="navActive == 1 && show">
+            <div class="title">
+                <div class="left">
+                    <img src="../../assets/img/pos.png" style="max-width: 13.5px">xxx站点
+                </div>
+                <div class="right">
+                    <img src="../../assets/img/close.png" @click="show = false" style="max-width: 24px">
+                </div>
+            </div>
+            <div class="title time">
+                <div class="left">
+                    2020-08-20 14时 &nbsp;<span class="waterIcon air level2">优</span>
+                </div>
+                <div class="right">
+                </div>
+            </div>
+            <ul class="fator">
+                <li>8</li>
+                <li>50</li>
+                <li>0.41</li>
+                <li>6.98</li>
+                <li>0.22</li>
+                <li>4.60</li>
+                <li>AQI</li>
+                <li>PM <sub>10</sub></li>
+                <li>SO <sub>2</sub></li>
+                <li>NO <sub>2</sub></li>
+                <li>CO</li>
+                <li>O <sub>3</sub></li>
+            </ul>
+        </div>
     </div>
 </template>
 
@@ -69,7 +120,11 @@
         name: "mapCom",
         data () {
           return {
+            typeClass: ["active"],
+            type: 0,
             show: false,
+            active: [],
+            isClickState: false,
             navActive: 0,
             levelText: ["Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "劣Ⅴ"],
             activeClass: ["active"],
@@ -99,6 +154,16 @@
               {  backgroundColor: "#FF9B00"  },
               {  backgroundColor: "#FF0000"  },
             ],
+            fxImg: [
+              require("../../assets/img/icon/b.png"),
+              require("../../assets/img/icon/db.png"),
+              require("../../assets/img/icon/d.png"),
+              require("../../assets/img/icon/dn.png"),
+              require("../../assets/img/icon/n.png"),
+              require("../../assets/img/icon/xn.png"),
+              require("../../assets/img/icon/x.png"),
+              require("../../assets/img/icon/xb.png"),
+            ],
             pointList: [],
             map: {}
           }
@@ -107,21 +172,26 @@
           this.getTestPoint()
         },
         methods: {
+            jumpUrl(num){
+              if( this.navActive == 0 && num == 1 ) {
+                this.$router.push('/stationList')
+              }else if( this.navActive == 0 && num == 2 ) {
+                this.$router.push('/assessmentWater')
+              } else if( this.navActive == 1 && num == 1 ) {
+                this.$router.push('/stationListAir')
+              } else if( this.navActive == 1 && num == 2 ) {
+                this.$router.push('/assessmentAir')
+              }
+            },
             changeItem(num){
               this.activeClass      = []
               this.activeClass[num] = "active"
+              this.show             = false
               this.navActive        = num
+              this.active           = []
             },
             // 获取百度地图对象
             initMap({BMap, map}){
-              // 点击地图空白地方触发
-              let that = this
-              map.addEventListener("click", function(e){
-                if(e.overlay){
-                  return; // 存在覆盖物则不触发
-                }
-                that.hideInfo()
-              });
               this.map = BMap
             },
             getTestPoint() {
@@ -136,18 +206,49 @@
                   obj.point.lat = this.options.center.lat - ( Math.random()/5 )
                 }
                 obj.level = Math.floor(Math.random() * 5) + 1;
+                obj.fx    = Math.floor(Math.random() * 6) + 1;
+                obj.fl    = Math.floor(Math.random() * 100);
+                obj.type  = Math.floor(Math.random() * 4);
+                if( obj.type == 0 ) {
+                  obj.typeName = "国控"
+                } else if( obj.type == 1 ) {
+                  obj.typeName = "省控"
+                } else if( obj.type == 2 ) {
+                  obj.typeName = "常规"
+                } else if( obj.type == 3 ) {
+                  obj.typeName = "微型"
+                }
                 this.pointList.push(obj)
               }
             },
-            showStationInfo(info){
-                this.show = true
+            showStationInfo(info, index=0){
+              this.isClickState = true
+              this.show = true
+              this.active[index] = "active"
             },
-            hideInfo(){
+            hideInfo({type, target, point, pixel, overlay}){
+              if(overlay || this.isClickState) {
+                this.isClickState = false
+                return false;
+              }
+              this.active = []
               this.show = false
             },
             refresh(){
               window.location.reload(true)
-            }
+            },
+          draw ({el, BMap, map},item) {
+            const pixel = map.pointToOverlayPixel(new BMap.Point(item.point.lng, item.point.lat))
+            el.style.left = pixel.x - 60 + 'px'
+            el.style.top = pixel.y - 20 + 'px'
+          },
+          // 切换站点类型
+          changeType(num){
+              this.typeClass      = []
+              this.typeClass[num] = "active"
+              this.type           = num
+              this.active         = []
+          }
         }
     }
 </script>
@@ -161,6 +262,14 @@
         level4: #FFFF00;
         level5: #FF9B00;
         level6: #FF0000;
+    };
+    @colorsLevels: {
+        level1: #00E400;
+        level2: #FFFF00;
+        level3: #FF7E00;
+        level4: #FF0000;
+        level5: #99004C;
+        level6: #7E0023;
     };
     .map{
         width: 100%;
@@ -241,6 +350,15 @@
                           background: @value;
                       }
                   })
+                  &.air{
+                      each(@colorsLevels, {
+                          &.@{key} {
+                              background: @value;
+                          }
+                      })
+                      border-radius: 0;
+                      padding: 2px 8px;
+                  }
               }
             }
         }
@@ -256,6 +374,35 @@
                 text-align: center;
                 margin-top: 10px;
                 color: #1A1A1A;
+            }
+        }
+    }
+    .airStationType{
+        position: absolute;
+        left: 10px;
+        right: 10px;
+        bottom: 60px;
+        ul{
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #FFFFFF;
+            box-shadow: 0px 3px 6px rgba(26, 26, 26, 0.11);
+            padding: 10px 0;
+            border-radius: 6px;
+            li{
+                flex: 1;
+                font-size: 12px;
+                color: #999999;
+                text-align: center;
+                &:not(:last-child){
+                    border-right: 1px solid #ddd;
+                }
+                &.active{
+                    color: #216CD5;
+                }
             }
         }
     }
@@ -279,6 +426,67 @@
             text-align: center;
             font-size: 12px;
             box-shadow: 0px 3px 6px rgba(26, 26, 26, 0.11);
+        }
+    }
+    .sample {
+        img{
+            position: absolute;
+            top: -9px;
+            left: -13px;
+        }
+        width: 60px;
+        height: 23px;
+        background: #24C768;
+        each(@colorsLevels, {
+            &.@{key} {
+                background: @value;
+            }
+        })
+        position: absolute;
+        border-radius: 4px;
+        .airPoint{
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: black;
+            text-align: center;
+            span{
+                flex: 1;
+                text-align: center;
+            }
+            .airNumber{
+                font-size: 13px;
+                color: #fff;
+            }
+            .airText{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                color: #333333;
+                background: #EEEEEE;
+                height: calc(100% - 4px);
+                margin: 2px;
+                border-radius: 2px;
+            }
+        }
+    }
+    .sample.active {
+        img{
+            animation: myfirst 2s infinite;
+        }
+    }
+    @keyframes myfirst {
+        0% {
+            transform: translate(0px, 0px);
+        }
+        50% {
+            transform: translate(0px, -10px);
+        }
+        100% {
+            transform: translate(0px, 0px);
         }
     }
 </style>

@@ -56,12 +56,15 @@ import * as echarts from 'echarts'
 import time from "./libs/time";
 // 百度地图
 import BaiduMap from "vue-baidu-map";
+// axios
+import axios from './libs/axios'
 // 返回功能
 import historyBack from "./libs/historyBack";
 Vue.use(time)
 Vue.use(BaiduMap,{key: "MjvG4rIZL3MbcnWHG8fiz5kZ"})
 Vue.prototype.historyBack = historyBack
 Vue.prototype.$echarts = echarts;
+Vue.prototype.$http    = axios
 Vue.use(PullRefresh).use(List).use(Image).use(Cell).use(CellGroup).use(NavBar).use(Collapse).use(CollapseItem)
     .use(Button).use(Step).use(Steps).use(NumberKeyboard).use(Field).use(Popup).use(DatetimePicker).use(Overlay).use(Switch).use(Tab).use(Tabs)
     .use(Tag).use(Icon).use(Picker).use(TreeSelect).use(Uploader).use(ActionSheet).use(Search).use(Checkbox).use(CheckboxGroup).use(Tabbar).use(TabbarItem)

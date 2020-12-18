@@ -60,6 +60,47 @@ const router = new VueRouter({
       },
       component: () => import("@/pages/map/index.vue")
     },
+    // 首页选择站点
+    {
+      path: "/stationListSelect",
+      name: "stationListSelect",
+      meta: {
+        tabShow: false,
+        keepAlive: true,
+      },
+      component: () => import("@/pages/home/stationListSelect.vue")
+    },
+    // 首页今日峰值
+    {
+      path: "/peakvalue",
+      name: "peakvalue",
+      meta: {
+        tabShow: false,
+        keepAlive: true,
+      },
+      component: () => import("@/pages/home/peakvalue.vue")
+    },
+    // 首页今日达标
+    {
+      path: "/standard",
+      name: "standard",
+      meta: {
+        tabShow: false,
+        keepAlive: true,
+      },
+      component: () => import("@/pages/home/standard.vue")
+    },
+    // 首页污染日历
+    {
+      path: "/calendar",
+      name: "calendar",
+      meta: {
+        tabShow: false,
+        keepAlive: true,
+      },
+      component: () => import("@/pages/home/calendar.vue")
+    },
+      // 水站站点列表
     {
       path: "/stationList",
       name: "stationList",
@@ -69,6 +110,7 @@ const router = new VueRouter({
       },
       component: () => import("@/pages/water/stationList.vue")
     },
+      // 水站考核分析
     {
       path: "/assessmentWater",
       name: "assessmentWater",
@@ -78,6 +120,53 @@ const router = new VueRouter({
       },
       component: () => import("@/pages/water/assessment.vue")
     },
+      // 气站站点列表
+    {
+      path: "/stationListAir",
+      name: "stationListAir",
+      meta: {
+        tabShow: false,
+        keepAlive: true,
+      },
+      component: () => import("@/pages/home/stationList.vue")
+    },
+      // 气站考核分析
+    {
+      path: "/assessmentAir",
+      name: "assessmentAir",
+      meta: {
+        tabShow: false,
+        keepAlive: true,
+      },
+      component: () => import("@/pages/home/assessment.vue")
+    },
+    {
+      path: '/mine',
+      name: 'mine',
+      meta: {
+        tabShow: false,
+        keepAlive: true
+      },
+      component: () => import('@/pages/mine/index.vue')
+    },
+    {
+      path: '/changePassword',
+      name: 'changePassword',
+      meta: {
+        tabShow: false,
+        keepAlive: true
+      },
+      component: () => import('@/pages/mine/changePassword.vue')
+    },
+    {
+      path: '/qrcode',
+      name: 'qrcode',
+      meta: {
+        tabShow: false,
+        keepAlive: true
+      },
+      component: () => import('@/pages/mine/qrcode.vue')
+    }
   ]
 })
 router.afterEach((to,from)=>{

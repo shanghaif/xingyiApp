@@ -3,6 +3,7 @@ export default {
   state: {
     tabShow: true,
     activeId: 0,
+    stationData: {}
   },
   getters: {
 
