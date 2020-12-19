@@ -52,12 +52,12 @@
                         <li>{{realTimeData.o3 || '--'}}</li>
                         <li>{{realTimeData.no2 || '--'}}</li>
                         <li>{{realTimeData.co || '--'}}</li>
-                        <li class="level1">PM <sub>2.5</sub></li>
-                        <li class="level2">PM <sub>10</sub></li>
-                        <li class="level3">SO <sub>2</sub></li>
-                        <li class="level4">O <sub>3</sub></li>
-                        <li class="level5">NO <sub>2</sub></li>
-                        <li class="level6">CO</li>
+                        <li :class="'level'+(realTimeData.pm25_level+1)">PM <sub>2.5</sub></li>
+                        <li :class="'level'+(realTimeData.pm10_level+1)">PM <sub>10</sub></li>
+                        <li :class="'level'+(realTimeData.so2_level+1)">SO <sub>2</sub></li>
+                        <li :class="'level'+(realTimeData.o3_level+1)">O <sub>3</sub></li>
+                        <li :class="'level'+(realTimeData.no2_level+1)">NO <sub>2</sub></li>
+                        <li :class="'level'+(realTimeData.co_level+1)">CO</li>
                     </ul>
                 </div>
             </div>
@@ -87,7 +87,7 @@
             </div>
             <div class="item">
                 <div class="title">
-                    <div class="left"><span></span> 2020年度优良天数统计</div>
+                    <div class="left"><span></span> {{new Date().getFullYear()}}年度优良天数统计</div>
                     <div class="right"><span :class="selectActive[1][0]" @click="changeItem(1,0)">本年</span> <span :class="selectActive[1][1]" @click="changeItem(1,1)">本月</span></div>
                 </div>
                 <div class="content normal">
@@ -100,35 +100,10 @@
                             <td>占比</td>
                             <td>天数</td>
                         </tr>
-                        <tr>
-                            <td><span class="level1"></span>优</td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="level2"></span>良</td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="level3"></span>轻度</td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="level4"></span>中度</td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="level5"></span>重度</td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="level6"></span>严重</td>
-                            <td>80%</td>
-                            <td>160</td>
+                        <tr v-for="(item,index) in goodfineData.data" :key="index">
+                            <td><span :class="'level'+index"></span>{{item.name}}</td>
+                            <td>{{item.percent}}</td>
+                            <td>{{item.value}}</td>
                         </tr>
                     </table>
                 </div>
@@ -148,35 +123,10 @@
                             <td>占比</td>
                             <td>指数</td>
                         </tr>
-                        <tr>
-                            <td><span class="pm25"></span>PM <sub>2.5</sub></td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pm10"></span>PM <sub>10</sub></td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="so2"></span>SO <sub>2</sub></td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="o3"></span>O <sub>3</sub></td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="no2"></span>NO <sub>2</sub></td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="co"></span>CO</td>
-                            <td>80%</td>
-                            <td>160</td>
+                        <tr v-for="(item,index) in comprehensiveData.data" :key="index">
+                            <td><span :class="item.name"></span><font v-html="item.html"></font></td>
+                            <td>{{item.percent}}</td>
+                            <td>{{item.value}}</td>
                         </tr>
                     </table>
                 </div>
@@ -196,35 +146,10 @@
                             <td>占比</td>
                             <td>天数</td>
                         </tr>
-                        <tr>
-                            <td><span class="pm25"></span>PM <sub>2.5</sub></td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pm10"></span>PM <sub>10</sub></td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="so2"></span>SO <sub>2</sub></td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="o3"></span>O <sub>3</sub></td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="no2"></span>NO <sub>2</sub></td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="co"></span>CO</td>
-                            <td>80%</td>
-                            <td>160</td>
+                        <tr v-for="(item,index) in firstPolluteData.data" :key="index">
+                            <td><span :class="item.name"></span><font v-html="item.html"></font></td>
+                            <td>{{item.percent}}</td>
+                            <td>{{item.value}}</td>
                         </tr>
                     </table>
                 </div>
@@ -291,50 +216,10 @@
                                 <td>情况</td>
                                 <td>同比</td>
                             </tr>
-                            <tr>
-                                <td>PM2.5</td>
-                                <td>108</td>
-                                <td>-10 <font class="down">↓</font></td>
-                            </tr>
-                            <tr>
-                                <td>PM10</td>
-                                <td>108</td>
-                                <td>-10 <font class="down">↓</font></td>
-                            </tr>
-                            <tr>
-                                <td>SO2</td>
-                                <td>108</td>
-                                <td>-10 <font class="down">↓</font></td>
-                            </tr>
-                            <tr>
-                                <td>O3</td>
-                                <td>108</td>
-                                <td>-10 <font class="up">↑</font></td>
-                            </tr>
-                            <tr>
-                                <td>NO2</td>
-                                <td>108</td>
-                                <td>-10 <font class="down">↓</font></td>
-                            </tr>
-                            <tr>
-                                <td>CO</td>
-                                <td>108</td>
-                                <td>-10 <font class="down">↓</font></td>
-                            </tr>
-                            <tr>
-                                <td>优良天数</td>
-                                <td>108</td>
-                                <td>-10 <font class="down">↓</font></td>
-                            </tr>
-                            <tr>
-                                <td>综合指数</td>
-                                <td>108</td>
-                                <td>-10 <font class="down">↓</font></td>
-                            </tr>
-                            <tr>
-                                <td>O3超标天数</td>
-                                <td>108</td>
-                                <td>-10 <font class="down">↓</font></td>
+                            <tr v-for="(item,index) in airData" :key="index">
+                                <td>{{item.item}}</td>
+                                <td>{{item.case}}</td>
+                                <td>{{item.dq_tb != "--" ? Math.abs(item.dq_tb) : item.dq_tb}} <template v-if="item.dq_tb != '--' && Number(item.dq_tb) != 0"><font class="down" v-if="Number(item.dq_tb) < 0">↓</font><font class="up" v-else>↑</font></template></td>
                             </tr>
                         </table>
                     </div>
@@ -343,26 +228,23 @@
             <div class="item">
                 <div class="title">
                     <div class="left"><span></span> 同比分析</div>
-                    <div class="right"><span class="active selectStation" @click="selectPicker(1)">{{stationValue}} <span class="triangleDownStation"></span></span></div>
+                    <div class="right"><span class="active selectStation" @click="selectPicker(2)">{{factorValue}} <span class="triangleDownStation"></span></span></div>
                 </div>
                 <div class="content factor">
-                    <div class="selectFactor" @click="selectPicker(2)">
-                        {{factorValue}} <span class="triangleDown"></span>
-                    </div>
                     <div class="echarts" id="echarts6">
 
                     </div>
                 </div>
             </div>
         </div>
-        <van-popup v-model="stationPicker" position="bottom">
-            <van-picker
-                show-toolbar
-                :columns="stationColumns"
-                @confirm="onStationConfirm"
-                @cancel="stationPicker = false"
-            />
-        </van-popup>
+<!--        <van-popup v-model="stationPicker" position="bottom">-->
+<!--            <van-picker-->
+<!--                show-toolbar-->
+<!--                :columns="stationColumns"-->
+<!--                @confirm="onStationConfirm"-->
+<!--                @cancel="stationPicker = false"-->
+<!--            />-->
+<!--        </van-popup>-->
         <van-popup v-model="factorPicker" position="bottom">
             <van-picker
                 show-toolbar
@@ -395,7 +277,63 @@
               factor: 'aqi',
               mnType: "city"
             },
+            goodAndFineTime: {
+              startTime: '',
+              endTime: '',
+              mnType: 'city',
+              timeType: '日',
+              mns: ''
+            },
+            comprehensiveTime: {
+              startTime: '',
+              endTime: '',
+              mnType: 'city',
+              timeType: '年',
+              mns: ''
+            },
+            firstPolluteTime: {
+              startTime: '',
+              endTime: '',
+              mnType: 'city',
+              timeType: '日',
+              mns: ''
+            },
+            standardTime: {
+              startTime: '',
+              endTime: '',
+              mnType: 'city',
+              timeType: '日',
+              mns: ''
+            },
+            airDataTime: {
+              startTime: '',
+              endTime: '',
+              mnType: 'city',
+              timeType: '年',
+              mns: ''
+            },
+            tbTime: {
+              startTime: '',
+              endTime: '',
+              mnType: 'city',
+              timeType: '月',
+              factor: "aqi",
+              mns: ''
+            },
             recentData: {},
+            goodfineData: {
+              data: []
+            },
+            comprehensiveData: {
+              data: []
+            },
+            firstPolluteData: {
+              data: []
+            },
+            standardData: {
+              data: []
+            },
+            airData: [],
             showYBP: false,
             selectActive: [["active"],["active"],["active"],["active"],["active"],["active"]],
             factorActive: ["active"],
@@ -405,12 +343,12 @@
             firstWaste: {}, // 2020年首要污染物占比
             exceedDay: {}, // 2020年超标天数占比
             monthStatic: {}, // 同比分析
-            stationValue: "站点", // 默认选中
-            stationPicker: false, // 选择站点
-            stationColumns: ["站点A","站点B"], // 站点列表
             factorValue: "AQI", // 默认选中
             factorPicker: false, // 选择因子
             factorColumns: ["AQI", 'PM2.5', 'PM10', 'SO2', 'O3', 'NO2', 'CO'], // 因子列表
+            colorList: ["#FFCF3F","#5CDFD5","#D2F13C","#55DE38","#FF7840","#3E9AF7"],
+            htmls: ["PM <sub>2.5</sub>", "PM <sub>10</sub>", "SO <sub>2</sub>", "O <sub>3</sub>", "NO <sub>2</sub>", "CO"],
+            nameList: ["pm25", "pm10", "so2", "o3", "no2", "co"]
           }
         },
       activated() {
@@ -418,22 +356,37 @@
         this.getRealTimeAirQuality();
         // 近24小时趋势
         this.getRecentlyRealData();
+        // 优良天数统计
+        this.getGoodAndFineDays();
+        // 综合贡献指数
+        this.getComprehensive();
+        // 首要污染物占比
+        this.getFirstPollute();
+        // 超标天数占比
+        this.getStandardDays();
+        // 空气质量累计情况
+        this.getAirDataStatus();
+        // 同比分析
+        this.getTbStatisticData();
       },
       mounted() {
-            let date = new Date()
-            this.recentlyTime.endTime   = date.format("yyyyMMddhh")
-            date.setTime(date.getTime()-24*60*60*1000) // 近24小时
-            this.recentlyTime.startTime = date.format("yyyyMMddhh")
-            // 2020年优良天数统计
-            this.drawPieCountDay();
-            // 2020年度综合指数贡献比
-            this.drawPieContribution();
-            // 2020年首要污染物占比
-            this.drawPieFirstWaste();
-            // 2020年超标天数占比
-            this.drawPieExceedDay();
-            // 同比分析
-            this.drawLineMonthStatic();
+        let date = new Date()
+        this.recentlyTime.endTime      = date.format("yyyyMMddhh")
+        this.goodAndFineTime.endTime   = date.format("yyyyMMddhh")
+        this.goodAndFineTime.startTime = date.format("yyyy010100")
+        this.comprehensiveTime.startTime = date.format("yyyy010100")
+        this.comprehensiveTime.endTime   = date.format("yyyyMMddhh")
+        this.firstPolluteTime.startTime  = date.format("yyyy010100")
+        this.firstPolluteTime.endTime    = date.format("yyyyMMddhh")
+        this.standardTime.startTime  = date.format("yyyy010100")
+        this.standardTime.endTime    = date.format("yyyyMMddhh")
+        this.airDataTime.startTime  = date.format("yyyy010100")
+        this.airDataTime.endTime    = date.format("yyyyMMddhh")
+        this.tbTime.endTime    = date.format("yyyyMMddhh")
+        date.setTime(date.getTime()-24*60*60*1000) // 近24小时
+        this.recentlyTime.startTime = date.format("yyyyMMddhh")
+        date.setTime(date.getTime()-3*365*24*60*60*1000) // 近三年
+        this.tbTime.startTime    = date.format("yyyyMMddhh")
         },
         methods: {
           // 顶部菜单跳转
@@ -539,8 +492,19 @@
           },
           // 2020年优良天数统计
           drawPieCountDay(){
+            let that = this
             this.countDayEcharts = this.$echarts.init(document.getElementById("echarts2"))
-            // let colorList= ["#24C768","#E5CE10","#FF7E00","#FF0000","#990000","#7E0000"]
+            let colorList= ["#24C768","#E5CE10","#FF7E00","#FF0000","#990000","#7E0000"]
+            let levelList= ["优","良","轻度","中度","重度","严重"]
+            this.goodfineData.data.map((item,index)=>{
+              let obj       = {}
+              obj.value     = item
+              obj.name      = levelList[index]
+              obj.itemStyle = {
+                normal: {color: colorList[index]}
+              }
+              this.goodfineData.data[index] = obj
+            })
             let option2 = {
               series: [
                 {
@@ -551,7 +515,7 @@
                   selectedMode: false,
                   label: {
                     normal: {
-                      formatter: '优良天数\n{a|200天}\n同比增长24天',
+                      formatter: '优良天数\n{a|'+(this.goodfineData.data[0].value + this.goodfineData.data[1].value)+'天}\n同比增长'+this.goodfineData.tb+'天',
                       rich: {
                         a: {
                           color: '#1A1A1A',
@@ -576,7 +540,7 @@
                   labelLine: {
                     show: false
                   },
-                  data: [100, 146, 46]
+                  data: this.goodfineData.data
                 },
                 {
                   type: 'pie',
@@ -584,7 +548,15 @@
                   label: {
                     position: 'outside',
                     normal: {
-                      formatter: function(data){ return data.percent.toFixed(1)+"%";} ,
+                      formatter: function(data){
+                        let percent = data.percent.toFixed(1)+"%";
+                        that.goodfineData.data[data.dataIndex].percent = percent
+                        if( data.percent > 0 ) {
+                          return percent;
+                        } else {
+                          return ""
+                        }
+                      } ,
                       textStyle: {
                         fontWeight: 'normal',
                         fontSize: 10,
@@ -593,11 +565,11 @@
                     }
                   },
                   labelLine: {
-                    show: true,
-                    length: 1,
-                    length2: 1,
+                    show: false,
+                    length: 0,
+                    length2: 0,
                   },
-                  data: [100, 146, 46]
+                  data: this.goodfineData.data
                 }
               ]
             }
@@ -605,8 +577,20 @@
           },
           // 2020年度综合指数贡献比
           drawPieContribution(){
+            let that = this
             this.pieContribution = this.$echarts.init(document.getElementById("echarts3"))
-            // let colorList= ["#24C768","#E5CE10","#FF7E00","#FF0000","#990000","#7E0000"]
+            let value    = 0
+            this.comprehensiveData.data.map((item,index)=>{
+              let obj       = {}
+              obj.value     = item
+              value        += item
+              obj.name      = this.nameList[index]
+              obj.html      = this.htmls[index]
+              obj.itemStyle = {
+                normal: {color: this.colorList[index]}
+              }
+              this.comprehensiveData.data[index] = obj
+            })
             let option2 = {
               series: [
                 {
@@ -617,7 +601,7 @@
                   selectedMode: false,
                   label: {
                     normal: {
-                      formatter: '综合指数\n{a|6.133}\n同比减少1.009',
+                      formatter: '综合指数\n{a|'+value+'}\n同比减少'+this.comprehensiveData.tb,
                       rich: {
                         a: {
                           color: '#1A1A1A',
@@ -642,7 +626,7 @@
                   labelLine: {
                     show: false
                   },
-                  data: [100, 146, 46]
+                  data: this.comprehensiveData.data
                 },
                 {
                   type: 'pie',
@@ -650,7 +634,15 @@
                   label: {
                     position: 'outside',
                     normal: {
-                      formatter: function(data){ return data.percent.toFixed(1)+"%";} ,
+                      formatter: function(data){
+                        let percent = data.percent.toFixed(1)+"%";
+                        that.comprehensiveData.data[data.dataIndex].percent = percent
+                        if( data.percent > 0 ) {
+                          return percent;
+                        } else {
+                          return ""
+                        }
+                      } ,
                       textStyle: {
                         fontWeight: 'normal',
                         fontSize: 10,
@@ -659,11 +651,11 @@
                     }
                   },
                   labelLine: {
-                    show: true,
+                    show: false,
                     length: 1,
                     length2: 1,
                   },
-                  data: [100, 146, 46]
+                  data: this.comprehensiveData.data
                 }
               ]
             }
@@ -671,8 +663,19 @@
           },
           // 2020年首要污染物占比
           drawPieFirstWaste(){
+            let that = this
             this.firstWaste = this.$echarts.init(document.getElementById("echarts4"))
-            // let colorList= ["#24C768","#E5CE10","#FF7E00","#FF0000","#990000","#7E0000"]
+            this.firstPolluteData.data.map((item,index)=>{
+              let obj       = {}
+              obj.value     = item
+              obj.name      = this.nameList[index]
+              obj.html      = this.htmls[index]
+              obj.itemStyle = {
+                normal: {color: this.colorList[index]}
+              }
+              this.firstPolluteData.data[index] = obj
+            })
+            console.log(this.firstPolluteData, "fir")
             let option2 = {
               series: [
                 {
@@ -683,21 +686,6 @@
                   selectedMode: false,
                   label: {
                     normal: {
-                      // formatter: '综合指数\n{a|6.133}\n同比减少1.009',
-                      // rich: {
-                      //   a: {
-                      //     color: '#1A1A1A',
-                      //     lineHeight: 22,
-                      //     fontFamily: "PingFang SC",
-                      //     align: 'center',
-                      //     fontSize: 12
-                      //   }
-                      // },
-                      // textStyle: {
-                      //   color: "#666666",
-                      //   fontWeight: "normal",
-                      //   fontSize: 9
-                      // },
                       position: "center",
                       show: false
                     }
@@ -708,7 +696,7 @@
                   labelLine: {
                     show: false
                   },
-                  data: [100, 146, 46]
+                  data: this.firstPolluteData.data
                 },
                 {
                   type: 'pie',
@@ -716,7 +704,15 @@
                   label: {
                     position: 'outside',
                     normal: {
-                      formatter: function(data){ return data.percent.toFixed(1)+"%";} ,
+                      formatter: function(data){
+                        let percent = data.percent.toFixed(1)+"%";
+                        that.firstPolluteData.data[data.dataIndex].percent = percent
+                        if( data.percent > 0 ) {
+                          return percent;
+                        } else {
+                          return ""
+                        }
+                      } ,
                       textStyle: {
                         fontWeight: 'normal',
                         fontSize: 10,
@@ -725,11 +721,11 @@
                     }
                   },
                   labelLine: {
-                    show: true,
-                    length: 1,
-                    length2: 1,
+                    show: false,
+                    length: 0,
+                    length2: 0,
                   },
-                  data: [100, 146, 46]
+                  data: this.firstPolluteData.data
                 }
               ]
             }
@@ -955,8 +951,8 @@
           changeItem(key, index){
             this.$set(this.selectActive, key, [])
             this.$set(this.selectActive[key], index, "active")
+            let date = new Date()
             if( key == 0 ) {
-              let date = new Date()
               if( index == 0 ) {
                 this.recentText = "近24小时"
                 date.setTime(date.getTime()-24*60*60*1000) // 近24小时
@@ -969,6 +965,40 @@
                 this.recentlyTime.timeType  = "日"
               }
               this.getRecentlyRealData()
+            } else if( key == 1 ) {
+              if( index == 0 ) {
+                this.goodAndFineTime.startTime = date.format("yyyy010100")
+              } else {
+                this.goodAndFineTime.startTime = date.format("yyyyMM0100")
+              }
+              this.getGoodAndFineDays()
+            } else if( key == 2 ) {
+              if( index == 0 ) {
+                this.comprehensiveTime.startTime = date.format("yyyy010100")
+                this.comprehensiveTime.timeType  = "年"
+              } else {
+                this.comprehensiveTime.startTime = date.format("yyyyMM0100")
+                this.comprehensiveTime.timeType  = "月"
+              }
+              this.getComprehensive()
+            } else if( key == 3 ) {
+              if( index == 0 ) {
+                this.firstPolluteTime.startTime = date.format("yyyy010100")
+              } else {
+                this.firstPolluteTime.startTime = date.format("yyyyMM0100")
+              }
+              this.getFirstPollute()
+            } else if( key == 4 ) {
+
+            } else if( key == 5 ) {
+              if( index == 0 ) {
+                this.airDataTime.startTime = date.format("yyyy010100")
+                this.airDataTime.timeType  = "年"
+              } else {
+                this.airDataTime.startTime = date.format("yyyyMM0100")
+                this.airDataTime.timeType  = "月"
+              }
+              this.getAirDataStatus()
             }
           },
           // 切换因子
@@ -1000,13 +1030,6 @@
           },
           // 最近24小时趋势
           getRecentlyRealData(){
-            if( this.$store.state.vuex.stationData.id ) {
-              this.recentlyTime.mns = this.$store.state.vuex.stationData.id
-              this.recentlyTime.mnType = "station"
-            } else {
-              this.recentlyTime.mns = ""
-              this.recentlyTime.mnType = "city"
-            }
             this.$http.get("/AirAppXY-Service/air/airLineData", {params:this.recentlyTime}).then(res=>{
               if( res.data.code == 200 ) {
                 this.recentData = res.data.content.info
@@ -1014,7 +1037,102 @@
                 this.drawLineHoursData();
               }
             })
+          },
+          // 优良天数占比
+          getGoodAndFineDays(){
+            this.$http.get("/AirAppXY-Service/air/getAirLevelData", {params: this.goodAndFineTime}).then(res=>{
+              if( res.data.code == 200 ) {
+                let obj = res.data.content.info
+                this.goodfineData.data =  [obj[0], obj[1], obj[2], obj[3], obj[4], obj[5]]
+                this.goodfineData.tb   = obj['01TB']
+                // 优良天数统计
+                this.drawPieCountDay();
+              }
+            })
+          },
+          // 综合贡献指数
+          getComprehensive(){
+            this.$http.get("/AirAppXY-Service/air/getAirCompositeIndex", {params: this.comprehensiveTime}).then(res=>{
+              if( res.data.code == 200 ) {
+
+                let obj = res.data.content.info
+                this.comprehensiveData.data =  [obj.pm25, obj.pm10, obj.so2, obj.o3, obj.no2, obj.co]
+                this.comprehensiveData.tb   =  obj['IndexDq_Tb']
+                // 优良天数统计
+                this.drawPieContribution();
+              }
+            })
+          },
+          // 首要污染物占比
+          getFirstPollute(){
+            this.$http.get("/AirAppXY-Service/air/getAirPollutionData", {params: this.firstPolluteTime}).then(res=>{
+              if( res.data.code == 200 ) {
+                let obj = res.data.content.info
+                this.firstPolluteData.data =  [obj.PM25, obj.PM10, obj.SO2, obj.O3, obj.NO2, obj.CO]
+                // 首要污染物占比
+                this.drawPieFirstWaste();
+              }
+            })
+          },
+          // 超标天数占比
+          getStandardDays(){
+            this.$http.get("/AirAppXY-Service/air/getAirStandardData", {params: this.standardTime}).then(res=>{
+              if( res.data.code == 200 ) {
+                let obj = res.data.content.info
+                this.standardData.data =  [obj.PM25, obj.PM10, obj.SO2, obj.O3, obj.NO2, obj.CO]
+                // 2020年超标天数占比
+                this.drawPieExceedDay();
+              }
+            })
+          },
+          // 空气质量累计情况
+          getAirDataStatus() {
+            this.$http.get("/AirAppXY-Service/air/getAirQualityData",{params: this.airDataTime}).then(res=>{
+                if(res.data.code == 200) {
+                  this.airData = res.data.content.info
+                }
+            })
+          },
+          // 同比分析
+          getTbStatisticData(){
+            this.$http.get("/AirAppXY-Service/air/getAirTBAnalyze",{params:this.tbTime}).then(res=>{
+              if( res.data.code == 200 ) {
+                // 同比分析
+                this.drawLineMonthStatic();
+              }
+            })
           }
+        },
+        beforeRouteEnter(to,from,next){
+          next(vm=>{
+            if( vm.$store.state.vuex.stationData.id ) {
+              vm.recentlyTime.mns       = vm.$store.state.vuex.stationData.id
+              vm.recentlyTime.mnType    = "station"
+              vm.goodAndFineTime.mns    = vm.$store.state.vuex.stationData.id
+              vm.goodAndFineTime.mnType = "station"
+              vm.comprehensiveTime.mns       = vm.$store.state.vuex.stationData.id
+              vm.comprehensiveTime.mnType    = "station"
+              vm.firstPolluteTime.mns       = vm.$store.state.vuex.stationData.id
+              vm.firstPolluteTime.mnType    = "station"
+              vm.standardTime.mns       = vm.$store.state.vuex.stationData.id
+              vm.standardTime.mnType    = "station"
+              vm.airDataTime.mns       = vm.$store.state.vuex.stationData.id
+              vm.airDataTime.mnType    = "station"
+            } else {
+              vm.recentlyTime.mns       = ""
+              vm.recentlyTime.mnType    = "city"
+              vm.goodAndFineTime.mns    = ""
+              vm.goodAndFineTime.mnType = "city"
+              vm.comprehensiveTime.mns       = ""
+              vm.comprehensiveTime.mnType    = "city"
+              vm.firstPolluteTime.mns       = ""
+              vm.firstPolluteTime.mnType    = "city"
+              vm.standardTime.mns       = ""
+              vm.standardTime.mnType    = "city"
+              vm.airDataTime.mns       = ""
+              vm.airDataTime.mnType    = "city"
+            }
+          })
         }
     }
 </script>
