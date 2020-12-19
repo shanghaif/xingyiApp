@@ -169,35 +169,10 @@
                             <td>占比</td>
                             <td>天数</td>
                         </tr>
-                        <tr>
-                            <td><span class="pm25"></span>PM <sub>2.5</sub></td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pm10"></span>PM <sub>10</sub></td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="so2"></span>SO <sub>2</sub></td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="o3"></span>O <sub>3</sub></td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="no2"></span>NO <sub>2</sub></td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="co"></span>CO</td>
-                            <td>80%</td>
-                            <td>160</td>
+                        <tr v-for="(item,index) in standardData.data" :key="index">
+                            <td><span :class="item.name"></span><font v-html="item.html"></font></td>
+                            <td>{{item.percent}}</td>
+                            <td>{{item.value}}</td>
                         </tr>
                     </table>
                 </div>
@@ -334,6 +309,7 @@
               data: []
             },
             airData: [],
+            tbData: [],
             showYBP: false,
             selectActive: [["active"],["active"],["active"],["active"],["active"],["active"]],
             factorActive: ["active"],
@@ -382,11 +358,10 @@
         this.standardTime.endTime    = date.format("yyyyMMddhh")
         this.airDataTime.startTime  = date.format("yyyy010100")
         this.airDataTime.endTime    = date.format("yyyyMMddhh")
-        this.tbTime.endTime    = date.format("yyyyMMddhh")
+        this.tbTime.endTime      = date.format("yyyyMMddhh")
+        this.tbTime.startTime    = date.format("yyyy010100")
         date.setTime(date.getTime()-24*60*60*1000) // 近24小时
         this.recentlyTime.startTime = date.format("yyyyMMddhh")
-        date.setTime(date.getTime()-3*365*24*60*60*1000) // 近三年
-        this.tbTime.startTime    = date.format("yyyyMMddhh")
         },
         methods: {
           // 顶部菜单跳转
@@ -675,7 +650,6 @@
               }
               this.firstPolluteData.data[index] = obj
             })
-            console.log(this.firstPolluteData, "fir")
             let option2 = {
               series: [
                 {
@@ -733,8 +707,19 @@
           },
           // 2020年超标天数占比
           drawPieExceedDay(){
+            let that = this
             this.exceedDay = this.$echarts.init(document.getElementById("echarts5"))
             // let colorList= ["#24C768","#E5CE10","#FF7E00","#FF0000","#990000","#7E0000"]
+            this.standardData.data.map((item,index)=>{
+              let obj       = {}
+              obj.value     = item
+              obj.name      = this.nameList[index]
+              obj.html      = this.htmls[index]
+              obj.itemStyle = {
+                normal: {color: this.colorList[index]}
+              }
+              this.standardData.data[index] = obj
+            })
             let option2 = {
               series: [
                 {
@@ -770,7 +755,7 @@
                   labelLine: {
                     show: false
                   },
-                  data: [100, 146, 46]
+                  data: this.standardData.data
                 },
                 {
                   type: 'pie',
@@ -778,7 +763,15 @@
                   label: {
                     position: 'outside',
                     normal: {
-                      formatter: function(data){ return data.percent.toFixed(1)+"%";} ,
+                      formatter: function(data){
+                        let percent = data.percent.toFixed(1)+"%";
+                        that.standardData.data[data.dataIndex].percent = percent
+                        if( data.percent > 0 ) {
+                          return percent;
+                        } else {
+                          return ""
+                        }
+                      },
                       textStyle: {
                         fontWeight: 'normal',
                         fontSize: 10,
@@ -787,11 +780,11 @@
                     }
                   },
                   labelLine: {
-                    show: true,
+                    show: false,
                     length: 1,
                     length2: 1,
                   },
-                  data: [100, 146, 46]
+                  data: this.standardData.data
                 }
               ]
             }
@@ -799,6 +792,7 @@
           },
           // 同比分析
           drawLineMonthStatic(){
+            let year = new Date().getFullYear()
             this.monthStatic = this.$echarts.init(document.getElementById('echarts6'))
             let option = {
               // title: {
@@ -819,22 +813,22 @@
                 {
                   x: "left",
                   y: "top",
-                  data: ["2018年"],
+                  data: [(year-2)+''],
                 },
                 {
                   x: "25%",
                   y: "top",
-                  data: ["2019年"],
+                  data: [(year-1)+''],
                 },
                 {
                   x: "50%",
                   y: "top",
-                  data: ["2020年"],
+                  data: [year+''],
                 }
               ],
               xAxis: {
                 type: 'category',
-                data: ["5月", "6月", "7月", "8月", "9月", "10月"],
+                data: this.tbData.time,
                 axisLabel: {
                   show: true,
                   type: 'category',
@@ -882,8 +876,8 @@
                 right: "4%"
               },
               series: [{
-                name: "2018年",
-                data: [32,54,121,68,89,111],
+                name: (year-2)+'',
+                data: this.tbData.tbDatas,
                 type: 'line',
                 smooth: true,
                 symbolSize: 8,   //折线点的大小
@@ -896,8 +890,8 @@
                   }
                 }
               },{
-                name: "2019年",
-                data: [45,77,111,67,112,21],
+                name: (year-1)+'',
+                data: this.tbData.tbData,
                 type: 'line',
                 smooth: true,
                 symbolSize: 8,   //折线点的大小
@@ -910,8 +904,8 @@
                   }
                 }
               },{
-                name: "2020年",
-                data: [34,56,87,55,120,111],
+                name: year+'',
+                data: this.tbData.dqData,
                 type: 'line',
                 smooth: true,
                 symbolSize: 8,   //折线点的大小
@@ -944,8 +938,14 @@
           // 选择因子回调
           onFactorConfirm(value, index){
             console.log(index);
+            if( index == 0 ) {
+              this.tbTime.factor = "aqi"
+            } else {
+              this.tbTime.factor = this.nameList[index-1]
+            }
             this.factorValue = value;
             this.factorPicker = false;
+            this.getTbStatisticData()
           },
           // 统一切换处理
           changeItem(key, index){
@@ -989,7 +989,12 @@
               }
               this.getFirstPollute()
             } else if( key == 4 ) {
-
+              if( index == 0 ) {
+                this.standardTime.startTime = date.format("yyyy010100")
+              } else {
+                this.standardTime.startTime = date.format("yyyyMM0100")
+              }
+              this.getStandardDays()
             } else if( key == 5 ) {
               if( index == 0 ) {
                 this.airDataTime.startTime = date.format("yyyy010100")
@@ -1068,7 +1073,7 @@
             this.$http.get("/AirAppXY-Service/air/getAirPollutionData", {params: this.firstPolluteTime}).then(res=>{
               if( res.data.code == 200 ) {
                 let obj = res.data.content.info
-                this.firstPolluteData.data =  [obj.PM25, obj.PM10, obj.SO2, obj.O3, obj.NO2, obj.CO]
+                this.firstPolluteData.data =  [obj.pm25, obj.pm10, obj.so2, obj.o3, obj.no2, obj.co]
                 // 首要污染物占比
                 this.drawPieFirstWaste();
               }
@@ -1079,7 +1084,7 @@
             this.$http.get("/AirAppXY-Service/air/getAirStandardData", {params: this.standardTime}).then(res=>{
               if( res.data.code == 200 ) {
                 let obj = res.data.content.info
-                this.standardData.data =  [obj.PM25, obj.PM10, obj.SO2, obj.O3, obj.NO2, obj.CO]
+                this.standardData.data =  [obj.pm25, obj.pm10, obj.so2, obj.o3, obj.no2, obj.co]
                 // 2020年超标天数占比
                 this.drawPieExceedDay();
               }
@@ -1097,6 +1102,7 @@
           getTbStatisticData(){
             this.$http.get("/AirAppXY-Service/air/getAirTBAnalyze",{params:this.tbTime}).then(res=>{
               if( res.data.code == 200 ) {
+                this.tbData = res.data.content.info
                 // 同比分析
                 this.drawLineMonthStatic();
               }
@@ -1118,6 +1124,8 @@
               vm.standardTime.mnType    = "station"
               vm.airDataTime.mns       = vm.$store.state.vuex.stationData.id
               vm.airDataTime.mnType    = "station"
+              vm.tbTime.mns       = vm.$store.state.vuex.stationData.id
+              vm.tbTime.mnType    = "station"
             } else {
               vm.recentlyTime.mns       = ""
               vm.recentlyTime.mnType    = "city"
@@ -1131,6 +1139,8 @@
               vm.standardTime.mnType    = "city"
               vm.airDataTime.mns       = ""
               vm.airDataTime.mnType    = "city"
+              vm.tbTime.mns       = ""
+              vm.tbTime.mnType    = "city"
             }
           })
         }
