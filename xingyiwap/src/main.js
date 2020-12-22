@@ -61,9 +61,9 @@ import axios from './libs/axios'
 // 返回功能
 import historyBack from "./libs/historyBack";
 
-import { Table, TableColumn } from 'element-ui';
+import { Table, TableColumn, DatePicker } from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-Vue.use(Table).use(TableColumn)
+Vue.use(Table).use(TableColumn).use(DatePicker)
 Vue.use(time)
 Vue.use(BaiduMap,{key: "MjvG4rIZL3MbcnWHG8fiz5kZ"})
 Vue.prototype.historyBack = historyBack

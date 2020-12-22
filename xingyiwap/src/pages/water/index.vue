@@ -371,6 +371,8 @@
           this.$router.push("/calendarWater")
         } else if( number == 3 ) {
           this.$router.push("/history")
+        } else if( number == 4 ) {
+          this.$router.push("/reportWater")
         }
       },
       comfirmDateSelected(value){
