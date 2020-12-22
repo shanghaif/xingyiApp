@@ -6,111 +6,33 @@
       <div class="standard_top">
         <ul>
           <li><img src="../../assets/img/sy_point.png" alt="">&nbsp;今日空气质量若想达到</li>
-          <li><span class="liang selected">优</span></li>
-          <li><span class="liang">良</span></li>
+          <li><span class="liang" :class="actives[0]" @click="changeSelected(0)">优</span></li>
+          <li><span class="liang" :class="actives[1]" @click="changeSelected(1)">良</span></li>
         </ul>
         <ul>
           <li><img src="../../assets/img/sy_point.png" alt="">&nbsp;今日空气质量若想达到</li>
-          <li><input type="text" value="100" /> </li>
-          <li><span class="jisuan">计算</span></li>
+          <li><input type="text" v-model="standardTime.airLevelNum" /> </li>
+          <li><span class="jisuan" @click="getAirLevelStatus">计算</span></li>
         </ul>
       </div>
       <div class="standard_content">
-        <div class="item level1">
-          <div class="top">PM2.5</div>
-          <div class="center">
-            <ul>
-              <li>当前累计</li>
-              <li>60</li>
-              <li>（分指数：55）</li>
-            </ul>
-            <ul>
-              <li>剩余控制</li>
-              <li>369</li>
-            </ul>
+        <template v-for="(item,index) in dataList">
+          <div class="item level1">
+            <div class="top">{{item.factor}}</div>
+            <div class="center">
+              <ul>
+                <li>当前累计</li>
+                <li>{{item.value}}</li>
+                <li>（分指数：{{item.Index}}）</li>
+              </ul>
+              <ul>
+                <li>剩余控制</li>
+                <li>{{item.residue}}</li>
+              </ul>
+            </div>
+            <div class="bottom">表现较好，继续保持！</div>
           </div>
-          <div class="bottom">表现较好，继续保持！</div>
-        </div>
-
-        <div class="item level1">
-          <div class="top">PM10</div>
-          <div class="center">
-            <ul>
-              <li>当前累计</li>
-              <li>45</li>
-              <li>（分指数：63）</li>
-            </ul>
-            <ul>
-              <li>剩余控制</li>
-              <li>148</li>
-            </ul>
-          </div>
-          <div class="bottom">表现较好，继续保持！</div>
-        </div>
-
-        <div class="item level2">
-          <div class="top">SO2</div>
-          <div class="center">
-            <ul>
-              <li>当前累计</li>
-              <li>7</li>
-              <li>（分指数：7）</li>
-            </ul>
-            <ul>
-              <li>剩余控制</li>
-              <li>497</li>
-            </ul>
-          </div>
-          <div class="bottom">差距较大，加强管控！</div>
-        </div>
-
-        <div class="item level1">
-          <div class="top">NO2</div>
-          <div class="center">
-            <ul>
-              <li>当前累计</li>
-              <li>13</li>
-              <li>（分指数：55）</li>
-            </ul>
-            <ul>
-              <li>剩余控制</li>
-              <li>243</li>
-            </ul>
-          </div>
-          <div class="bottom">表现较好，继续保持！</div>
-        </div>
-
-        <div class="item level1">
-          <div class="top">CO</div>
-          <div class="center">
-            <ul>
-              <li>当前累计</li>
-              <li>0.383</li>
-              <li>（分指数：10）</li>
-            </ul>
-            <ul>
-              <li>剩余控制</li>
-              <li>12.783</li>
-            </ul>
-          </div>
-          <div class="bottom">表现较好，继续保持！</div>
-        </div>
-
-        <div class="item level3">
-          <div class="top">O3</div>
-          <div class="center">
-            <ul>
-              <li>当前累计</li>
-              <li>136</li>
-              <li>（分指数：80）</li>
-            </ul>
-            <ul>
-              <li>剩余控制</li>
-              <li>160</li>
-            </ul>
-          </div>
-          <div class="bottom">今日已无法达到目标值</div>
-        </div>
+        </template>
       </div>
     </div>
   </div>
@@ -118,7 +40,46 @@
 
 <script>
   export default {
-
+    data() {
+      return {
+        actives: ["selected"],
+        standardTime: {
+          airLevelNum: 50,
+          time: "",
+          mns: ""
+        },
+        dataList: [],
+      }
+    },
+    activated() {
+      let time = new Date().format("yyyyMMddhh")
+      this.standardTime.time = time
+      this.getAirLevelStatus()
+    },
+    methods: {
+      changeSelected(num){
+        this.actives      = [];
+        this.actives[num] = "selected"
+        this.standardTime.airLevelNum = 50*(num+1)
+        this.getAirLevelStatus()
+      },
+      getAirLevelStatus(){
+        this.$http.get("/AirAppXY-Service/air/getAirStandardToDay",{params: this.standardTime}).then(res=>{
+          if( res.data.code == 200 ) {
+            this.dataList = res.data.content.info
+          }
+        })
+      }
+    },
+    beforeRouteEnter(to,from,next){
+      next(vm=>{
+        if( vm.$store.state.vuex.stationData.id ) {
+          vm.standardTime.mns       = vm.$store.state.vuex.stationData.id
+        } else {
+          vm.standardTime.mns       = ""
+        }
+      })
+    }
   }
 </script>
 
@@ -218,6 +179,7 @@
             margin-top: 8px;
             flex: 1;
             li{
+              white-space: nowrap;
               height: 33%;
               font-size: 12px;
               text-align: center;

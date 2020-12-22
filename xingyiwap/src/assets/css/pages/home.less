@@ -45,7 +45,7 @@
       ul{
         .flexDisplayContent();
         li{
-          width: 20%;
+          width: 23%;
           text-align: center;
           color:#F5F5F5;
           font-size: 13px;
@@ -184,14 +184,32 @@
           }
           &.waterContent{
             li{
-              &:nth-child(n+7):not(:nth-child(n+13)){
+              &:nth-child(-n+5){
+                width: 20%;
+                margin-top: 7px;
+                color: #fff;
+                font-size: 20px;
+              }
+              &:nth-child(n+6){
+                .setWidthAndHeight(15%, 20px);
+                line-height: 20px;
+                margin: 0 2.5%;
+                font-size: 12px;
+                color: #fff;
+                each(@colorsLevels, {
+                  &.@{key} {
+                    background: @value;
+                  }
+                })
+              }
+              &:nth-child(n+6):not(:nth-child(n+11)){
                 overflow: visible;
                 white-space:nowrap;
               }
-              &:nth-child(n+13){
-                .setWidthAndHeight(12%, 20px);
+              &:nth-child(n+11){
+                .setWidthAndHeight(15%, 20px);
                 line-height: 20px;
-                margin: 7px 2.3%;
+                margin: 7px 2.5%;
                 font-size: 12px;
                 color: #fff;
                 each(@colorsWaterLevels, {

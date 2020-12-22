@@ -110,6 +110,16 @@ const router = new VueRouter({
       },
       component: () => import("@/pages/water/stationList.vue")
     },
+    // 水首页污染日历
+    {
+      path: "/calendarWater",
+      name: "calendarWater",
+      meta: {
+        tabShow: false,
+        keepAlive: true,
+      },
+      component: () => import("@/pages/water/calendar.vue")
+    },
       // 水站考核分析
     {
       path: "/assessmentWater",
@@ -119,6 +129,27 @@ const router = new VueRouter({
         keepAlive: true,
       },
       component: () => import("@/pages/water/assessment.vue")
+    },
+    // 水环境首页选择站点
+    {
+      path: "/stationListSelectWater",
+      name: "stationListSelectWater",
+      meta: {
+        tabShow: false,
+        keepAlive: true,
+      },
+      component: () => import("@/pages/water/stationListSelectWater.vue")
+    },
+      // 水站历史数据
+    {
+      path: "/history",
+      name: "history",
+      meta: {
+        tabShow: false,
+        activeId: 1,
+        keepAlive: true,
+      },
+      component: () => import("@/pages/water/history.vue")
     },
       // 气站站点列表
     {

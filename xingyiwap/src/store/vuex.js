@@ -3,7 +3,13 @@ export default {
   state: {
     tabShow: true,
     activeId: 0,
-    stationData: {}
+    stationData: {  // 气站选中站点
+      text: "兴义市",
+      id: null
+    },
+    stationDataWater: { // 水站选中站点
+
+    }
   },
   getters: {
 

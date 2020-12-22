@@ -25,55 +25,55 @@
       ></Calendar>
     </div>
     <div class="airQuality">
-      <div class="title">空气质量 <font>({{currentData.spt ? ( currentData.spt.slice(0,4)+"-"+currentData.spt.slice(4,6)+"-"+currentData.spt.slice(6,8) ) : "--" }})</font></div>
+      <div class="title">水质等级 <font>({{currentData.spt ? ( currentData.spt.slice(0,4)+"-"+currentData.spt.slice(4,6)+"-"+currentData.spt.slice(6,8) ) : "--" }})</font></div>
       <div class="quality">
         <ul>
           <li>
-            <template v-if="currentData.level == 0">
-              <span class="level1 selected"><font>{{currentData.aqi}}</font>优</span> <div class="first">0<font>50</font></div>
+            <template v-if="Number(currentData.wq_tp) == 0">
+              <span class="level1 selected"><font>{{levelText[Number(currentData.wq_tp)]}}</font></span>
             </template>
             <template v-else>
-              优 <span class="level1"></span> <div class="first">0<font>50</font></div>
+              Ⅰ <span class="level1"></span>
             </template>
           </li>
           <li>
-            <template v-if="currentData.level == 1">
-              <span class="level2 selected"><font>{{currentData.aqi}}</font>良</span> 100
+            <template v-if="Number(currentData.wq_tp) == 1">
+              <span class="level2 selected"><font>{{levelText[Number(currentData.wq_tp)]}}</font></span>
             </template>
             <template v-else>
-              良 <span class="level2"></span>100
+              Ⅱ <span class="level2"></span>
             </template>
           </li>
           <li>
-            <template v-if="currentData.level == 2">
-              <span class="level3 selected"><font>{{currentData.aqi}}</font>轻度</span> 150
+            <template v-if="Number(currentData.wq_tp) == 2">
+              <span class="level3 selected"><font>{{levelText[Number(currentData.wq_tp)]}}</font></span>
             </template>
             <template v-else>
-              轻度 <span class="level3"></span>150
+              Ⅲ <span class="level3"></span>
             </template>
           </li>
           <li>
-            <template v-if="currentData.level == 3">
-              <span class="level4 selected"><font>{{currentData.aqi}}</font>中度</span> 200
+            <template v-if="Number(currentData.wq_tp) == 3">
+              <span class="level4 selected"><font>{{levelText[Number(currentData.wq_tp)]}}</font></span>
             </template>
             <template v-else>
-              中度 <span class="level4"></span>200
+              Ⅳ <span class="level4"></span>
             </template>
           </li>
           <li>
-            <template v-if="currentData.level == 4">
-              <span class="level5 selected"><font>{{currentData.aqi}}</font>重度</span> 300
+            <template v-if="Number(currentData.wq_tp) == 4">
+              <span class="level5 selected"><font>{{levelText[Number(currentData.wq_tp)]}}</font></span>
             </template>
             <template v-else>
-              重度 <span class="level5"></span>300
+              Ⅴ <span class="level5"></span>
             </template>
           </li>
           <li>
-            <template v-if="currentData.level == 5">
-              <span class="level6 selected"><font>{{currentData.aqi}}</font>严重</span> 500
+            <template v-if="Number(currentData.wq_tp) == 5">
+              <span class="level6 selected"><font>{{levelText[Number(currentData.wq_tp)]}}</font></span>
             </template>
             <template v-else>
-              严重 <span class="level6"></span>500
+              劣Ⅴ <span class="level6"></span>
             </template>
           </li>
         </ul>
@@ -86,12 +86,12 @@
       </div>
       <div class="cont">
         <ul>
-          <li><span>PM2.5</span><span>{{currentData.pm25 || "--"}}</span></li>
-          <li><span>PM10</span><span>{{currentData.pm10 || "--"}}</span></li>
-          <li><span>SO2</span><span>{{currentData.so2 || "--"}}</span></li>
-          <li><span>NO2</span><span>{{currentData.no2 || "--"}}</span></li>
-          <li><span>CO</span><span>{{currentData.co || "--"}}</span></li>
-          <li><span>O3</span><span>{{currentData.o3 || "--"}}</span></li>
+          <li><span>pH值</span><span>{{currentData.ph || "--"}}</span></li>
+          <li><span>总磷</span><span>{{currentData.tp || "--"}}</span></li>
+          <li><span>高锰酸盐</span><span>{{currentData.codmn || "--"}}</span></li>
+          <li><span>溶解氧</span><span>{{currentData.dox || "--"}}</span></li>
+          <li><span>氨氮</span><span>{{currentData.nh3n || "--"}}</span></li>
+          <li></li>
         </ul>
       </div>
     </div>
@@ -101,12 +101,13 @@
 <script>
   import Calendar from '../../components/calendarPollute/index';
   export default {
-    name: "calendar",
+    name: "calendarWater",
     components: {
       Calendar
     },
     data(){
       return {
+        levelText: ["Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "劣Ⅴ"],
         textTop: ["日", "一", "二", "三", "四", "五", "六"],
         dateTop: "",
         show_level: 1,
@@ -119,7 +120,6 @@
         calendarTime: {
           startTime: '',
           endTime: '',
-          mnType: 'city',
           timeType: '日',
           mns: ''
         }
@@ -153,12 +153,16 @@
         let lat = new Date(d.format("yyyyy"),d.format("MM"), 0)
         let cout= lat.getDate()
         this.marker = []
-        this.$http.get("/AirAppXY-Service/air/getAirCalendarData", {params:this.calendarTime}).then(res=>{
+        this.$http.get("/AirAppXY-Service/water/getWaterCalendarData", {params:this.calendarTime}).then(res=>{
           if( res.data.code == 200 ) {
             this.calendarData = res.data.content.info
             this.calendarData.forEach((item,index)=>{
-              let obj = { date: item.spt.slice(0,4)+"-"+item.spt.slice(4,6)+"-"+item.spt.slice(6,8), className: "level"+(item.level+1) }
-              if( !item.hasOwnProperty("level") && this.calendarData[index-1].hasOwnProperty("level") ) {
+              let obj = { date: item.spt.slice(0,4)+"-"+item.spt.slice(4,6)+"-"+item.spt.slice(6,8) }
+              if(item.wq_tp){
+                obj.className = "level"+(Number(item.wq_tp)+1)
+              }
+              if( !item.hasOwnProperty("wq_tp") && this.calendarData[index-1].hasOwnProperty("wq_tp") ) {
+                console.log(item, this.calendarData[index-1])
                 this.checkLevel  = true
                 this.currentData = this.calendarData[index-1]
                 this.marker[index - 1].chooseDay = true
@@ -182,12 +186,17 @@
     },
     beforeRouteEnter(to,from,next){
       next(vm=>{
-        if( vm.$store.state.vuex.stationData.id ) {
-          vm.calendarTime.mns       = vm.$store.state.vuex.stationData.id
-          vm.calendarTime.mnType    = "station"
+        if( vm.$store.state.vuex.stationDataWater.id ) {
+          vm.calendarTime.mns       = vm.$store.state.vuex.stationDataWater.id
         } else {
-          vm.calendarTime.mns       = ""
-          vm.calendarTime.mnType    = "city"
+          if( localStorage.getItem("stationDataWater") ) {
+            vm.$store.state.vuex.stationDataWater = JSON.parse(localStorage.getItem("stationDataWater"))
+          }
+          if( vm.$store.state.vuex.stationDataWater.id ){
+            vm.calendarTime.mns       = vm.$store.state.vuex.stationDataWater.id
+          } else {
+            vm.calendarTime.mns       = ""
+          }
         }
       })
     }
@@ -379,7 +388,9 @@
           width: 30%;
           height: 35px;
           line-height: 35px;
-          border: 1px solid #CCC;
+          &:not(:last-child){
+            border: 1px solid #CCC;
+          }
           margin-top: 10px;
           display: flex;
           border-radius: 4px;

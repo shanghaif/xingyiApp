@@ -5,7 +5,7 @@
                 <img src="../../assets/img/user_icon.png" @click="$router.push({path: '/mine'})" style="height: 18px; width: 18px" alt="">
             </template>
             <template #title>
-                xx站点
+                {{$store.state.vuex.stationDataWater.text}} <span class="navBarxl" @click="$router.push('/stationListSelectWater')"></span>
             </template>
             <template #right>
                 <img src="../../assets/img/message.png" @click="$router.push({path: '/mine'})" style="height: 17.5px; width: 19.5px" alt="">
@@ -16,11 +16,11 @@
                 <img src="../../assets/img/home/yun.png" class="yun" alt="">
                 <img src="../../assets/img/home/yun1.png" class="yun1" alt="">
             </div>
-            <p class="update">更新：2020-01-10 10:00</p>
+            <p class="update">更新：{{realData.aRealData.spt}}</p>
             <div class="menu_list">
                 <ul>
                     <li @click="goto(1)"><img src="../../assets/img/home/wrrl.png" style="width: 43.2px; height: 43.8px" alt=""><br>污染日历</li>
-                    <li @click="goto(2)"><img src="../../assets/img/home/jrdb.png" style="width: 43.2px; height: 43.8px" alt=""><br>达标分析</li>
+<!--                    <li @click="goto(2)"><img src="../../assets/img/home/jrdb.png" style="width: 43.2px; height: 43.8px" alt=""><br>达标分析</li>-->
                     <li @click="goto(3)"><img src="../../assets/img/home/jrfz.png" style="width: 43.2px; height: 43.8px" alt=""><br>历史数据</li>
                     <li @click="goto(4)"><img src="../../assets/img/home/jrbj.png" style="width: 43.2px; height: 43.8px" alt=""><br>报表分析</li>
                 </ul>
@@ -30,7 +30,7 @@
 
                 </div>
                 <div class="waterDisc">
-                    目标水质：<span class="level3">Ⅲ</span>，首要污染物：无
+                    目标水质：<span :class="'level'+(Number(realData.targetLevel)+1)">{{levelText[Number(realData.targetLevel)]}}</span>，首要污染物：{{realData.aRealData.primary_pollutant || '--'}}
                 </div>
             </div>
             <div class="actionCanvas">
@@ -39,24 +39,24 @@
                 </div>
                 <div class="aqiContent">
                     <ul class="waterContent">
-                        <li>34</li>
-                        <li>52</li>
-                        <li>8.12</li>
-                        <li>15</li>
-                        <li>110</li>
-                        <li>0.6</li>
-                        <li>COD</li>
+<!--                        <li>{{realData.aRealData.cond}}</li>-->
+                        <li>{{realData.aRealData.ph || '--'}}</li>
+                        <li>{{realData.aRealData.tp || '--'}}</li>
+                        <li>{{realData.aRealData.codmn || '--'}}</li>
+                        <li>{{realData.aRealData.dox || '--'}}</li>
+                        <li>{{realData.aRealData.nh3n || '--'}}</li>
+<!--                        <li>电导率</li>-->
                         <li>pH值</li>
                         <li>总磷</li>
                         <li>高锰酸盐</li>
                         <li>溶解氧</li>
                         <li>氨氮</li>
-                        <li class="level1">Ⅰ</li>
-                        <li class="level2">Ⅱ</li>
-                        <li class="level3">Ⅲ</li>
-                        <li class="level4">Ⅳ</li>
-                        <li class="level5">Ⅴ</li>
-                        <li class="level6">劣Ⅴ</li>
+<!--                        <li class="level1" style="background-color: #ccc">无</li>-->
+                        <li class="level2" style="background-color: #ccc">无</li>
+                        <li :class="'level'+(realData.aRealData.tp_level+1)">{{levelText[realData.aRealData.tp_level] || '--'}}</li>
+                        <li :class="'level'+(realData.aRealData.codmn_level+1)">{{levelText[realData.aRealData.codmn_level] || '--'}}</li>
+                        <li :class="'level'+(realData.aRealData.dox_level+1)">{{levelText[realData.aRealData.dox_level] || '--'}}</li>
+                        <li :class="'level'+(realData.aRealData.nh3n_level+1)">{{levelText[realData.aRealData.nh3n_level] || '--'}}</li>
                     </ul>
                 </div>
             </div>
@@ -77,9 +77,9 @@
                     </div>
                     <div class="factorMaxAndMin">
                         <ul>
-                            <li>0.25 <img src="../../assets/img/avg.png" alt=""></li>
-                            <li>0.45 <img src="../../assets/img/max.png" alt=""></li>
-                            <li>0.08 <img src="../../assets/img/min.png" alt=""></li>
+                            <li>{{monitorData.avg}} <img src="../../assets/img/avg.png" alt=""></li>
+                            <li>{{monitorData.max}} <img src="../../assets/img/max.png" alt=""></li>
+                            <li>{{monitorData.min}} <img src="../../assets/img/min.png" alt=""></li>
                         </ul>
                     </div>
                     <div class="echarts" id="echarts">
@@ -97,31 +97,11 @@
                         <table>
                             <tr>
                                 <td>时间</td>
-                                <td>总磷(mg/L)</td>
+                                <td>{{factorValue}}(mg/L)</td>
                             </tr>
-                            <tr>
-                                <td>13日1时</td>
-                                <td>67</td>
-                            </tr>
-                            <tr>
-                                <td>13日2时</td>
-                                <td>89</td>
-                            </tr>
-                            <tr>
-                                <td>13日3时</td>
-                                <td>123</td>
-                            </tr>
-                            <tr>
-                                <td>13日4时</td>
-                                <td>256</td>
-                            </tr>
-                            <tr>
-                                <td>13日5时</td>
-                                <td>200</td>
-                            </tr>
-                            <tr>
-                                <td>13日6时</td>
-                                <td>111</td>
+                            <tr v-for="(item,index) in monitorData.time">
+                                <td>{{item}}</td>
+                                <td>{{monitorData.data[index] || "--"}}</td>
                             </tr>
                         </table>
                     </div>
@@ -134,6 +114,7 @@
                 </div>
                 <div class="content">
                     <calendar
+                        v-if="showCalendar"
                         v-on:choseDay="clickDay"
                         v-on:changeMonth="changeMonth"
                         :sundayStart="false"
@@ -165,13 +146,13 @@
             <div class="item">
                 <div class="title">
                     <div class="left"><span></span> 水质达标情况</div>
-                    <div class="right"><span class="selectStation" @click="selectPicker(6)">{{timeClass}} <span class="triangleDownStationToggle"></span></span><span class="selectStation" @click="selectPicker(5)">{{currentDateDb.format("yyyy-MM")}} <span class="triangleDownStationToggle"></span></span></div>
+                    <div class="right"><span class="selectStation" @click="selectPicker(6)">{{timeClass}} <span class="triangleDownStationToggle"></span></span><span class="selectStation" @click="selectPicker(5)">{{currentDateDb.format(formatDate)}} <span class="triangleDownStationToggle"></span></span></div>
                 </div>
                 <div class="content factor">
                     <div class="factorMaxAndMin" style="margin-top: 0; margin-bottom: 10px">
                         <ul>
-                            <li>水质达标率：80%</li>
-                            <li>目标水质：<span class="level3">Ⅲ</span></li>
+                            <li>水质达标率：{{standardData.standard*100}}%</li>
+                            <li>目标水质：<span :class="'level'+(standardData.targetLevel+1)">{{levelText[standardData.targetLevel]}}</span></li>
                         </ul>
                     </div>
                     <div class="echarts" id="echarts7">
@@ -202,6 +183,7 @@
         <van-popup v-model="factorPicker" position="bottom">
             <van-picker
                     show-toolbar
+                    :default-index="1"
                     :columns="factorColumns"
                     @confirm="onFactorConfirm"
                     @cancel="factorPicker = false"
@@ -211,6 +193,7 @@
         <van-popup v-model="factorPickerTb" position="bottom">
             <van-picker
                     show-toolbar
+                    :default-index="2"
                     :columns="factorColumnsTb"
                     @confirm="onFactorConfirmTb"
                     @cancel="factorPickerTb = false"
@@ -252,38 +235,8 @@
     },
     data () {
       return {
+        formatDate: "yyyy",
         marker: [
-            {"date":"2020-12-01","className":"level2"},
-            {"date":"2020-12-02","className":"level1"},
-            {"date":"2020-12-03","className":"level2"},
-            {"date":"2020-12-04","className":"level2"},
-            {"date":"2020-12-05","className":"level2"},
-            {"date":"2020-12-06","className":"level2"},
-            {"date":"2020-12-07","className":"level2"},
-            {"date":"2020-12-08","className":"level2"},
-            {"date":"2020-12-09","className":"level1"},
-            {"date":"2020-12-10","className":"level2"},
-            {"date":"2020-12-11","className":"level3"},
-            {"date":"2020-12-12","className":"level4"},
-            {"date":"2020-12-13","className":"level4"},
-            {"date":"2020-12-14","className":"level1"},
-            {"date":"2020-12-15","className":"level1"},
-            {"date":"2020-12-16","className":""},
-            {"date":"2020-12-17","className":""},
-            {"date":"2020-12-18","className":""},
-            {"date":"2020-12-19","className":""},
-            {"date":"2020-12-20","className":""},
-            {"date":"2020-12-21","className":""},
-            {"date":"2020-12-22","className":""},
-            {"date":"2020-12-23","className":""},
-            {"date":"2020-12-24","className":""},
-            {"date":"2020-12-25","className":""},
-            {"date":"2020-12-26","className":""},
-            {"date":"2020-12-27","className":""},
-            {"date":"2020-12-28","className":""},
-            {"date":"2020-12-29","className":""},
-            {"date":"2020-12-30","className":""},
-            {"date":"2020-12-31","className":""}
         ],
         minDate: new Date(2010, 0, 1),
         maxDate: new Date(),
@@ -291,6 +244,11 @@
         datePickerDb: false,
         currentDate: new Date(),
         currentDateDb: new Date(),
+        realData: {
+          aRealData: {}
+        },
+        monitorData: {},
+        levelText: ["Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "劣Ⅴ"],
         options: {
           srtokeWidth: 2.4  // svg线宽度
         },
@@ -307,39 +265,132 @@
         stationColumns: ["站点A","站点B"], // 站点列表
         factorValue: "总磷", // 默认选中
         factorPicker: false, // 选择因子
-        factorColumns: ["COD", 'pH值', '总磷', '高锰酸盐', '溶解氧', '氨氮'], // 因子列表
+        factorColumns: ['pH值', '总磷', '高锰酸盐', '溶解氧', '氨氮'], // 因子列表
+        factorValueArray: ['ph', 'tp', 'codmn','dox','nh3n'],
         factorValueTb: "总磷",
         factorPickerTb: false, // 选择因子
-        factorColumnsTb: ["COD", 'pH值', '总磷', '高锰酸盐', '溶解氧', '氨氮'], // 因子列表
+        factorColumnsTb: ['水质','pH值', '总磷', '高锰酸盐', '溶解氧', '氨氮'], // 因子列表
         timeClassSelectedPicker: false,
-        timeClass: "月度", // 默认选中
+        timeClass: "年度", // 默认选中
         timeClassPicker: false, // 选择站点
-        timeClassColumns: ["月度","季度", "年度"], // 站点列表
+       //  timeClassColumns: ["月度", "年度"], // 站点列表
+        timeClassColumns: ["年度"],
+        realQualityTime: {
+          mns: ""
+        },
+        showCalendar: false,
+        monitorTime: {
+          startTime: '',
+          endTime: '',
+          timeType: '小时',
+          factor: 'tp',
+          mns: ""
+        },
+        distributionTime: {
+          startTime: '',
+          endTime: '',
+          timeType: '日',
+          mns: ""
+        },
+        tbTime: {
+          startTime: '',
+          endTime: '',
+          timeType: '月',
+          factor: 'tp',
+          mns: ""
+        },
+        standardTime: {
+          startTime: '',
+          endTime: '',
+          timeType: '月',
+          mns: ""
+        },
+        tbData: {},
+        waterColor: ["#CCFFFF","#00CCFF","#00FF00","#FFFF00","#FF9B00","#FF0000"],
+        standardData: {
+          standard: 0,
+        },
       }
     },
     mounted() {
-      // 顶部仪表盘
-      this.initDashboard();
-      // 水质监测数据
-      this.drawLineHoursData();
-      // 同比分析
-      this.drawLineMonthStatic();
-      // 达标情况
-      this.drawLineMonthStaticTb();
+      let d = new Date()
+      this.monitorTime.endTime = d.format("yyyyMMddhh")
+      this.distributionTime.endTime = d.format("yyyyMMddhh")
+      this.distributionTime.startTime = d.format("yyyyMM0100")
+      this.tbTime.startTime = d.format("yyyy010100")
+      this.tbTime.endTime   = d.format("yyyyMMddhh")
+      this.standardTime.endTime = d.format("yyyyMMddhh")
+      this.standardTime.startTime = d.format("yyyy010100")
+      d.setTime(d.getTime()-24*60*60*1000)
+      this.monitorTime.startTime = d.format("yyyyMMddhh")
+    },
+    created() {
+
+    },
+    activated() {
+      // 获取默认站点
+      this.getStationList();
     },
     methods: {
+      // 获取站点列表
+      getStationList() {
+        this.$http.get("/AirAppXY-Service/map/queryTreeW", {params: {typeCode: 'WQ', basinnOrAreaOrCustom: "type"}}).then(res=>{
+          if( res.data.code == 200 ) {
+            if( !this.$store.state.vuex.stationDataWater.id ) {
+              this.$set(this.$store.state.vuex.stationDataWater, "text", res.data.content.info[2].children[0].nodeName)
+              this.$set(this.$store.state.vuex.stationDataWater, "id", res.data.content.info[2].children[0].nodeId)
+              this.$set(this.$store.state.vuex.stationDataWater, "children", [])
+              localStorage.setItem("stationDataWater",JSON.stringify(this.$store.state.vuex.stationDataWater))
+            }
+            this.realQualityTime.mns = this.monitorTime.mns = this.tbTime.mns = this.distributionTime.mns = this.standardTime.mns = this.$store.state.vuex.stationDataWater.id
+            // 获取水质达标情况
+            this.getWaterRealQuality();
+            // 水质监测数据
+            this.getMonitorData();
+            // 水质日历
+            this.getWaterDistribution();
+            // 同比数据
+            this.getTbStacticsData();
+            // 水质达标
+            this.getWaterStandardStatus();
+          }
+        })
+      },
+      getWaterRealQuality() {
+        this.$http.get("/AirAppXY-Service/water/waterRealQuality",{params: this.realQualityTime}).then(res=>{
+          if( res.data.code == 200 ) {
+            this.realData = res.data.content.info
+            // 顶部仪表盘
+            this.initDashboard();
+          }
+        })
+      },
       // 顶部菜单跳转
       goto(number){
+        if( number == 1 ) {
+          this.$router.push("/calendarWater")
+        } else if( number == 3 ) {
+          this.$router.push("/history")
+        }
       },
       comfirmDateSelected(value){
         this.datePicker = false
         this.$refs.calendar.ChoseMonth(value.format("yyyy-MM"))
+        this.distributionTime.startTime = value.format("yyyyMMddhh")
+        let lastDay = new Date(value.format("yyyy"), value.format("MM"), 0).getDate();
+        this.distributionTime.endTime   = value.format("yyyyMM"+lastDay+"hh")
+        this.getWaterDistribution();
       },
       comfirmDateSelectedDb(value){
         this.datePickerDb = false
+        this.standardTime.startTime = value.format("yyyy010100")
+        let d = new Date(value.format("yyyy"),12,0);
+        this.standardTime.endTime   = value.format("yyyy12"+d.getDate()+"00")
+        this.getWaterStandardStatus()
       },
       // 水质监测数据
       drawLineHoursData(){
+        let that = this
         this.lineHoursEcharts = this.$echarts.init(document.getElementById("echarts"))
         let option  = {
           color: "#E5CE10",
@@ -359,7 +410,7 @@
               rotate: 40,
               color: "#666"
             },
-            data: ['13日1时','13日2时','13日3时','13日4时','13日5时','13日6时']
+            data: this.monitorData.time
           },
           tooltip: {
             trigger: 'axis'
@@ -385,39 +436,21 @@
                 color: "#ddd"
               }
             },
-            max: 300,
-            interval: 60,
           },
           series: [{
-            name: 'sdata',
-            data: [67, 89, 123, 256, 200, 111],
+            name: this.factorValue,
+            data: this.monitorData.data,
             type: 'bar',
             barWidth: 7,
             itemStyle: {
               normal: {
                 //每根柱子颜色设置
                 color: function(params) {
-                  return "#24C768";
-                  // switch (that.dataItem.LEVEL[params.dataIndex]) {
-                  //   case "优":
-                  //     return "#24C768"
-                  //     break;
-                  //   case "良":
-                  //     return "#E5CE10"
-                  //     break;
-                  //   case "轻度污染":
-                  //     return "#FF7E00"
-                  //     break;
-                  //   case "中度污染":
-                  //     return "#FF0000"
-                  //     break;
-                  //   case "重度污染":
-                  //     return "#990000"
-                  //     break;
-                  //   case "严重污染":
-                  //     return "#7E0000"
-                  //     break;
-                  // }
+                  if( that.factorValue == "pH值" ) {
+                    return "#24C768";
+                  } else {
+                    return that.waterColor[that.monitorData.level[params.dataIndex]]
+                  }
                 }
               }
             },
@@ -430,6 +463,7 @@
       },
       // 同比分析
       drawLineMonthStatic(){
+        let year = new Date().getFullYear()
         this.monthStatic = this.$echarts.init(document.getElementById('echarts6'))
         let option = {
           // title: {
@@ -450,22 +484,22 @@
             {
               x: "left",
               y: "top",
-              data: ["2018年"],
+              data: [(year-2)+''],
             },
             {
               x: "25%",
               y: "top",
-              data: ["2019年"],
+              data: [(year-1)+''],
             },
             {
               x: "50%",
               y: "top",
-              data: ["2020年"],
+              data: [year+''],
             }
           ],
           xAxis: {
             type: 'category',
-            data: ["5月", "6月", "7月", "8月", "9月", "10月"],
+            data: this.tbData.time,
             axisLabel: {
               show: true,
               type: 'category',
@@ -492,9 +526,6 @@
             },
           },
           yAxis: {
-            interval: 50,
-            min: 0,
-            max: 150,
             type: 'value',
             axisTick: {
               show: false
@@ -508,13 +539,13 @@
           },
           grid: {
             top: "16%",
-            left: "8%",
+            left: "12%",
             bottom: "15%",
             right: "4%"
           },
           series: [{
-            name: "2018年",
-            data: [32,54,121,68,89,111],
+            name: (year-2)+'',
+            data: this.tbData.tbDatas,
             type: 'line',
             smooth: true,
             symbolSize: 8,   //折线点的大小
@@ -527,8 +558,8 @@
               }
             }
           },{
-            name: "2019年",
-            data: [45,77,111,67,112,21],
+            name: (year-1)+'',
+            data: this.tbData.tbData,
             type: 'line',
             smooth: true,
             symbolSize: 8,   //折线点的大小
@@ -541,8 +572,8 @@
               }
             }
           },{
-            name: "2020年",
-            data: [34,56,87,55,120,111],
+            name: year+'',
+            data: this.tbData.dqData,
             type: 'line',
             smooth: true,
             symbolSize: 8,   //折线点的大小
@@ -574,8 +605,9 @@
           },
           xAxis: {
             type: 'category',
-            data: ["5月", "6月", "7月", "8月", "9月", "10月"],
+            data: this.standardData.time,
             axisLabel: {
+              rotate: 30,
               show: true,
               type: 'category',
               boundaryGap: false,
@@ -601,7 +633,7 @@
             },
           },
           yAxis: {
-            interval: 50,
+            interval: 25,
             min: 0,
             max: 100,
             type: 'value',
@@ -625,8 +657,8 @@
             right: "4%"
           },
           series: [{
-            name: "2019年",
-            data: [45,77,12,45,25,21],
+            name: this.currentDateDb.format(this.formatDate),
+            data: this.standardData.data,
             type: 'line',
             smooth: true,
             symbolSize: 8,   //折线点的大小
@@ -666,16 +698,29 @@
       onTimeClassConfirm(value, index){
         this.timeClass = value;
         this.timeClassSelectedPicker = false;
+        // if( index == 0 ) {
+        //   this.formatDate = "yyyy-MM"
+        // } else if( index == 1 ) {
+        //   this.formatDate = "yyyy"
+        // }
       },
       // 选择因子回调
       onFactorConfirm(value, index){
         this.factorValue = value;
         this.factorPicker = false;
+        this.monitorTime.factor = this.factorValueArray[index]
+        this.getMonitorData();
       },
       // 选择因子回调(同比分析)
       onFactorConfirmTb(value, index){
         this.factorValueTb = value;
         this.factorPickerTb = false;
+        if( index == 0 ) {
+          this.tbTime.factor = "wqg"
+        } else {
+          this.tbTime.factor = this.factorValueArray[index-1]
+        }
+        this.getTbStacticsData();
       },
       // 统一切换处理
       changeItem(key, index){
@@ -685,9 +730,28 @@
       selectTime(number){
         this.selectTimeActive         = []
         this.selectTimeActive[number] = "active"
+        let d = new Date()
+        if( number == 0 ) {
+          this.monitorTime.endTime = d.format("yyyyMMddhh")
+          d.setTime(d.getTime()-24*60*60*1000)
+          this.monitorTime.startTime = d.format("yyyyMMddhh")
+          this.monitorTime.timeType  = "小时"
+        } else if( number == 1 ) {
+          this.monitorTime.endTime = d.format("yyyyMMddhh")
+          d.setTime(d.getTime()-30*24*60*60*1000)
+          this.monitorTime.startTime = d.format("yyyyMMddhh")
+          this.monitorTime.timeType  = "日"
+        } else if( number == 2 ) {
+          this.monitorTime.endTime = d.format("yyyyMMddhh")
+          d.setTime(d.getTime()-365*24*60*60*1000)
+          this.monitorTime.startTime = d.format("yyyyMMddhh")
+          this.monitorTime.timeType  = "月"
+        }
+        this.getMonitorData();
       },
       // 顶部仪表盘
       initDashboard(){
+        let that = this
         let echarts = this.$echarts.init(document.getElementById("dashboard"))
         let option = {
           tooltip: {
@@ -734,7 +798,7 @@
             max: 5,
             center: ['50%', '60%'],
             data: [{
-              value: 4,
+              value: this.realData.aRealData.wq_tp,
               name: '当前水质'
             }],
             splitNumber: 5,
@@ -747,7 +811,7 @@
             },
             detail: {
               formatter: function(value) {
-                return "Ⅴ"
+                return that.levelText[value]
               },
               fontSize: 40,
               color: "#fff",
@@ -771,22 +835,7 @@
               fontSize: 10,
               distance: 0,
               formatter: function(value) {
-                if(value >= 5) {
-                  return "劣Ⅴ"
-                } else if (value >= 4) {
-                  return 'Ⅴ'
-                } else if (value >= 3) {
-                  return 'Ⅳ'
-                }
-                else if (value >= 2) {
-                  return 'Ⅲ'
-                }
-                else if (value >= 1) {
-                  return 'Ⅱ'
-                }
-                else if (value >= 0) {
-                  return 'Ⅰ'
-                }
+                return that.levelText[value]
               }
             },
             axisTick: {
@@ -822,7 +871,51 @@
       clickDay(value){
       },
       changeMonth(){},
-
+      getMonitorData(){
+        this.$http.get("/AirAppXY-Service/water/waterMonitorData", {params: this.monitorTime}).then(res=>{
+            if( res.data.code == 200 ) {
+              this.monitorData = res.data.content.info
+              // 水质监测数据
+              this.drawLineHoursData();
+            }
+        })
+      },
+      getWaterDistribution(){
+        this.$http.get("/AirAppXY-Service/water/getWaterLineData", {params: this.distributionTime}).then(res=>{
+          if( res.data.code == 200 ) {
+            this.marker = []
+            res.data.content.info.forEach((item,index)=>{
+              let obj  = {}
+              obj.date = item.spt.slice(0,4) + "-" + item.spt.slice(4,6) + "-" + item.spt.slice(6,8)
+              if( item.wq_tp ) {
+                obj.className= "level" + (Number(item.wq_tp) + 1)
+              } else {
+                obj.className= ""
+              }
+              this.marker.push(obj)
+            })
+            this.showCalendar = true
+          }
+        })
+      },
+      getTbStacticsData(){
+        this.$http.get("/AirAppXY-Service/water/getWaterTBAnalyze", {params: this.tbTime}).then(res=>{
+          if( res.data.code == 200 ) {
+            this.tbData = res.data.content.info
+            // 同比分析
+            this.drawLineMonthStatic();
+          }
+        })
+      },
+      getWaterStandardStatus(){
+        this.$http.get("/AirAppXY-Service/water/getWaterStandard",{params: this.standardTime}).then(res=>{
+          if( res.data.code == 200 ) {
+            this.standardData = res.data.content.info
+            // 达标情况
+            this.drawLineMonthStaticTb();
+          }
+        })
+      }
     }
   }
 </script>

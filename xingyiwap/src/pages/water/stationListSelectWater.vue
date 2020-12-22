@@ -2,7 +2,7 @@
     <div>
         <van-nav-bar left-arrow @click-left="historyBack" :fixed="true" class="common-nav-bar">
             <template #title>
-                空气站点列表
+                水环境站点列表
             </template>
             <template #right>
                 <img src="../../assets/img/search.png" @click="$router.push({path: '/mine'})" style="height: 18px; width: 18px" alt="">
@@ -73,29 +73,26 @@
         },
         methods: {
             selectItem(item) {
-              this.$store.state.vuex.stationData = item
-              this.$router.push('/home')
+              this.$store.state.vuex.stationDataWater = item
+              localStorage.setItem("stationDataWater",JSON.stringify(item))
+              this.$router.push('/water')
             },
             // 获取站点列表
             getStationList(){
-              this.$http.get("/AirAppXY-Service/map/queryTreeW", {params: {typeCode: 'MM', basinnOrAreaOrCustom: "type"}}).then(res=>{
+              this.$http.get("/AirAppXY-Service/map/queryTreeW", {params: {typeCode: 'WQ', basinnOrAreaOrCustom: "type"}}).then(res=>{
                 this.stationTree = res.data.content.info
-                this.stationTree.unshift({text: "区域", id: "area", children: [{ text: "兴义市", id: null, children: [] }]})
                 this.handleTree(this.stationTree)
               })
             },
             // 处理树
             handleTree(list){
-              console.log(list, "shenme")
               list.map((item, index)=>{
                 console.log(item, "null")
-                if( index > 0 ) {
                   item.id   = item.nodeId
                   item.text = item.nodeName
                   if( item.children.length > 0 ) {
                     this.handleTree(item.children)
                   }
-                }
               })
               this.showTree = true
             }

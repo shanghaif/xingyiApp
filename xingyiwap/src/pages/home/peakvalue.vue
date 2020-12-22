@@ -5,7 +5,7 @@
     <div class="peak" style="margin-top: 47px">
       <div class="peak_top">
         <ul>
-          <li><img src="../../assets/img/sy_point.png" alt="">&nbsp;xx县(2020-06-29 16时至2020-06-30 15时)峰值分析</li>
+          <li><img src="../../assets/img/sy_point.png" alt="">&nbsp;{{$store.state.vuex.stationData.text}}({{showTime.startTime}}时至{{showTime.endTime}}时)峰值分析</li>
         </ul>
       </div>
       <div class="peak_table">
@@ -17,41 +17,11 @@
             <td>谷值</td>
             <td>平均值</td>
           </tr>
-          <tr>
-            <td>PM2.5</td>
-            <td>108</td>
-            <td>108</td>
-            <td>108</td>
-          </tr>
-          <tr>
-            <td>PM10</td>
-            <td class="important">58</td>
-            <td>58</td>
-            <td>58</td>
-          </tr>
-          <tr>
-            <td>SO <sub>2</sub></td>
-            <td>34</td>
-            <td>34</td>
-            <td>34</td>
-          </tr>
-          <tr>
-            <td>O <sub>3</sub></td>
-            <td>12</td>
-            <td>12</td>
-            <td>12</td>
-          </tr>
-          <tr>
-            <td>NO <sub>2</sub></td>
-            <td>2.7</td>
-            <td>2.7</td>
-            <td>2.7</td>
-          </tr>
-          <tr>
-            <td>CO</td>
-            <td class="important">190</td>
-            <td>190</td>
-            <td>190</td>
+          <tr v-for="(item,index) in dataList" :key="index">
+            <td>{{item.factor}}</td>
+            <td>{{item.max}}</td>
+            <td>{{item.min}}</td>
+            <td>{{item.avg}}</td>
           </tr>
           </tbody>
         </table>
@@ -69,13 +39,13 @@
             </div>
             <div class="e_select">
               <ul>
-                <li class="active">AQI</li>
-                <li>PM2.5</li>
-                <li>PM10</li>
-                <li>SO2</li>
-                <li>O3</li>
-                <li>NO2</li>
-                <li>CO</li>
+                <li :class="factorActive[0]" @click="changeFactor(0, 'aqi')">AQI</li>
+                <li :class="factorActive[1]" @click="changeFactor(1, 'pm25')">PM2.5</li>
+                <li :class="factorActive[2]" @click="changeFactor(2, 'pm10')">PM10</li>
+                <li :class="factorActive[3]" @click="changeFactor(3, 'so2')">SO2</li>
+                <li :class="factorActive[4]" @click="changeFactor(4, 'o3')">O3</li>
+                <li :class="factorActive[5]" @click="changeFactor(5, 'no2')">NO2</li>
+                <li :class="factorActive[6]" @click="changeFactor(6, 'co')">CO</li>
               </ul>
             </div>
           </div>
@@ -87,12 +57,42 @@
 
 <script>
   export default {
-    mounted() {
-      this.drawLine()
+    data(){
+      return {
+        factorActive: ["active"],
+        peakTime: {
+          startTime: "",
+          endTime: "",
+          mnType: "city",
+          factor: "aqi",
+          timeType: "小时",
+          mns: ""
+        },
+        dataList: [],
+        showTime: {
+          startTime: "",
+          endTime: ""
+        },
+        recentData: {},
+        lineHoursEcharts: {}
+      }
+    },
+    activated() {
+      // 最近24小时
+      let d = new Date()
+      this.peakTime.endTime = d.format("yyyyMMddhh")
+      this.showTime.endTime = d.format("yyyy-MM-dd hh")
+      d.setTime(d.getTime()-24*60*60*1000)
+      this.peakTime.startTime = d.format("yyyyMMddhh")
+      this.showTime.startTime = d.format("yyyy-MM-dd hh")
+      this.getPeakValueData()
+      this.getRecentlyRealData()
     },
     methods: {
-      drawLine(){
-        let echarts = this.$echarts.init(document.getElementById("echarts"))
+      // 近24小时趋势
+      drawLineHoursData(){
+        let that = this
+        this.lineHoursEcharts = this.$echarts.init(document.getElementById("echarts"))
         let option  = {
           color: "#E5CE10",
           xAxis: {
@@ -111,7 +111,7 @@
               rotate: 40,
               color: "#666"
             },
-            data: ['1时', '2时', '3时', '4时', '5时', '6时', '7时', '8时', '9时', '10时', '11时', '12时', '13时', '14时', '15时', '16时', '17时', '18时', '19时', '20时', '21时', '22时', '23时', '24时']
+            data: this.recentData.time
           },
           tooltip: {
             trigger: 'axis'
@@ -137,19 +137,36 @@
                 color: "#ddd"
               }
             },
-            max: 150,
-            interval: 30,
+            max: 300,
+            interval: 60,
           },
           series: [{
-            data: [20, 30, 40, 50, 60, 80, 20, 40, 110, 65, 98, 45, 88, 22, 11, 55, 88, 99, 12, 77, 33, 44, 88, 99],
+            data: this.recentData.data,
             type: 'bar',
-            barWidth: 8,
+            barWidth: 7,
             itemStyle: {
               normal: {
                 //每根柱子颜色设置
                 color: function(params) {
-                  if ( params.value > 60 ) {
-                    return "#FF7E00"
+                  switch (that.recentData.level[params.dataIndex]) {
+                    case 0:
+                      return "#24C768"
+                      break;
+                    case 1:
+                      return "#E5CE10"
+                      break;
+                    case 2:
+                      return "#FF7E00"
+                      break;
+                    case 3:
+                      return "#FF0000"
+                      break;
+                    case 4:
+                      return "#990000"
+                      break;
+                    case 5:
+                      return "#7E0000"
+                      break;
                   }
                 }
               }
@@ -159,8 +176,50 @@
             }
           }]
         }
-        echarts.setOption(option)
+        this.lineHoursEcharts.setOption(option)
       },
+      getPeakValueData(){
+        this.$http.get("/AirAppXY-Service/air/getAirPeakData",{params: this.peakTime}).then(res=>{
+          if( res.data.code == 200 ) {
+            this.dataList = res.data.content.info
+            if( this.dataList.length > 0 ) {
+              this.dataList.map((item)=>{
+                if( String(item.avg).indexOf(".") != -1 ) { // 如果是小数就保留两位小数
+                  item.avg = item.avg.toFixed(2)
+                }
+              })
+            }
+          }
+        })
+      },
+      // 最近24小时趋势
+      getRecentlyRealData(){
+        this.$http.get("/AirAppXY-Service/air/airLineData", {params:this.peakTime}).then(res=>{
+          if( res.data.code == 200 ) {
+            this.recentData = res.data.content.info
+            // 近24小时趋势图表
+            this.drawLineHoursData();
+          }
+        })
+      },
+      // 切换因子
+      changeFactor(key, name) {
+        this.factorActive        = []
+        this.factorActive[key]   = "active"
+        this.peakTime.factor     = name
+        this.getRecentlyRealData()
+      },
+    },
+    beforeRouteEnter(to,from,next){
+      next(vm=>{
+        if( vm.$store.state.vuex.stationData.id ) {
+          vm.peakTime.mns       = vm.$store.state.vuex.stationData.id
+          vm.peakTime.mnType    = "station"
+        } else {
+          vm.peakTime.mns       = ""
+          vm.peakTime.mnType    = "city"
+        }
+      })
     }
   }
 </script>
