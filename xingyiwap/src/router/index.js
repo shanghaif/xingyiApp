@@ -162,6 +162,18 @@ const router = new VueRouter({
       },
       component: () => import("@/pages/water/report.vue")
     },
+    ,
+    // 气站报表分析
+    {
+      path: "/report",
+      name: "report",
+      meta: {
+        tabShow: false,
+        activeId: 1,
+        keepAlive: true,
+      },
+      component: () => import("@/pages/home/report.vue")
+    },
       // 气站站点列表
     {
       path: "/stationListAir",

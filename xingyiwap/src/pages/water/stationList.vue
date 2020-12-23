@@ -10,33 +10,15 @@
         </van-nav-bar>
         <div class="listContent">
             <van-tabs v-model="active" color="#216CD5">
-                <van-tab title="国控站">
-                    <div class="list">
-                        <van-cell-group>
-                            <template v-for="(item,index) in stationList">
-                                <van-cell :title="item.name" @click="$router.push('/map')">
-                                    <template #default>
-                                        <div class="listRightContent">
-                                            <div class="waterLevel">
-                                                <span :class="'level'+item.level">水质等级</span>{{levelText[item.level-1]}}类
-                                            </div>
-                                            <img src="../../assets/img/dz.png" style="width: 17px; height: 17px" alt="">
-                                        </div>
-                                    </template>
-                                </van-cell>
-                            </template>
-                        </van-cell-group>
-                    </div>
-                </van-tab>
                 <van-tab title="市控站">
                     <div class="list">
                         <van-cell-group>
                             <template v-for="(item,index) in stationList">
-                                <van-cell :title="item.name" @click="$router.push('/map')">
+                                <van-cell :title="item.stationName" @click="$router.push('/map')">
                                     <template #default>
                                         <div class="listRightContent">
                                             <div class="waterLevel">
-                                                <span :class="'level'+item.level">水质等级</span>{{levelText[item.level-1]}}类
+                                                <span :class="'level'+(item.aRealData.wq_tp+1)">水质等级</span>{{levelText[item.aRealData.wq_tp]}}类
                                             </div>
                                             <img src="../../assets/img/dz.png" style="width: 17px; height: 17px" alt="">
                                         </div>
@@ -80,8 +62,18 @@
         mounted() {
 
         },
-        methods: {
-
+      activated() {
+        this.getStationList()
+      },
+      methods: {
+          // 获取站点数据
+          getStationList(type="water") {
+              this.$http.get("/AirAppXY-Service/map/getStationInfo",{params: {stationType: type}}).then(res=>{
+                if( res.data.code == 200 ) {
+                  this.stationList = res.data.content.info
+                }
+              })
+          },
         }
     }
 </script>

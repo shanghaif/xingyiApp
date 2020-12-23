@@ -17,25 +17,25 @@
                 <img src="../../assets/img/home/yun1.png" class="yun1" alt="">
             </div>
             <p class="update">更新：2020-01-10 10:00</p>
-            <div class="echarts" id="echarts">
+            <div class="echarts">
                 <div class="bgDom">
                     <ul>
-                        <li>140</li>
+                        <li>{{polluteData.nums[0]}}</li>
                         <li>污染源总数（家）</li>
                     </ul>
                 </div>
             </div>
-            <ul class="topItems">
+            <ul class="topItems scroll">
                 <li>
-                    <div class="polluteCount"><font style="font-size: 15px">32</font> 家</div>
+                    <div class="polluteCount"><font style="font-size: 15px">{{polluteData.nums[1]}}</font> 家</div>
                     <div class="polluteType"><span class="round_icon"></span>废水废气企业</div>
                 </li>
                 <li>
-                    <div class="polluteCount"><font style="font-size: 15px">63</font> 家</div>
+                    <div class="polluteCount"><font style="font-size: 15px">{{polluteData.nums[2]}}</font> 家</div>
                     <div class="polluteType"><span class="round_icon"></span>废水企业</div>
                 </li>
                 <li>
-                    <div class="polluteCount"><font style="font-size: 15px">45</font> 家</div>
+                    <div class="polluteCount"><font style="font-size: 15px">{{polluteData.nums[3]}}</font> 家</div>
                     <div class="polluteType"><span class="round_icon"></span>废气企业</div>
                 </li>
             </ul>
@@ -58,30 +58,10 @@
                             <td>占比</td>
                             <td>数据量</td>
                         </tr>
-                        <tr>
-                            <td><span class="level1"></span>工业源</td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="level2"></span>生活源</td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="level3"></span>污水处理厂</td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="level4"></span>重金属污染…</td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="level5"></span>规模化禽…</td>
-                            <td>80%</td>
-                            <td>160</td>
+                        <tr v-for="(item,index) in typeData.data">
+                            <td><span :class="'level'+(index+1)"></span>{{item.name}}</td>
+                            <td>{{item.percent}}</td>
+                            <td>{{item.value}}</td>
                         </tr>
                     </table>
                 </div>
@@ -98,12 +78,7 @@
                 </div>
                 <div class="content normal1">
                     <ul class="companyCount">
-                        <li>企业总数：140</li>
-                        <li>废水废气：45</li>
-                        <li>废水：70</li>
-                        <li>废气：70</li>
-                        <li>土壤：8</li>
-                        <li>其他：12</li>
+                        <li v-for="(item,index) in importantData.nums" :key="index">{{importantData.type[index]}}：{{item}}</li>
                     </ul>
                     <table border="0" cellspacing="0" class="bottomTable" cellpadding="0">
                         <tr>
@@ -111,35 +86,10 @@
                             <td>企业名称</td>
                             <td>污染类型</td>
                         </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>兴义市丰都污水处理厂</td>
-                            <td>废水/废气</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>兴义市鸿源再生能源回收处理</td>
-                            <td>废水</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>兴义市水务有限责任公司</td>
-                            <td>废水</td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>兴义市水务有限责任公司桔山</td>
-                            <td>废气</td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>兴义市阳光水务有限责任公司</td>
-                            <td>废水</td>
-                        </tr>
-                        <tr>
-                            <td>6</td>
-                            <td>贵州兴化化工股份有限公司</td>
-                            <td>废水</td>
+                        <tr v-for="(item,index) in companyData">
+                            <td>{{index+1}}</td>
+                            <td>{{item.name}}</td>
+                            <td>{{item.unitType}}</td>
                         </tr>
                     </table>
                 </div>
@@ -210,10 +160,11 @@
                 </div>
             </div>
         </div>
-        <!--月度、季度、年度选择-->
+
         <van-popup v-model="stationClassPicker" position="bottom">
             <van-picker
                 show-toolbar
+                :default-index="0"
                 :columns="stationClassColumns"
                 @confirm="onStationClassConfirm"
                 @cancel="stationClassPicker = false"
@@ -232,16 +183,37 @@
             activeTab: 0,
             stationClassValue: "省控重点企业",
             stationClassPicker: false,
-            stationClassColumns: ["省控重点企业", "市控重点企业", "区/县控重点企业"],
+            stationClassColumns: ["省控重点企业", "州控重点企业", "市控重点企业"],
+            polluteTime: {
+              controlLevel: 1,
+              isImportant: 1
+            },
+            polluteData: {
+              nums: [],
+            },
+            typeData: {
+
+            },
+            importantData: {
+              nums: []
+            },
+            companyData: []
           }
         },
         mounted() {
             this.drawEcharts()
         },
-        methods: {
+        activated() {
+            this.getPolluteNum();
+            this.getTypeData();
+            this.getImportantCom(); // 获取重点企业
+        },
+      methods: {
           onStationClassConfirm(value, index){
             this.stationClassValue  = value;
             this.stationClassPicker = false;
+            this.polluteTime.controlLevel = index + 1
+            this.getImportantCom()
           },
           selectToggle(num){
             $("#collapse"+num).slideToggle()
@@ -256,8 +228,21 @@
             this.activeClass[num] = "active"
           },
           drawEcharts(){
-              let countDayEcharts = this.$echarts.init(document.getElementById("echarts2"))
-              // let colorList= ["#24C768","#E5CE10","#FF7E00","#FF0000","#990000","#7E0000"]
+            let that = this
+            let countDayEcharts = this.$echarts.init(document.getElementById("echarts2"))
+            let colorList= ["#1FBC53","#FF7E00","#12A2FF","#E55530","#7E30E6"]
+            this.typeData.data = []
+            if( this.typeData.nums ) {
+              this.typeData.nums.map((item,index)=>{
+                let obj       = {}
+                obj.value     = item
+                obj.name      = this.typeData.types[index]
+                obj.itemStyle = {
+                  normal: {color: colorList[index]}
+                }
+                this.typeData.data[index] = obj
+              })
+            }
               let option2 = {
                 series: [
                   {
@@ -268,7 +253,7 @@
                     selectedMode: false,
                     label: {
                       normal: {
-                        formatter: '{a|60家}\n重点污染源',
+                        formatter: '{a|'+this.typeData.total+'家}\n重点污染源',
                         rich: {
                           a: {
                             color: '#1A1A1A',
@@ -293,7 +278,7 @@
                     labelLine: {
                       show: false
                     },
-                    data: [100, 146, 46]
+                    data: this.typeData.data
                   },
                   {
                     type: 'pie',
@@ -301,7 +286,15 @@
                     label: {
                       position: 'outside',
                       normal: {
-                        formatter: function(data){ return data.percent.toFixed(1)+"%";} ,
+                        formatter: function(data){
+                          let percent = data.percent.toFixed(1)+"%";
+                          that.typeData.data[data.dataIndex].percent = percent
+                          if( data.percent > 0 ) {
+                            return percent;
+                          } else {
+                            return ""
+                          }
+                        } ,
                         textStyle: {
                           fontWeight: 'normal',
                           fontSize: 10,
@@ -314,12 +307,39 @@
                       length: 1,
                       length2: 1,
                     },
-                    data: [100, 146, 46]
+                    data: this.typeData.data
                   }
                 ]
               }
               countDayEcharts.setOption(option2)
-            }
+            },
+          getPolluteNum(){
+            this.$http.get("/AirAppXY-Service/pollutionSource/pollNumInfo").then(res=>{
+                if( res.data.code == 200 || res.data.code == 0 ) {
+                  this.polluteData = res.data.content.info
+                }
+            })
+          },
+          getTypeData() {
+            this.$http.get("/AirAppXY-Service/pollutionSource/pollNumInfoType").then(res=>{
+              if( res.data.code == 200 || res.data.code == 0 ) {
+                this.typeData = res.data.content.info
+                this.drawEcharts()
+              }
+            })
+          },
+          getImportantCom(){
+            this.$http.get("/AirAppXY-Service/pollutionSource/pollNumInfo", {params: this.polluteTime}).then(res=>{
+              if( res.data.code == 200 || res.data.code == 0 ) {
+                this.importantData = res.data.content.info
+                this.$http.get("/AirAppXY-Service/pollutionSource/pollInfo", {params: this.polluteTime}).then(result=>{
+                  if( result.data.code == 200 || result.data.code == 0 ) {
+                    this.companyData = result.data.content.info
+                  }
+                })
+              }
+            })
+          }
         }
     }
 </script>

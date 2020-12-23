@@ -6,7 +6,7 @@ const timeout = 10000
 
 // 设置请求服务ip
 // const baseUrl = "http://192.168.171.34:30133"
-// const baseUrl = "http://218.91.209.254:30133"
+const baseUrl = "http://192.168.171.42:30233"
 
 // 获取本地token
 // const token   = localStorage.getItem("token")
@@ -14,7 +14,7 @@ const timeout = 10000
 
 // 实例化axios
 const serve   = axios.create({
-  // baseURL: baseUrl,
+  baseURL: baseUrl,
   timeout: timeout,
   //withCredentials: true
 })

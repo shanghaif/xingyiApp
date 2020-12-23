@@ -17,27 +17,27 @@
                 <img src="../../assets/img/home/yun1.png" class="yun1" alt="">
             </div>
             <p class="update">更新：2020-01-10 10:00</p>
-            <div class="echarts" id="echarts">
+            <div class="echarts">
                 <div class="bgDom voiceDom">
                     <ul>
-                        <li>1120</li>
+                        <li>{{voiceCount.N_001+voiceCount.N_002+voiceCount.N_003}}</li>
                         <li>声环境点位总数（个）</li>
                     </ul>
                 </div>
             </div>
             <ul class="topItems voiceTopItems">
                 <li>
-                    <div class="polluteCount"><font style="font-size: 15px">132</font> 个</div>
+                    <div class="polluteCount"><font style="font-size: 15px">{{voiceCount.N_003}}</font> 个</div>
                     <div class="polluteType">道路交通</div>
                     <span class="borderDom"></span>
                 </li>
                 <li>
-                    <div class="polluteCount"><font style="font-size: 15px">163</font> 个</div>
+                    <div class="polluteCount"><font style="font-size: 15px">{{voiceCount.N_001}}</font> 个</div>
                     <div class="polluteType">城市区域</div>
                     <span class="borderDom"></span>
                 </li>
                 <li>
-                    <div class="polluteCount"><font style="font-size: 15px">145</font> 个</div>
+                    <div class="polluteCount"><font style="font-size: 15px">{{voiceCount.N_002}}</font> 个</div>
                     <div class="polluteType">城市功能区</div>
                 </li>
             </ul>
@@ -45,16 +45,16 @@
         <div class="items_content">
             <div class="tabs">
                 <ul>
-                    <li :class="activeClass[0]" @click="changeTabs(0)">道路交通</li>
-                    <li :class="activeClass[1]" @click="changeTabs(1)">城市区域</li>
-                    <li :class="activeClass[2]" @click="changeTabs(2)">城市功能区</li>
+                    <li :class="activeClass[0]" @click="changeTabs(0,'N_003')">道路交通</li>
+                    <li :class="activeClass[1]" @click="changeTabs(1,'N_001')">城市区域</li>
+                    <li :class="activeClass[2]" @click="changeTabs(2,'N_002')">城市功能区</li>
                 </ul>
             </div>
             <div class="items">
                 <div class="title_content">
                     <div class="left">
                         <span class="left_icon"></span>
-                        功能区等级点位统计
+                        等级点位统计
                     </div>
                 </div>
                 <div class="content normal">
@@ -67,35 +67,10 @@
                             <td>占比</td>
                             <td>数据量</td>
                         </tr>
-                        <tr>
-                            <td><span class="voice0"></span>0级</td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="voice1"></span>1级</td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="voice2"></span>2级</td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="voice3"></span>3级</td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="voice4a"></span>4a级</td>
-                            <td>80%</td>
-                            <td>160</td>
-                        </tr>
-                        <tr>
-                            <td><span class="voice4b"></span>4b级</td>
-                            <td>80%</td>
-                            <td>160</td>
+                        <tr v-for="(item,index) in listData.dataList">
+                            <td><span :class="'voice'+index"></span>{{item.name}}</td>
+                            <td>{{item.percent}}</td>
+                            <td>{{item.value}}</td>
                         </tr>
                     </table>
                 </div>
@@ -104,30 +79,15 @@
                 <div class="title_content">
                     <div class="left">
                         <span class="left_icon"></span>
-                        功能区噪音监测
+                        噪音监测
                     </div>
                 </div>
                 <div class="content">
                     <ul class="voiceGnq">
-                        <li>
-                            <div class="first"><div class="iconVoice">0级</div>  xxx站点</div>
-                            <div class="second">监测值：<font>47.5</font> dp(A)</div>
-                            <div class="third">监测时间：19:55</div>
-                        </li>
-                        <li>
-                            <div class="first"><div class="iconVoice">0级</div>  xxx站点</div>
-                            <div class="second">监测值：<font>47.5</font> dp(A)</div>
-                            <div class="third">监测时间：19:55</div>
-                        </li>
-                        <li>
-                            <div class="first"><div class="iconVoice">0级</div>  xxx站点</div>
-                            <div class="second">监测值：<font>47.5</font> dp(A)</div>
-                            <div class="third">监测时间：19:55</div>
-                        </li>
-                        <li>
-                            <div class="first"><div class="iconVoice">0级</div>  xxx站点</div>
-                            <div class="second">监测值：<font>47.5</font> dp(A)</div>
-                            <div class="third">监测时间：19:55</div>
+                        <li v-for="(item,index) in listData.data" :key="index">
+                            <div class="first"><div class="iconVoice">{{item.noiseLevel}}</div>  {{item.station_name}}</div>
+                            <div class="second">监测值：<font>{{item.leq}}</font> dp(A)</div>
+                            <div class="third">监测时间：{{new Date(item.time).format("MM-dd hh:mm")}}</div>
                         </li>
                     </ul>
                 </div>
@@ -145,12 +105,27 @@
         activeNames: [],
         activeTab: 0,
         stationClassValue: "省控重点企业",
+        params: {
+          stationType: "N_003"
+        },
         stationClassPicker: false,
         stationClassColumns: ["省控重点企业", "市控重点企业", "区/县控重点企业"],
+        voiceCount: {
+          N_001: 0,
+          N_002: 0,
+          N_003: 0
+        },
+        listData: {
+          data: []
+        },
       }
     },
     mounted() {
-      this.drawEcharts()
+      // this.drawEcharts()
+    },
+    activated() {
+      this.getVoiceStationCount()
+      this.getVoiceList()
     },
     methods: {
       onStationClassConfirm(value, index){
@@ -165,13 +140,30 @@
           this.arrow = "arrow-up"
         }
       },
-      changeTabs(num){
+      changeTabs(num,type){
         this.activeClass      = []
         this.activeClass[num] = "active"
+        this.params.stationType = type
+        this.getVoiceList()
       },
       drawEcharts(){
+        let that = this
         let countDayEcharts = this.$echarts.init(document.getElementById("echarts2"))
-        // let colorList= ["#24C768","#E5CE10","#FF7E00","#FF0000","#990000","#7E0000"]
+        let colorList= ["#FFFF99","#62FA61","#6799FC","#EF7031","#FF0000","#EB22EB"]
+        this.listData.dataList = []
+        let i = 0
+        if( this.listData.level ) {
+          for (var key in this.listData.level) {
+            let obj = {}
+            obj.value = this.listData.level[key]
+            obj.name  = key
+            obj.itemStyle = {
+              normal: {color: colorList[i]}
+            }
+            i++;
+            this.listData.dataList.push(obj);
+          }
+        }
         let option2 = {
           series: [
             {
@@ -182,7 +174,7 @@
               selectedMode: false,
               label: {
                 normal: {
-                  formatter: '{a|12个}\n0级',
+                  formatter: '{a|'+this.listData.dataList[0].value+'个}\n0级',
                   rich: {
                     a: {
                       color: '#1A1A1A',
@@ -207,7 +199,7 @@
               labelLine: {
                 show: false
               },
-              data: [100, 146, 46]
+              data: this.listData.dataList
             },
             {
               type: 'pie',
@@ -215,7 +207,15 @@
               label: {
                 position: 'outside',
                 normal: {
-                  formatter: function(data){ return data.percent.toFixed(1)+"%";} ,
+                  formatter: function(data){
+                    let percent = data.percent.toFixed(1)+"%";
+                    that.listData.dataList[data.dataIndex].percent = percent
+                    if( data.percent > 0 ) {
+                      return percent;
+                    } else {
+                      return ""
+                    }
+                  } ,
                   textStyle: {
                     fontWeight: 'normal',
                     fontSize: 10,
@@ -224,15 +224,32 @@
                 }
               },
               labelLine: {
-                show: true,
+                show: false,
                 length: 1,
                 length2: 1,
               },
-              data: [100, 146, 46]
+              data: this.listData.dataList
             }
           ]
         }
         countDayEcharts.setOption(option2)
+      },
+      // 获取声环境站点个数
+      getVoiceStationCount(){
+        this.$http.get("/AirAppXY-Service/noise/noiseStationNum").then(res=>{
+          if( res.data.code == 200 || res.data.code == 0 ) {
+            this.voiceCount = res.data.content.info
+          }
+        })
+      },
+      // 获取噪声详情
+      getVoiceList(){
+        this.$http.get("/AirAppXY-Service/noise/noiseRealData",{params: this.params}).then(res=>{
+          if( res.data.code == 200 || res.data.code == 0 ) {
+            this.listData = res.data.content.info
+            this.drawEcharts()
+          }
+        })
       }
     }
   }

@@ -6,10 +6,10 @@
             </template>
             <template #title>
                 <ul>
-                    <li :class="activeClass[0]" @click="changeItem(0)">水质</li>
-                    <li :class="activeClass[1]" @click="changeItem(1)">空气</li>
-                    <li :class="activeClass[2]" @click="changeItem(2)">声环境</li>
-                    <li :class="activeClass[3]" @click="changeItem(3)">污染源</li>
+                    <li :class="activeClass[0]" @click="changeItem(0,'water')">水质</li>
+                    <li :class="activeClass[1]" @click="changeItem(1,'air')">空气</li>
+                    <li :class="activeClass[2]" @click="changeItem(2,'noise')">声环境</li>
+                    <li :class="activeClass[3]" @click="changeItem(3,'poll')">污染源</li>
                 </ul>
             </template>
             <template #right>
@@ -25,47 +25,46 @@
             </ul>
         </div>
         <baidu-map class="map" @click="hideInfo" ref="map" :center="options.center" :zoom="options.zoom" center="兴义市" @ready="initMap">
-                <bm-label v-for="(item,index) in pointList" :key="index" v-if="pointList.length > 0 && navActive == 0" :content="levelText[item.level]" :position="item.point" :labelStyle="Object.assign(label[item.level], baseStyle)" @click="showStationInfo(item)" />
-            <template v-for="(item,index) in pointList">
+            <bm-label v-for="(item,index) in stationList.water" :key="index" v-if="stationList.water.length > 0 && navActive == 0" :content="levelText[item.aRealData.wq_tp]" :position="{lng:item.longitude,lat:item.latitude}" :labelStyle="Object.assign(label[item.aRealData.wq_tp], baseStyle)" @click="showStationInfo(item,'water')" />
+            <template v-for="(item,index) in stationList.air">
                 <bm-overlay
                     pane="labelPane"
-                    :class="'level'+item.level+' sample '+active[index]"
+                    :class="'level'+(item.level+1)+' sample '+active[index]"
                     @draw="({el, BMap, map})=>{draw({el, BMap, map}, item)}"
-                    @touchstart.native="showStationInfo(item,index)"
-                    v-show="(item.type == type) && pointList.length > 0 && navActive == 1"
+                    @touchstart.native="showStationInfo(item,'air',index)"
+                    v-show="stationList.air.length > 0 && navActive == 1"
                    >
                     <div class="airPoint">
-                        <img :src="fxImg[item.fx]" style="max-width: 21px" alt="">
-                        <span class="airNumber">{{item.fl}}</span><span class="airText">{{item.typeName}}</span>
+                        <img :src="fxImg[item.fx ? item.fx : 0]" style="max-width: 21px" alt="">
+                        <span class="airNumber">{{item.aqi || '--'}}</span><span class="airText">微型</span>
                     </div>
                 </bm-overlay>
             </template>
+            <bm-marker v-if="pointList.length > 0 && navActive == 2" v-for="(item,index) in stationList.noise" :key="index" :position="item.point"></bm-marker>
         </baidu-map>
-        <div class="stationInfo" v-if="navActive == 0 && show">
+        <div class="stationInfo" @click="selectStations" v-if="navActive == 0 && show">
             <div class="title">
                 <div class="left">
-                    <img src="../../assets/img/pos.png" style="max-width: 13.5px">xxx站点
+                    <img src="../../assets/img/pos.png" style="max-width: 13.5px">{{waterInfo.stationName}}
                 </div>
                 <div class="right">
-                    <img src="../../assets/img/close.png" @click="show = false" style="max-width: 24px">
+                    <img src="../../assets/img/close.png" @click.stop="show = false" style="max-width: 24px">
                 </div>
             </div>
             <div class="title time">
                 <div class="left">
-                    2020-08-20 14时 &nbsp;<span class="waterIcon level2">Ⅱ</span>
+                    {{waterInfo.aRealData ? waterInfo.aRealData.spt : '--'}} &nbsp;<span class="waterIcon" :class="waterInfo.aRealData ? ( 'level' + ( waterInfo.aRealData.wq_tp + 1 ) ) : ''">{{waterInfo.aRealData ? levelText[waterInfo.aRealData.wq_tp] : '--'}}</span>
                 </div>
                 <div class="right">
-                    目标水质：<span class="waterIcon level2">Ⅱ</span>
+                    目标水质：<span class="waterIcon" :class="waterInfo.targetLevel ? ('level'+(waterInfo.targetLevel+1)) : 'normal'">{{waterInfo.targetLevel ? levelText[waterInfo.targetLevel] : "--"}}</span>
                 </div>
             </div>
-            <ul class="fator">
-                <li>8</li>
-                <li>50</li>
-                <li>0.41</li>
-                <li>6.98</li>
-                <li>0.22</li>
-                <li>4.60</li>
-                <li>COD</li>
+            <ul class="fator water">
+                <li>{{waterInfo.aRealData.codmn || '--'}}</li>
+                <li>{{waterInfo.aRealData.nh3n || '--'}}</li>
+                <li>{{waterInfo.aRealData.ph || '--'}}</li>
+                <li>{{waterInfo.aRealData.tp || '--'}}</li>
+                <li>{{waterInfo.aRealData.dox || '--'}}</li>
                 <li>高锰酸盐</li>
                 <li>氨氮</li>
                 <li>pH值</li>
@@ -73,18 +72,18 @@
                 <li>溶解氧</li>
             </ul>
         </div>
-        <div class="airStationType" v-if="navActive == 1 && !show">
-            <ul>
-                <li :class="typeClass[0]" @click="changeType(0)">国控站（6）</li>
-                <li :class="typeClass[1]" @click="changeType(1)">省控站（6）</li>
-                <li :class="typeClass[2]" @click="changeType(2)">常规站（6）</li>
-                <li :class="typeClass[3]" @click="changeType(3)">微型站（6）</li>
-            </ul>
-        </div>
+<!--        <div class="airStationType" v-if="navActive == 1 && !show">-->
+<!--            <ul>-->
+<!--                <li :class="typeClass[0]" @click="changeType(0)">国控站（6）</li>-->
+<!--                <li :class="typeClass[1]" @click="changeType(1)">省控站（6）</li>-->
+<!--                <li :class="typeClass[2]" @click="changeType(2)">常规站（6）</li>-->
+<!--                <li :class="typeClass[3]" @click="changeType(3)">微型站（6）</li>-->
+<!--            </ul>-->
+<!--        </div>-->
         <div class="stationInfo" v-if="navActive == 1 && show">
             <div class="title">
                 <div class="left">
-                    <img src="../../assets/img/pos.png" style="max-width: 13.5px">xxx站点
+                    <img src="../../assets/img/pos.png" style="max-width: 13.5px">{{airInfo.stationName}}
                 </div>
                 <div class="right">
                     <img src="../../assets/img/close.png" @click="show = false" style="max-width: 24px">
@@ -92,7 +91,7 @@
             </div>
             <div class="title time">
                 <div class="left">
-                    2020-08-20 14时 &nbsp;<span class="waterIcon air level2">优</span>
+                    {{airInfo.spt || '--'}} &nbsp;<span class="waterIcon air" :class="'level'+(airInfo.level+1)">{{airInfo.airQuality || '--'}}</span>
                 </div>
                 <div class="right">
                 </div>
@@ -153,6 +152,7 @@
               {  backgroundColor: "#FFFF00"  },
               {  backgroundColor: "#FF9B00"  },
               {  backgroundColor: "#FF0000"  },
+              {  backgroundColor: "#cccccc"  },
             ],
             fxImg: [
               require("../../assets/img/icon/b.png"),
@@ -165,13 +165,25 @@
               require("../../assets/img/icon/xb.png"),
             ],
             pointList: [],
-            map: {}
+            map: {},
+            waterInfo: {},
+            airInfo: {},
+            stationList: {
+              water: [],
+              air: [],
+              noise: [],
+              poll: []
+            },
+
           }
         },
         mounted() {
           this.getTestPoint()
         },
-        methods: {
+        activated() {
+          this.getStationList()
+        },
+      methods: {
             jumpUrl(num){
               if( this.navActive == 0 && num == 1 ) {
                 this.$router.push('/stationList')
@@ -183,12 +195,13 @@
                 this.$router.push('/assessmentAir')
               }
             },
-            changeItem(num){
+            changeItem(num,type){
               this.activeClass      = []
               this.activeClass[num] = "active"
               this.show             = false
               this.navActive        = num
               this.active           = []
+              this.getStationList(type)
             },
             // 获取百度地图对象
             initMap({BMap, map}){
@@ -221,10 +234,16 @@
                 this.pointList.push(obj)
               }
             },
-            showStationInfo(info, index=0){
+            showStationInfo(info, type, index=0){
               this.isClickState = true
               this.show = true
+              this.active = []
               this.active[index] = "active"
+              if( type == "water" ) {
+                this.waterInfo = info
+              } else if( type == "air" ) {
+                this.airInfo = info
+              }
             },
             hideInfo({type, target, point, pixel, overlay}){
               if(overlay || this.isClickState) {
@@ -238,7 +257,7 @@
               window.location.reload(true)
             },
           draw ({el, BMap, map},item) {
-            const pixel = map.pointToOverlayPixel(new BMap.Point(item.point.lng, item.point.lat))
+            const pixel = map.pointToOverlayPixel(new BMap.Point(item.lng, item.lat))
             el.style.left = pixel.x - 60 + 'px'
             el.style.top = pixel.y - 20 + 'px'
           },
@@ -248,6 +267,52 @@
               this.typeClass[num] = "active"
               this.type           = num
               this.active         = []
+          },
+          // 获取站点数据
+          getStationList(type="water") {
+              if( this.stationList[type].length == 0 ) {
+                if( type == "water" || type=="air" ) {
+                  this.$http.get("/AirAppXY-Service/map/getStationInfo",{params: {stationType: type}}).then(res=>{
+                    if( res.data.code == 200 ) {
+                      this.stationList[type] = res.data.content.info
+                      if( type == "air" ) {
+                        this.stationList[type].map((item)=>{
+                          if( item.airQuality ) {
+                            if( item.airQuality.indexOf("优") ) {
+                              item.level = 0
+                            } else if( item.airQuality.indexOf("良") ) {
+                              item.level = 1
+                            } else if( item.airQuality.indexOf("轻度") ) {
+                              item.level = 2
+                            } else if( item.airQuality.indexOf("中度") ) {
+                              item.level = 3
+                            } else if( item.airQuality.indexOf("重度") ) {
+                              item.level = 4
+                            } else if( item.airQuality.indexOf("严重") ) {
+                              item.level = 5
+                            }
+                          } else {
+                            item.level = 6
+                          }
+                        })
+                      }
+                    }
+                  })
+                } else if( type == "noise" ) {
+                  this.$http.get("/AirAppXY-Service/noise/noiseRealData", {params: {stationType: "N_001,N_002,N_003"}}).then(res=>{
+                    if( res.data.code == 200 || res.data.code == 0 ) {
+                      this.stationList[type] = res.data.content.info
+                    }
+                  })
+                }
+              }
+          },
+          selectStations(){
+              // this.$store.state.vuex.stationDataWater.id = this.waterInfo.stationCode
+              // this.$store.state.vuex.stationDataWater.text = this.waterInfo.stationName
+              // this.$store.state.vuex.stationDataWater.children = []
+              // localStorage.setItem("stationDataWater",JSON.stringify(this.$store.state.vuex.stationDataWater))
+              // this.$router.push("/water")
           }
         }
     }
@@ -270,6 +335,7 @@
         level4: #FF0000;
         level5: #99004C;
         level6: #7E0023;
+        level7: #cccccc;
     };
     .map{
         width: 100%;
@@ -345,6 +411,9 @@
                   width: 20px;
                   height: 20px;
                   border-radius: 20px;
+                  &.normal{
+                      color: #1a1a1a;
+                  }
                   each(@colorsWaterLevels, {
                       &.@{key} {
                           background: @value;
@@ -374,6 +443,11 @@
                 text-align: center;
                 margin-top: 10px;
                 color: #1A1A1A;
+            }
+            &.water{
+                li{
+                    width: 19%;
+                }
             }
         }
     }

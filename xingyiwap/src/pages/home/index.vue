@@ -5,7 +5,7 @@
                 <img src="../../assets/img/user_icon.png" @click="$router.push({path: '/mine'})" style="height: 18px; width: 18px" alt="">
             </template>
             <template #title>
-                {{$store.state.vuex.stationData.text || '兴义市'}}
+                {{$store.state.vuex.stationData.text || '兴义市'}}<span class="navBarxl" @click="$router.push('/stationListSelect')"></span>
             </template>
             <template #right>
                 <img src="../../assets/img/message.png" @click="$router.push({path: '/mine'})" style="height: 17.5px; width: 19.5px" alt="">
@@ -373,7 +373,7 @@
             } else if( number == 3 ) {
                 this.$router.push('/peakvalue')
             } else if( number == 4 ) {
-
+                this.$router.push('/report')
             }
           },
           // 近24小时趋势

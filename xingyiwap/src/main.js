@@ -5,6 +5,7 @@ import {
   Button,
   Step,
   Steps,
+  Loading,
   PullRefresh,
   NavBar,
   List,
@@ -73,7 +74,7 @@ Vue.use(PullRefresh).use(List).use(Image).use(Cell).use(CellGroup).use(NavBar).u
     .use(Button).use(Step).use(Steps).use(NumberKeyboard).use(Field).use(Popup).use(DatetimePicker).use(Overlay).use(Switch).use(Tab).use(Tabs)
     .use(Tag).use(Icon).use(Picker).use(TreeSelect).use(Uploader).use(ActionSheet).use(Search).use(Checkbox).use(CheckboxGroup).use(Tabbar).use(TabbarItem)
     .use(Swipe).use(SwipeItem).use(Grid).use(GridItem).use(Dialog).use(DropdownMenu).use(DropdownItem).use(IndexBar).use(IndexAnchor).use(Divider).use(Slider).use(Progress)
-    .use(ImagePreview).use(Toast).use(RadioGroup).use(Radio)
+    .use(ImagePreview).use(Toast).use(RadioGroup).use(Radio).use(Loading)
 Vue.config.productionTip = false
 
 new Vue({

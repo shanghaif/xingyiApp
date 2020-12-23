@@ -87,7 +87,6 @@
             // 处理树
             handleTree(list){
               list.map((item, index)=>{
-                console.log(item, "null")
                   item.id   = item.nodeId
                   item.text = item.nodeName
                   if( item.children.length > 0 ) {

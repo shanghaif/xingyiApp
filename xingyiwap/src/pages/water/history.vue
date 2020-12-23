@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="height: 100%">
         <van-nav-bar left-arrow @click-left="historyBack" :fixed="true" class="common-nav-bar">
             <template #title>
                 {{stationName}}历史数据
@@ -18,7 +18,13 @@
 
             </div>
             <div class="items">
-                <el-table
+                <van-list
+                        v-model="loading"
+                        :finished="finished"
+                        finished-text="没有更多了"
+                        @load="onLoad"
+                >
+                    <el-table
                         :data="tableData"
                         style="width: 100%"
                         border
@@ -29,6 +35,17 @@
                             align="center"
                             label="时间"
                             width="140">
+                        <template slot-scope="scope">
+                            <font v-if="historyTime.timeType == '小时'">
+                                {{scope.row.spt ? (scope.row.spt.slice(0,4)+'-'+scope.row.spt.slice(4,6)+'-'+scope.row.spt.slice(6,8)+' '+scope.row.spt.slice(8,10)+'时') : '--'}}
+                            </font>
+                            <font v-else-if="historyTime.timeType == '日'">
+                                {{scope.row.spt ? (scope.row.spt.slice(0,4)+'-'+scope.row.spt.slice(4,6)+'-'+scope.row.spt.slice(6,8)) : '--'}}
+                            </font>
+                            <font v-else-if="historyTime.timeType == '月'">
+                                {{scope.row.spt ? (scope.row.spt.slice(0,4)+'-'+scope.row.spt.slice(4,6)) : '--'}}
+                            </font>
+                        </template>
                     </el-table-column>
                     <el-table-column
                             fixed
@@ -36,7 +53,7 @@
                             align="center"
                             >
                         <template slot-scope="scope">
-                            <span :class="'level'+scope.row.level" style="width: 40px;">{{levelText[scope.row.level - 1]}}类</span>
+                            <span :class="'level'+(Number(scope.row.wq_tp)+1)" style="width: 40px;">{{levelText[Number(scope.row.wq_tp)]}}类</span>
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -46,7 +63,7 @@
                             width="80"
                             >
                         <template slot-scope="scope">
-                            0.566
+                            {{scope.row.nh3n || '--'}}
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -55,7 +72,7 @@
                             :render-header="renderHeader"
                     >
                         <template slot-scope="scope">
-                            0.766
+                            {{scope.row.codmn || '--'}}
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -64,7 +81,7 @@
                             :render-header="renderHeader"
                     >
                         <template slot-scope="scope">
-                            0.766
+                            {{scope.row.ph || '--'}}
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -73,7 +90,7 @@
                             :render-header="renderHeader"
                     >
                         <template slot-scope="scope">
-                            0.766
+                            {{scope.row.tp || '--'}}
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -82,10 +99,11 @@
                             :render-header="renderHeader"
                     >
                         <template slot-scope="scope">
-                            0.766
+                            {{scope.row.dox || '--'}}
                         </template>
                     </el-table-column>
                 </el-table>
+                </van-list>
             </div>
         </div>
         <!--月度、季度、年度选择-->
@@ -130,6 +148,8 @@
       data(){
         return {
           stationName: "",
+          loading: false,
+          finished: false,
           levelText: ["Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "劣Ⅴ"],
           timeClassSelectedPicker: false,
           timeClass: "小时数据", // 默认选中
@@ -146,63 +166,59 @@
           historyTime: {
               startTime: "",
               endTime: "",
-              timeType: "",
+              timeType: "小时",
               mns: ""
           },
+          pages: {
+            pageSize: 10,
+            pageNum: 1
+          },
           tableData: [
-              {
-                  time: "2020-01-10 23时",
-                  name: "达力堵德站",
-                  level: 3,
-                  isOk: 1,
-              },
-              {
-                time: "2020-01-10 23时",
-                  name: "万峰湖九里堡站",
-                  level: 2,
-                  isOk: 1,
-              },
-              {
-                time: "2020-01-10 23时",
-                  name: "下纳灰河站",
-                  level: 4,
-                  isOk: 1,
-              },
-              {
-                time: "2020-01-10 23时",
-                  name: "黄泥河岔江站",
-                  level: 2,
-                  isOk: 1,
-              },
-              {
-                time: "2020-01-10 23时",
-                  name: "湾塘河平寨站",
-                  level: 2,
-                  isOk: 1,
-              }
           ],
         }
       },
       mounted() {
-          // this.stationName = JSON.parse(localStorage.getItem("stationDataWater")).text
+          this.stationName = JSON.parse(localStorage.getItem("stationDataWater")).text
           let d = new Date()
           this.historyTime.endTime   = d.format("yyyy-MM-dd")
-          d.setTime(d.getTime()-24*60*60*1000)
+          d.setTime(d.getTime()-3*24*60*60*1000)
           this.currentDate = d
           this.historyTime.startTime = d.format("yyyy-MM-dd")
+      },
+      activated() {
+        this.getHistoryData()
       },
       methods: {
         onTimeClassConfirm(value, index){
           this.timeClass = value;
           this.timeClassSelectedPicker = false;
+          if( index == 0 ) {
+            this.historyTime.timeType = "小时"
+          } else if( index == 1 ) {
+            this.historyTime.timeType = "日"
+          } else if( index == 2 ) {
+            this.historyTime.timeType = "月"
+          }
+          this.finished = false
+          this.tableData = []
+          this.pages.pageNum = 1
+          this.getHistoryData()
         },
         comfirmDateSelected(value){
           this.datePicker = false
           this.historyTime.startTime = value.format("yyyy-MM-dd")
+          this.finished = false
+          this.tableData = []
+          this.pages.pageNum = 1
+          this.getHistoryData()
         },
         comfirmDateSelectedEnd(value){
           this.datePickerEnd = false
           this.historyTime.endTime = value.format("yyyy-MM-dd")
+          this.finished = false
+          this.tableData = []
+          this.pages.pageNum = 1
+          this.getHistoryData()
         },
         selectPicker(number){
           if( number == 5 ) {
@@ -216,6 +232,29 @@
         },
         changeEndTime(endTime){
             console.log(endTime, "startTime")
+        },
+        getHistoryData() {
+          this.loading = true
+            let params = JSON.parse(JSON.stringify(this.historyTime))
+            params.startTime = new Date(params.startTime).format("yyyyMMddhh")
+            params.endTime   = new Date(params.endTime).format("yyyyMMddhh")
+            params = Object.assign(this.pages,params)
+            this.$http.get("/AirAppXY-Service/water/getWaterStationData", {params: params}).then(res=>{
+              if( res.data.code == 200 ) {
+                this.tableData = this.tableData.concat(res.data.content.info)
+                this.$nextTick(()=>{
+                  // 加载状态结束
+                  this.loading = false;
+                })
+                if( res.data.content.info.length < this.pages.pageSize ) {
+                  this.finished = true
+                }
+              }
+            })
+        },
+        onLoad(){
+          this.pages.pageNum ++;
+          this.getHistoryData()
         },
         renderHeader(h, { column, $index}){
             let label    = column.label;
@@ -259,6 +298,13 @@
 
 <style lang="less" scoped>
     @import "../../assets/css/pages/assessment.less";
+    .van-loading{
+        text-align: center;
+        margin-top: 10px;
+    }
+    .common-nav-bar{
+        z-index: 999999;
+    }
     .items{
         width: 100% !important;
         padding: 0 !important;
