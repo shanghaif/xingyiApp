@@ -21,5 +21,17 @@
       })
       color: #fff;
     }
+    &.air{
+      span{
+        each(@colorsLevels, {
+          &.@{key} {
+            background: @value;
+          }
+        })
+        &.level7{
+          background: #ccc;
+        }
+      }
+    }
   }
 }

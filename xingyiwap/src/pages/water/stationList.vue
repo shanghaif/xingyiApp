@@ -40,22 +40,6 @@
             active: 0,
             levelText: ["Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "劣Ⅴ", "--"],
             stationList: [
-              {
-                name: "达力堵德站",
-                level: 2
-              },
-              {
-                name: "万峰湖九里堡站",
-                level: 3
-              },
-              {
-                name: "下纳灰河站",
-                level: 3
-              },
-              {
-                name: "万峰湖坝达章站",
-                level: 4
-              }
             ]
           }
         },
