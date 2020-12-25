@@ -8,7 +8,7 @@
                 {{$store.state.vuex.stationData.text || '兴义市'}}<span class="navBarxl" @click="$router.push('/stationListSelect')"></span>
             </template>
             <template #right>
-                <img src="../../assets/img/message.png" @click="$router.push({path: '/mine'})" style="height: 17.5px; width: 19.5px" alt="">
+                <img src="../../assets/img/message.png" style="height: 17.5px; width: 19.5px" alt="">
             </template>
         </van-nav-bar>
         <div class="bg_fullscreen">
@@ -30,7 +30,7 @@
                 <div class="svgContent">
                     <span class="aqi">AQI</span>
                     <span class="aqiValue">{{realTimeData.aqi || '--'}}</span>
-                    <span class="waste">首页污染物：<font>{{realTimeData.primaryPollution || '--'}}</font></span>
+                    <span class="waste">首要污染物：<font>{{realTimeData.primaryPollution || '--'}}</font></span>
                 </div>
                 <div class="svgDesc">
                     <ul>
@@ -75,11 +75,11 @@
                     <div class="e_select">
                         <ul>
                             <li :class="factorActive[0]" @click="changeFactor(0, 'aqi')">AQI</li>
-                            <li :class="factorActive[1]" @click="changeFactor(1, 'pm25')">PM2.5</li>
-                            <li :class="factorActive[2]" @click="changeFactor(2, 'pm10')">PM10</li>
-                            <li :class="factorActive[3]" @click="changeFactor(3, 'so2')">SO2</li>
-                            <li :class="factorActive[4]" @click="changeFactor(4, 'o3')">O3</li>
-                            <li :class="factorActive[5]" @click="changeFactor(5, 'no2')">NO2</li>
+                            <li :class="factorActive[1]" @click="changeFactor(1, 'pm25')">PM <sub>2.5</sub></li>
+                            <li :class="factorActive[2]" @click="changeFactor(2, 'pm10')">PM <sub>10</sub></li>
+                            <li :class="factorActive[3]" @click="changeFactor(3, 'so2')">SO <sub>2</sub></li>
+                            <li :class="factorActive[4]" @click="changeFactor(4, 'o3')">O <sub>3</sub></li>
+                            <li :class="factorActive[5]" @click="changeFactor(5, 'no2')">NO <sub>2</sub></li>
                             <li :class="factorActive[6]" @click="changeFactor(6, 'co')">CO</li>
                         </ul>
                     </div>

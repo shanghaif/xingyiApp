@@ -8,7 +8,7 @@
                 兴义市
             </template>
             <template #right>
-                <img src="../../assets/img/message.png" @click="$router.push({path: '/mine'})" style="height: 17.5px; width: 19.5px" alt="">
+                <img src="../../assets/img/message.png" style="height: 17.5px; width: 19.5px" alt="">
             </template>
         </van-nav-bar>
         <div class="top_content">
@@ -16,7 +16,7 @@
                 <img src="../../assets/img/home/yun.png" class="yun" alt="">
                 <img src="../../assets/img/home/yun1.png" class="yun1" alt="">
             </div>
-            <p class="update">更新：2020-01-10 10:00</p>
+            <p class="update"></p>
             <div class="echarts">
                 <div class="bgDom voiceDom">
                     <ul>
@@ -84,10 +84,10 @@
                 </div>
                 <div class="content">
                     <ul class="voiceGnq">
-                        <li v-for="(item,index) in listData.data" :key="index">
-                            <div class="first"><div class="iconVoice">{{item.noiseLevel}}</div>  {{item.station_name}}</div>
+                        <li v-for="(item,index) in listData.data" :key="index" @click="$router.push('/voiceDetail/'+item.station_code)">
+                            <div class="first"><div class="iconVoice"><span style="display: inline-block; transform: skewX(30deg)">{{item.noiseLevel}}</span></div>  {{item.station_name}}</div>
                             <div class="second">监测值：<font>{{item.leq}}</font> dp(A)</div>
-                            <div class="third">监测时间：{{new Date(item.time).format("MM-dd hh:mm")}}</div>
+                            <div class="third">时间：{{new Date(item.time).format("yyyy/MM/dd hh:mm")}}</div>
                         </li>
                     </ul>
                 </div>

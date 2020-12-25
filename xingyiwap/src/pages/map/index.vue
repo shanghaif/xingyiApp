@@ -13,19 +13,19 @@
                 </ul>
             </template>
             <template #right>
-                <img src="../../assets/img/search.png" @click="$router.push({path: '/mine'})" style="height: 18px; width: 18px" alt="">
+                <img src="../../assets/img/search.png" style="height: 18px; width: 18px" alt="">
             </template>
         </van-nav-bar>
         <div class="rightNav">
             <ul>
                 <li><img src="../../assets/img/desc.png" style="max-width: 15.5px" />说明</li>
                 <li @click="refresh"><img src="../../assets/img/refresh.png" style="max-width: 16px" />刷新</li>
-                <li @click="jumpUrl(1)"><img src="../../assets/img/station.png" style="max-width: 12.5px" />站点<br />列表</li>
-                <li @click="jumpUrl(2)"><img src="../../assets/img/kaohe.png" style="max-width: 11.5px" />考核<br />分析</li>
+                <li @click="jumpUrl(1)"><img src="../../assets/img/station.png" style="max-width: 12.5px" /><template v-if="navActive == 3">企业</template><template v-else>站点</template><br />列表</li>
+                <li @click="jumpUrl(2)" v-if="navActive==0 || navActive==1"><img src="../../assets/img/kaohe.png" style="max-width: 11.5px" />考核<br />分析</li>
             </ul>
         </div>
         <baidu-map class="map" @click="hideInfo" ref="map" :center="options.center" :zoom="options.zoom" center="兴义市" @ready="initMap">
-            <bm-label v-for="(item,index) in stationList.water" :key="index" v-if="stationList.water.length > 0 && navActive == 0" :content="levelText[item.aRealData.wq_tp]" :position="{lng:item.longitude,lat:item.latitude}" :labelStyle="Object.assign(label[item.aRealData.wq_tp], baseStyle)" @click="showStationInfo(item,'water')" />
+            <bm-label v-for="(item,index) in stationList.water" :key="index" v-if="stationList.water.length > 0 && navActive == 0" :content="item.aRealData ? levelText[item.aRealData.wq_tp] : '--'" :position="{lng:item.longitude,lat:item.latitude}" :labelStyle="Object.assign(label[item.aRealData ? item.aRealData.wq_tp : 6], baseStyle)" @click="showStationInfo(item,'water')" />
             <template v-for="(item,index) in stationList.air">
                 <bm-overlay
                     pane="labelPane"
@@ -35,12 +35,13 @@
                     v-show="stationList.air.length > 0 && navActive == 1"
                    >
                     <div class="airPoint">
-                        <img :src="fxImg[item.fx ? item.fx : 0]" style="max-width: 21px" alt="">
-                        <span class="airNumber">{{item.aqi || '--'}}</span><span class="airText">微型</span>
+                        <img :src="fxImg[item.fx ? item.fx : 2]" style="max-width: 21px" alt="">
+                        <span class="airNumber">{{(item.aRealData && item.aRealData.aqi) ? item.aRealData.aqi : '--'}}</span><span class="airText">微型</span>
                     </div>
                 </bm-overlay>
             </template>
-            <bm-marker v-if="pointList.length > 0 && navActive == 2" v-for="(item,index) in stationList.noise" :key="index" :position="item.point"></bm-marker>
+            <bm-marker v-if="stationList.noise.data.length > 0 && navActive == 2" v-for="(item,index) in stationList.noise.data" :key="index" :icon="{url: item.noiseLevelNum ? voiceIcons[Number(item.noiseLevelNum)] : '', size: {width: 24, height: 28}}" :position="{lng:item.longitude,lat:item.latitude}" @click="showStationInfo(item,'noise')"></bm-marker>
+            <bm-marker v-if="stationList.poll.length > 0 && navActive == 3 && index < 140" v-for="(item,index) in stationList.poll" :key="index" :icon="{url: require('../../assets/img/icon/wry.png'), size: {width: 26, height: 26}}" :position="{lng:item.longitude,lat:item.latitude}" @click="showStationInfo(item,'poll')"></bm-marker>
         </baidu-map>
         <div class="stationInfo" @click="selectStations" v-if="navActive == 0 && show">
             <div class="title">
@@ -60,11 +61,11 @@
                 </div>
             </div>
             <ul class="fator water">
-                <li>{{waterInfo.aRealData.codmn || '--'}}</li>
-                <li>{{waterInfo.aRealData.nh3n || '--'}}</li>
-                <li>{{waterInfo.aRealData.ph || '--'}}</li>
-                <li>{{waterInfo.aRealData.tp || '--'}}</li>
-                <li>{{waterInfo.aRealData.dox || '--'}}</li>
+                <li>{{waterInfo.aRealData ? waterInfo.aRealData.codmn : '--'}}</li>
+                <li>{{waterInfo.aRealData ? waterInfo.aRealData.nh3n : '--'}}</li>
+                <li>{{waterInfo.aRealData ? waterInfo.aRealData.ph : '--'}}</li>
+                <li>{{waterInfo.aRealData ? waterInfo.aRealData.tp : '--'}}</li>
+                <li>{{waterInfo.aRealData ? waterInfo.aRealData.dox : '--'}}</li>
                 <li>高锰酸盐</li>
                 <li>氨氮</li>
                 <li>pH值</li>
@@ -80,6 +81,14 @@
 <!--                <li :class="typeClass[3]" @click="changeType(3)">微型站（6）</li>-->
 <!--            </ul>-->
 <!--        </div>-->
+<!--        <div class="airStationType" v-if="navActive == 0 && !show">-->
+<!--            <ul>-->
+<!--                <li :class="typeClass[0]" @click="changeType(0)">国控站（6）</li>-->
+<!--                <li :class="typeClass[1]" @click="changeType(1)">省控站（6）</li>-->
+<!--                <li :class="typeClass[2]" @click="changeType(2)">市控站（6）</li>-->
+<!--                <li :class="typeClass[3]" @click="changeType(3)">手工站（6）</li>-->
+<!--            </ul>-->
+<!--        </div>-->
         <div class="stationInfo" v-if="navActive == 1 && show">
             <div class="title">
                 <div class="left">
@@ -91,18 +100,18 @@
             </div>
             <div class="title time">
                 <div class="left">
-                    {{airInfo.spt || '--'}} &nbsp;<span class="waterIcon air" :class="'level'+(airInfo.level+1)">{{airInfo.airQuality || '--'}}</span>
+                    {{airInfo.aRealData ? airInfo.aRealData.spt : '--'}} &nbsp;<span class="waterIcon air" :class="'level'+(airInfo.level+1)">{{airInfo.aRealData ? airInfo.aRealData.airQuality : '--'}}</span>
                 </div>
                 <div class="right">
                 </div>
             </div>
             <ul class="fator">
-                <li>8</li>
-                <li>50</li>
-                <li>0.41</li>
-                <li>6.98</li>
-                <li>0.22</li>
-                <li>4.60</li>
+                <li>{{(airInfo.aRealData && airInfo.aRealData.aqi) ? airInfo.aRealData.aqi : '--'}}</li>
+                <li>{{(airInfo.aRealData && airInfo.aRealData.pm10) ? airInfo.aRealData.pm10 : '--'}}</li>
+                <li>{{(airInfo.aRealData && airInfo.aRealData.so2) ? airInfo.aRealData.so2 : '--'}}</li>
+                <li>{{(airInfo.aRealData && airInfo.aRealData.no2) ? airInfo.aRealData.no2 : '--'}}</li>
+                <li>{{(airInfo.aRealData && airInfo.aRealData.co) ? airInfo.aRealData.co : '--'}}</li>
+                <li>{{(airInfo.aRealData && airInfo.aRealData.o3) ? airInfo.aRealData.o3 : '--'}}</li>
                 <li>AQI</li>
                 <li>PM <sub>10</sub></li>
                 <li>SO <sub>2</sub></li>
@@ -110,6 +119,49 @@
                 <li>CO</li>
                 <li>O <sub>3</sub></li>
             </ul>
+        </div>
+        <div class="stationInfo" v-if="navActive == 2 && show" @click="$router.push('/voiceDetail/'+noiseInfo.station_code)">
+            <div class="title">
+                <div class="left">
+                    <img src="../../assets/img/pos.png" style="max-width: 13.5px">{{noiseInfo.station_name}}
+                </div>
+                <div class="right">
+                    <img src="../../assets/img/close.png" @click.stop="show = false" style="max-width: 24px">
+                </div>
+            </div>
+            <div class="title time">
+                <div class="left">
+                    {{noiseInfo.time || '--'}}
+                </div>
+                <div class="right">
+                </div>
+            </div>
+            <div class="title time">
+                <div><font style="font-size: 19px">{{noiseInfo.leq}}</font>dp(A) <span class="waterIcon noise" :class="'voice'+Number(noiseInfo.noiseLevelNum)">{{noiseInfo.noiseLevel ? noiseInfo.noiseLevel : '--'}}</span></div>
+            </div>
+            <p style="font-size: 15px; color: #666; margin-top: 10px">{{noiseInfo.station_address}}</p>
+        </div>
+        <div class="stationInfo" v-if="navActive == 3 && show">
+            <div class="title">
+                <div class="left">
+                    <img src="../../assets/img/pos.png" style="max-width: 13.5px">{{pollInfo.name}}
+                </div>
+                <div class="right">
+                    <img src="../../assets/img/close.png" @click="show = false" style="max-width: 24px">
+                </div>
+            </div>
+            <div class="title time">
+                <div class="left">
+                    {{pollInfo.tradeName || '--'}}
+                </div>
+                <div class="right">
+                </div>
+            </div>
+            <div class="title time">
+                <div><span style="display: inline-block; padding: 2px 5px; background: #1E73D8; color: #fff">废水</span>&nbsp;&nbsp;--吨</div>
+                <div><span style="display: inline-block; padding: 2px 5px; background: #1E73D8; color: #fff">废气</span>&nbsp;&nbsp;--万立方</div>
+            </div>
+            <p style="font-size: 15px; color: #666; margin-top: 10px">{{pollInfo.address}}</p>
         </div>
     </div>
 </template>
@@ -121,6 +173,14 @@
           return {
             typeClass: ["active"],
             type: 0,
+            voiceIcons: [
+              require("../../assets/img/icon/voice0.png"),
+              require("../../assets/img/icon/voice1.png"),
+              require("../../assets/img/icon/voice2.png"),
+              require("../../assets/img/icon/voice3.png"),
+              require("../../assets/img/icon/voice4a.png"),
+              require("../../assets/img/icon/voice4b.png"),
+            ],
             show: false,
             active: [],
             isClickState: false,
@@ -128,7 +188,7 @@
             levelText: ["Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "劣Ⅴ"],
             activeClass: ["active"],
             options: {
-              zoom: 11,
+              zoom: 12 ,
               center: {
                 lng: 104.895830154,
                 lat: 25.0965590049
@@ -168,10 +228,14 @@
             map: {},
             waterInfo: {},
             airInfo: {},
+            noiseInfo: {},
+            pollInfo: {},
             stationList: {
               water: [],
               air: [],
-              noise: [],
+              noise: {
+                data: []
+              },
               poll: []
             },
 
@@ -243,6 +307,10 @@
                 this.waterInfo = info
               } else if( type == "air" ) {
                 this.airInfo = info
+              } else if( type == "noise" ) {
+                this.noiseInfo = info
+              } else if( type == "poll" ) {
+                this.pollInfo = info
               }
             },
             hideInfo({type, target, point, pixel, overlay}){
@@ -257,7 +325,7 @@
               window.location.reload(true)
             },
           draw ({el, BMap, map},item) {
-            const pixel = map.pointToOverlayPixel(new BMap.Point(item.lng, item.lat))
+            const pixel = map.pointToOverlayPixel(new BMap.Point(item.longitude, item.latitude))
             el.style.left = pixel.x - 60 + 'px'
             el.style.top = pixel.y - 20 + 'px'
           },
@@ -270,41 +338,38 @@
           },
           // 获取站点数据
           getStationList(type="water") {
-              if( this.stationList[type].length == 0 ) {
-                if( type == "water" || type=="air" ) {
-                  this.$http.get("/AirAppXY-Service/map/getStationInfo",{params: {stationType: type}}).then(res=>{
-                    if( res.data.code == 200 ) {
-                      this.stationList[type] = res.data.content.info
-                      if( type == "air" ) {
-                        this.stationList[type].map((item)=>{
-                          if( item.airQuality ) {
-                            if( item.airQuality.indexOf("优") ) {
-                              item.level = 0
-                            } else if( item.airQuality.indexOf("良") ) {
-                              item.level = 1
-                            } else if( item.airQuality.indexOf("轻度") ) {
-                              item.level = 2
-                            } else if( item.airQuality.indexOf("中度") ) {
-                              item.level = 3
-                            } else if( item.airQuality.indexOf("重度") ) {
-                              item.level = 4
-                            } else if( item.airQuality.indexOf("严重") ) {
-                              item.level = 5
-                            }
-                          } else {
-                            item.level = 6
-                          }
-                        })
-                      }
-                    }
-                  })
-                } else if( type == "noise" ) {
-                  this.$http.get("/AirAppXY-Service/noise/noiseRealData", {params: {stationType: "N_001,N_002,N_003"}}).then(res=>{
-                    if( res.data.code == 200 || res.data.code == 0 ) {
-                      this.stationList[type] = res.data.content.info
-                    }
-                  })
+              if( (type == "noise" && this.stationList[type].data.length==0) || this.stationList[type].length == 0 ) {
+                let url = type == "water" ? "/AirAppXY-Service/map/getRealStationWaterData" : type == "air" ? "/AirAppXY-Service/map/queryAirRealData" : type == "noise" ? "/AirAppXY-Service/noise/noiseRealData" : '/AirAppXY-Service/pollutionSource/pollInfo'
+                let params = {}
+                if( type == "noise" ) {
+                  params.stationType = "N_001,N_002,N_003"
                 }
+                this.$http.get(url, {params: params}).then(res=>{
+                  if( res.data.code == 200 || res.data.code == 0 ) {
+                    this.stationList[type] = res.data.content.info
+                    if( type == "air" ) {
+                      this.stationList[type].map((item)=>{
+                        if( item.aRealData && item.aRealData.airQuality ) {
+                          if( item.aRealData.airQuality.indexOf("优") != -1 ) {
+                            item.level = 0
+                          } else if( item.aRealData.airQuality.indexOf("良") != -1 ) {
+                            item.level = 1
+                          } else if( item.aRealData.airQuality.indexOf("轻度") != -1 ) {
+                            item.level = 2
+                          } else if( item.aRealData.airQuality.indexOf("中度") != -1 ) {
+                            item.level = 3
+                          } else if( item.aRealData.airQuality.indexOf("重度") != -1 ) {
+                            item.level = 4
+                          } else if( item.aRealData.airQuality.indexOf("严重") != -1 ) {
+                            item.level = 5
+                          }
+                        } else {
+                          item.level = 6
+                        }
+                      })
+                    }
+                  }
+                })
               }
           },
           selectStations(){
@@ -336,6 +401,14 @@
         level5: #99004C;
         level6: #7E0023;
         level7: #cccccc;
+    };
+    @colorsVoice: {
+        voice0: #FFFF99;
+        voice1: #62FA61;
+        voice2: #6799FC;
+        voice3: #EF7031;
+        voice4: #FF0000;
+        voice5: #EB22EB;
     };
     .map{
         width: 100%;
@@ -402,6 +475,7 @@
                   font-size: 15px;
               }
               .waterIcon{
+                  white-space: nowrap;
                   margin-left: 5px;
                   display: flex;
                   align-items: center;
@@ -420,6 +494,7 @@
                       }
                   })
                   &.air{
+                      width: auto;
                       each(@colorsLevels, {
                           &.@{key} {
                               background: @value;
@@ -427,6 +502,17 @@
                       })
                       border-radius: 0;
                       padding: 2px 8px;
+                  }
+                  &.noise{
+                      width: auto;
+                      each(@colorsVoice, {
+                          &.@{key} {
+                              background: @value;
+                          }
+                      })
+                      border-radius: 0;
+                      padding: 2px 8px;
+                      display: inline-block;
                   }
               }
             }

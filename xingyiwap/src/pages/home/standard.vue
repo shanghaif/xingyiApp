@@ -17,7 +17,7 @@
       </div>
       <div class="standard_content">
         <template v-for="(item,index) in dataList">
-          <div class="item level1">
+          <div class="item" :class="'level'+(item.level+1)">
             <div class="top">{{item.factor}}</div>
             <div class="center">
               <ul>
@@ -30,7 +30,7 @@
                 <li>{{item.residue}}</li>
               </ul>
             </div>
-            <div class="bottom">表现较好，继续保持！</div>
+            <div class="bottom">{{item.level == 0 ? "表现较好，继续保持！" : item.level == 1 ? "差距较大，加强管控！" : "今日已无法达到目标值！"}}</div>
           </div>
         </template>
       </div>

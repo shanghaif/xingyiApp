@@ -5,7 +5,7 @@
                 水质站点列表
             </template>
             <template #right>
-                <img src="../../assets/img/search.png" @click="$router.push({path: '/mine'})" style="height: 18px; width: 18px" alt="">
+                <img src="../../assets/img/search.png" style="height: 18px; width: 18px" alt="">
             </template>
         </van-nav-bar>
         <div class="listContent">
@@ -18,7 +18,7 @@
                                     <template #default>
                                         <div class="listRightContent">
                                             <div class="waterLevel">
-                                                <span :class="'level'+(item.aRealData.wq_tp+1)">水质等级</span>{{levelText[item.aRealData.wq_tp]}}类
+                                                <span :class="'level'+(item.aRealData ? (item.aRealData.wq_tp+1) : 6)">水质等级</span>{{levelText[item.aRealData ? item.aRealData.wq_tp : 6]}}类
                                             </div>
                                             <img src="../../assets/img/dz.png" style="width: 17px; height: 17px" alt="">
                                         </div>
@@ -38,7 +38,7 @@
         data () {
           return {
             active: 0,
-            levelText: ["Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "劣Ⅴ"],
+            levelText: ["Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "劣Ⅴ", "--"],
             stationList: [
               {
                 name: "达力堵德站",
@@ -67,8 +67,8 @@
       },
       methods: {
           // 获取站点数据
-          getStationList(type="water") {
-              this.$http.get("/AirAppXY-Service/map/getStationInfo",{params: {stationType: type}}).then(res=>{
+          getStationList() {
+              this.$http.get("/AirAppXY-Service/map/getRealStationWaterData").then(res=>{
                 if( res.data.code == 200 ) {
                   this.stationList = res.data.content.info
                 }

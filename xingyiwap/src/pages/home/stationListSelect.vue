@@ -5,7 +5,7 @@
                 空气站点列表
             </template>
             <template #right>
-                <img src="../../assets/img/search.png" @click="$router.push({path: '/mine'})" style="height: 18px; width: 18px" alt="">
+                <img src="../../assets/img/search.png" style="height: 18px; width: 18px" alt="">
             </template>
         </van-nav-bar>
         <div class="listContent">

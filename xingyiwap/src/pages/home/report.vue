@@ -478,7 +478,7 @@
     }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
     @import "../../assets/css/pages/assessment.less";
     .items{
         h4,h6{

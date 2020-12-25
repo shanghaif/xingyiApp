@@ -8,7 +8,7 @@
                 兴义市
             </template>
             <template #right>
-                <img src="../../assets/img/message.png" @click="$router.push({path: '/mine'})" style="height: 17.5px; width: 19.5px" alt="">
+                <img src="../../assets/img/message.png" style="height: 17.5px; width: 19.5px" alt="">
             </template>
         </van-nav-bar>
         <div class="top_content">
@@ -16,7 +16,7 @@
                 <img src="../../assets/img/home/yun.png" class="yun" alt="">
                 <img src="../../assets/img/home/yun1.png" class="yun1" alt="">
             </div>
-            <p class="update">更新：2020-01-10 10:00</p>
+            <p class="update"></p>
             <div class="echarts">
                 <div class="bgDom">
                     <ul>
@@ -183,7 +183,7 @@
             activeTab: 0,
             stationClassValue: "省控重点企业",
             stationClassPicker: false,
-            stationClassColumns: ["省控重点企业", "州控重点企业", "市控重点企业"],
+            stationClassColumns: ["省控重点企业", "州控重点企业"],
             polluteTime: {
               controlLevel: 1,
               isImportant: 1

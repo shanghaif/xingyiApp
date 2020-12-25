@@ -194,6 +194,28 @@ const router = new VueRouter({
       },
       component: () => import("@/pages/home/assessment.vue")
     },
+      // 声环境点位详情
+    {
+      path: "/voiceDetail/:code",
+      name: "voiceDetail",
+      meta: {
+        tabShow: false,
+        activeId: 3,
+        keepAlive: false,
+      },
+      component: () => import("@/pages/voice/detail.vue")
+    },
+    // 污染源详情
+    {
+      path: "/pollDetail/:code",
+      name: "pollDetail",
+      meta: {
+        tabShow: false,
+        activeId: 3,
+        keepAlive: false,
+      },
+      component: () => import("@/pages/pollute/detail.vue")
+    },
     {
       path: '/mine',
       name: 'mine',
