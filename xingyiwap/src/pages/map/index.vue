@@ -40,7 +40,7 @@
                     </div>
                 </bm-overlay>
             </template>
-            <bm-marker v-if="stationList.noise.data.length > 0 && navActive == 2" v-for="(item,index) in stationList.noise.data" :key="index" :icon="{url: item.noiseLevelNum ? voiceIcons[Number(item.noiseLevelNum)] : '', size: {width: 24, height: 28}}" :position="{lng:item.longitude,lat:item.latitude}" @click="showStationInfo(item,'noise')"></bm-marker>
+            <bm-marker v-if="stationList.noise.data.length > 0 && navActive == 2" v-for="(item,index) in stationList.noise.data" :key="index" :icon="{url: item.noiseLevelNum ? voiceIcons[Number(item.noiseLevelNum)] : voiceIcons[0 ], size: {width: 24, height: 28}}" :position="{lng:item.longitude,lat:item.latitude}" @click="showStationInfo(item,'noise')"></bm-marker>
             <bm-marker v-if="stationList.poll.length > 0 && navActive == 3 && index < 140" v-for="(item,index) in stationList.poll" :key="index" :icon="{url: require('../../assets/img/icon/wry.png'), size: {width: 26, height: 26}}" :position="{lng:item.longitude,lat:item.latitude}" @click="showStationInfo(item,'poll')"></bm-marker>
         </baidu-map>
         <div class="stationInfo" @click="selectStations" v-if="navActive == 0 && show">
