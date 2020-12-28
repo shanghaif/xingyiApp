@@ -35,7 +35,7 @@
                     v-show="stationList.air.length > 0 && navActive == 1"
                    >
                     <div class="airPoint">
-                        <img :src="fxImg[item.fx ? item.fx : 2]" style="max-width: 21px" alt="">
+<!--                        <img :src="fxImg[item.fx ? item.fx : 2]" style="max-width: 21px" alt="">-->
                         <span class="airNumber">{{(item.aRealData && item.aRealData.aqi) ? item.aRealData.aqi : '--'}}</span><span class="airText">微型</span>
                     </div>
                 </bm-overlay>
@@ -89,13 +89,13 @@
 <!--                <li :class="typeClass[3]" @click="changeType(3)">手工站（6）</li>-->
 <!--            </ul>-->
 <!--        </div>-->
-        <div class="stationInfo" v-if="navActive == 1 && show">
+        <div class="stationInfo" v-if="navActive == 1 && show"  @click="$router.push('/airDetail/'+airInfo.stationCode)">
             <div class="title">
                 <div class="left">
                     <img src="../../assets/img/pos.png" style="max-width: 13.5px">{{airInfo.stationName}}
                 </div>
                 <div class="right">
-                    <img src="../../assets/img/close.png" @click="show = false" style="max-width: 24px">
+                    <img src="../../assets/img/close.png" @click.stop="show = false" style="max-width: 24px">
                 </div>
             </div>
             <div class="title time">

@@ -38,6 +38,15 @@
                     <div class="polluteCount"><font style="font-size: 15px">{{polluteData.nums[3]}}</font> 家</div>
                     <div class="polluteType"><span class="round_icon"></span>废气企业</div>
                 </li>
+                <li>
+                    <div class="polluteCount"><font style="font-size: 15px">{{polluteData.nums[4]}}</font> 家</div>
+                    <div class="polluteType"><span class="round_icon"></span>土壤企业</div>
+                </li>
+                <li>
+                    <div class="polluteCount"><font style="font-size: 15px">{{polluteData.nums[5]}}</font> 家</div>
+                    <div class="polluteType"><span class="round_icon"></span>其他企业</div>
+                </li>
+                <li></li>
             </ul>
         </div>
         <div class="items_content">
@@ -303,7 +312,7 @@
                       }
                     },
                     labelLine: {
-                      show: true,
+                      show: false,
                       length: 1,
                       length2: 1,
                     },
@@ -343,3 +352,21 @@
         }
     }
 </script>
+
+<style lang="less" scoped>
+    .scroll{
+        width: auto !important;
+        overflow-x: scroll;
+        justify-content: flex-start !important;
+        li{
+            &:not(:last-child){
+             flex: 0 0 120px;
+            }
+            margin-left: 10px;
+            &:last-child{
+                flex: 0 0 1px;
+                background: transparent;
+            }
+        }
+    }
+</style>

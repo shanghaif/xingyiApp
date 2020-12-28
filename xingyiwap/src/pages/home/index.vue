@@ -34,8 +34,8 @@
                 </div>
                 <div class="svgDesc">
                     <ul>
-                        <li><span>12℃</span><span>晴</span></li>
-                        <li><span><img src="../../assets/img/icon/jt.png" style="width: 20px; height: 20px" alt="">&nbsp;2级</span><span><img src="../../assets/img/icon/yd.png" style="width: 11.2px; height: 14.3px" alt="">&nbsp;61%</span></li>
+                        <li><span>{{realTimeData.atmp || '--'}}℃</span><span><!--晴--></span></li>
+                        <li><span><!--<img src="../../assets/img/icon/jt.png" style="width: 20px; height: 20px" alt="">&nbsp;{{realTimeData.atm || '--'}}级--></span><span><img src="../../assets/img/icon/yd.png" style="width: 11.2px; height: 14.3px" alt="">&nbsp;{{realTimeData.hum || '--'}}%</span></li>
                     </ul>
                 </div>
             </div>

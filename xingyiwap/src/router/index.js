@@ -216,6 +216,17 @@ const router = new VueRouter({
       },
       component: () => import("@/pages/pollute/detail.vue")
     },
+    // 空气点位详情
+    {
+      path: "/airDetail/:code",
+      name: "airDetail",
+      meta: {
+        tabShow: false,
+        activeId: 3,
+        keepAlive: false,
+      },
+      component: () => import("@/pages/home/detail.vue")
+    },
     {
       path: '/mine',
       name: 'mine',
