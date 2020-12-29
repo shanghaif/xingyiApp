@@ -36,7 +36,7 @@
                 </table>
                 <h6>1、站点监测结果与分析</h6>
                 <div class="desc">
-                    <img src="../../assets/img/sy_point.png" alt="">2020年12月01日~2020年12月31日时间段内 [xx] 站点监测结果为：空气综合指数平均为1.33，与2019年12月01日~2019年12月31日监测结果相比，暂无数据。
+                    <img src="../../assets/img/sy_point.png" alt="">{{reportData.message1}}
                 </div>
                 <div class="echarts" id="echarts1">
 
@@ -44,7 +44,7 @@
                 <p class="echartsDesc">XX站点空气综合指数趋势图</p>
                 <h6>2、各因子监测结果及分析</h6>
                 <div class="desc">
-                    <img src="../../assets/img/sy_point.png" alt="">    本站点2020年12月01日~2020年12月31日站点监测结果，与去年同期相比，暂无数据。
+                    <img src="../../assets/img/sy_point.png" alt="">   {{reportData.message2}}
                 </div>
                 <div class="echarts" id="echarts2">
 
@@ -121,7 +121,8 @@
           timeClassSelectedPicker: false,
           timeClass: "月度", // 默认选中
           timeClassPicker: false, // 选择站点
-          timeClassColumns: ["月度","季度", "年度"], // 站点列表
+          // timeClassColumns: ["月度","季度", "年度"],
+          timeClassColumns: ["月度"], // 站点列表
           minDate: new Date(2010, 0, 1),
           maxDate: new Date(),
           datePicker: false,
@@ -153,14 +154,45 @@
                   isOk: 1,
               }
           ],
+          reportData: {
+            message1: "加载中……",
+            message2: "加载中……"
+          },
+          reportTime: {
+            startTime: "",
+            endTime: "",
+            timeType: "月",
+            mns: ""
+          },
         }
       },
       mounted() {
+          let d = new Date()
+          this.reportTime.endTime   = d.format("yyyyMMddhh")
+          d.setTime(d.getTime()-30*24*60*60*1000);
+          this.reportTime.startTime = d.format("yyyyMMddhh")
           this.drawLineMonthStaticTb()
           this.drawLineMonthStaticTb2()
           this.drawPieFirstWaste()
       },
+      activated() {
+        this.getReportInfo()
+      },
+      beforeRouteEnter(to,from,next){
+        next(vm=>{
+          if( vm.$store.state.vuex.stationData.id ) {
+            this.reportTime.mns = vm.$store.state.vuex.stationData.id
+          }
+        })
+      },
       methods: {
+        getReportInfo(){
+            this.$http.get("/AirAppXY-Service/air/airStationReportData", {params: this.reportTime}).then(res=>{
+              if( res.data.code == 200 ) {
+                this.reportData = res.data.content.info
+              }
+            })
+        },
         onTimeClassConfirm(value, index){
           this.timeClass = value;
           this.timeClassSelectedPicker = false;

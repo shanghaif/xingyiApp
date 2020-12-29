@@ -38,6 +38,7 @@
         data () {
           return {
             active: 0,
+            keyword: "",
             levelText: ["Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "劣Ⅴ", "--"],
             stationList: [
             ]

@@ -39,24 +39,7 @@
                 </div>
                 <div class="aqiContent">
                     <ul class="waterContent">
-<!--                        <li>{{realData.aRealData.cond}}</li>-->
-                        <li>{{realData.aRealData.ph || '--'}}</li>
-                        <li>{{realData.aRealData.tp || '--'}}</li>
-                        <li>{{realData.aRealData.codmn || '--'}}</li>
-                        <li>{{realData.aRealData.dox || '--'}}</li>
-                        <li>{{realData.aRealData.nh3n || '--'}}</li>
-<!--                        <li>电导率</li>-->
-                        <li>pH值</li>
-                        <li>总磷</li>
-                        <li>高锰酸盐</li>
-                        <li>溶解氧</li>
-                        <li>氨氮</li>
-<!--                        <li class="level1" style="background-color: #ccc">无</li>-->
-                        <li class="level2" style="background-color: #ccc">无</li>
-                        <li :class="'level'+(realData.aRealData.tp_level+1)">{{levelText[realData.aRealData.tp_level] || '--'}}</li>
-                        <li :class="'level'+(realData.aRealData.codmn_level+1)">{{levelText[realData.aRealData.codmn_level] || '--'}}</li>
-                        <li :class="'level'+(realData.aRealData.dox_level+1)">{{levelText[realData.aRealData.dox_level] || '--'}}</li>
-                        <li :class="'level'+(realData.aRealData.nh3n_level+1)">{{levelText[realData.aRealData.nh3n_level] || '--'}}</li>
+                        <li v-for="(item,index) in factorList" :key="index">{{realData.aRealData ? realData.aRealData[item.cd] : '--'}} <span class="waterFactor">{{item.monitoring_factor_nm}}</span><span class="waterLevel" :class="'level'+((realData.aRealData && (realData.aRealData[item.cd+'_level'] || realData.aRealData[item.cd+'_level']==0)) ? (realData.aRealData[item.cd+'_level'] + 1) : 7)">{{(realData.aRealData && (realData.aRealData[item.cd+'_level'] || realData.aRealData[item.cd+'_level']==0)) ? levelText[Number(realData.aRealData[item.cd+'_level'])] : '--'}}</span></li>
                     </ul>
                 </div>
             </div>
@@ -238,6 +221,7 @@
         formatDate: "yyyy",
         marker: [
         ],
+        factorList: [],
         minDate: new Date(2010, 0, 1),
         maxDate: new Date(),
         datePicker: false,
@@ -265,11 +249,11 @@
         stationColumns: ["站点A","站点B"], // 站点列表
         factorValue: "总磷", // 默认选中
         factorPicker: false, // 选择因子
-        factorColumns: ['pH值', '总磷', '高锰酸盐', '溶解氧', '氨氮'], // 因子列表
-        factorValueArray: ['ph', 'tp', 'codmn','dox','nh3n'],
+        factorColumns: ['水质类别', '总氮', '总磷', '高锰酸盐', '溶解氧', '氨氮'], // 因子列表
+        factorValueArray: ['wqg', 'tn', 'tp', 'codmn','dox','nh3n'],
         factorValueTb: "总磷",
         factorPickerTb: false, // 选择因子
-        factorColumnsTb: ['水质','pH值', '总磷', '高锰酸盐', '溶解氧', '氨氮'], // 因子列表
+        factorColumnsTb: ['水质类别','总氮', '总磷', '高锰酸盐', '溶解氧', '氨氮'], // 因子列表
         timeClassSelectedPicker: false,
         timeClass: "年度", // 默认选中
         timeClassPicker: false, // 选择站点
@@ -332,6 +316,20 @@
       this.getStationList();
     },
     methods: {
+      // 获取监测因子列表
+      getMonitorFactor(){
+        let params = {
+          mns: ""
+        }
+        if( this.$store.state.vuex.stationDataWater.id ) {
+          params.mns = this.$store.state.vuex.stationDataWater.id
+        }
+        this.$http.get("/AirAppXY-Service/map/queryStationMontFactors", {params:params}).then(res=>{
+          if( res.data.code == 200 ) {
+            this.factorList = res.data.content.info
+          }
+        })
+      },
       // 获取站点列表
       getStationList() {
         this.$http.get("/AirAppXY-Service/map/queryTreeW", {params: {typeCode: 'WQ', basinnOrAreaOrCustom: "type"}}).then(res=>{
@@ -360,6 +358,7 @@
         this.$http.get("/AirAppXY-Service/water/waterRealQuality",{params: this.realQualityTime}).then(res=>{
           if( res.data.code == 200 ) {
             this.realData = res.data.content.info
+            this.getMonitorFactor();
             // 顶部仪表盘
             this.initDashboard();
           }
@@ -717,11 +716,12 @@
       onFactorConfirmTb(value, index){
         this.factorValueTb = value;
         this.factorPickerTb = false;
-        if( index == 0 ) {
-          this.tbTime.factor = "wqg"
-        } else {
-          this.tbTime.factor = this.factorValueArray[index-1]
-        }
+        // if( index == 0 ) {
+        //   this.tbTime.factor = "wqg"
+        // } else {
+        //   this.tbTime.factor = this.factorValueArray[index-1]
+        // }
+        this.tbTime.factor = this.factorValueArray[index]
         this.getTbStacticsData();
       },
       // 统一切换处理

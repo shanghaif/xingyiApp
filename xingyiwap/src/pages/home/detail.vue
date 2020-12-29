@@ -58,12 +58,12 @@
 
                     </div>
                     <ul class="legend">
-                        <li><span class="level1"></span>Ⅰ</li>
-                        <li><span class="level2"></span>Ⅱ</li>
-                        <li><span class="level3"></span>Ⅲ</li>
-                        <li><span class="level4"></span>Ⅳ</li>
-                        <li><span class="level5"></span>Ⅴ</li>
-                        <li><span class="level6"></span>劣Ⅴ</li>
+                        <li><span class="level1"></span>优</li>
+                        <li><span class="level2"></span>良</li>
+                        <li><span class="level3"></span>轻度</li>
+                        <li><span class="level4"></span>中度</li>
+                        <li><span class="level5"></span>重度</li>
+                        <li><span class="level6"></span>严重</li>
                     </ul>
                     <div class="e_select">
                         <table>
@@ -95,12 +95,12 @@
                             ref="calendar"
                     ></calendar>
                     <ul class="legend">
-                        <li><span class="level1"></span>Ⅰ</li>
-                        <li><span class="level2"></span>Ⅱ</li>
-                        <li><span class="level3"></span>Ⅲ</li>
-                        <li><span class="level4"></span>Ⅳ</li>
-                        <li><span class="level5"></span>Ⅴ</li>
-                        <li><span class="level6"></span>劣Ⅴ</li>
+                        <li><span class="level1"></span>优</li>
+                        <li><span class="level2"></span>良</li>
+                        <li><span class="level3"></span>轻度</li>
+                        <li><span class="level4"></span>中度</li>
+                        <li><span class="level5"></span>重度</li>
+                        <li><span class="level6"></span>严重</li>
                     </ul>
                 </div>
             </div>
@@ -131,7 +131,7 @@
 </template>
 
 <script>
-    import calendar from "../../components/calendar";
+    import calendar from "../../components/calendarAir";
     export default {
        components: {
          calendar
@@ -363,7 +363,7 @@
                     normal: {
                       //每根柱子颜色设置
                       color: function(params) {
-                        if( that.factorValue == "pH值" || Number(that.monitorData.level[params.dataIndex]) == -1 ) {
+                        if( !that.monitorData.level[params.dataIndex] || that.monitorData.level[params.dataIndex] == -1 ) {
                           return "#24C768";
                         } else {
                           return that.waterColor[that.monitorData.level[params.dataIndex]]
@@ -416,6 +416,17 @@
         .chartsFormData{
             top: 100vh;
             margin-bottom: 0;
+            .legend{
+                li{
+                    span{
+                        each(@colorsLevels, {
+                            &.@{key}{
+                                background: @value !important;
+                            }
+                        })
+                    }
+                }
+            }
         }
     }
     .common-nav-bar{

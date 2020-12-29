@@ -45,19 +45,8 @@
                 </div>
                 <div class="aqiContent">
 <!--                    <p class="aqiTitle">今日累计AQI <font>56</font>, 首页污染物 <font>PM2.5</font></p>-->
-                    <ul style="margin-top: 20px">
-                        <li>{{realTimeData.pm25 || '--'}}</li>
-                        <li>{{realTimeData.pm10 || '--'}}</li>
-                        <li>{{realTimeData.so2 || '--'}}</li>
-                        <li>{{realTimeData.o3 || '--'}}</li>
-                        <li>{{realTimeData.no2 || '--'}}</li>
-                        <li>{{realTimeData.co || '--'}}</li>
-                        <li :class="'level'+(realTimeData.pm25_level+1)">PM <sub>2.5</sub></li>
-                        <li :class="'level'+(realTimeData.pm10_level+1)">PM <sub>10</sub></li>
-                        <li :class="'level'+(realTimeData.so2_level+1)">SO <sub>2</sub></li>
-                        <li :class="'level'+(realTimeData.o3_level+1)">O <sub>3</sub></li>
-                        <li :class="'level'+(realTimeData.no2_level+1)">NO <sub>2</sub></li>
-                        <li :class="'level'+(realTimeData.co_level+1)">CO</li>
+                    <ul>
+                        <li v-for="(item,index) in factorList" :key="index">{{realTimeData[item.cd] || '--'}} <span class="factor" :class="'level'+((realTimeData[item.cd+'_level'] || realTimeData[item.cd+'_level']==0) ? (realTimeData[item.cd+'_level'] + 1) : 7)">{{item.monitoring_factor_nm}}</span></li>
                     </ul>
                 </div>
             </div>
@@ -319,6 +308,7 @@
             firstWaste: {}, // 2020年首要污染物占比
             exceedDay: {}, // 2020年超标天数占比
             monthStatic: {}, // 同比分析
+            factorList: [], // 因子监测列表
             factorValue: "AQI", // 默认选中
             factorPicker: false, // 选择因子
             factorColumns: ["AQI", 'PM2.5', 'PM10', 'SO2', 'O3', 'NO2', 'CO'], // 因子列表
@@ -328,6 +318,8 @@
           }
         },
       activated() {
+        // 获取监测因子列表
+        this.getMonitorFactor();
         // 获取实时空气质量
         this.getRealTimeAirQuality();
         // 近24小时趋势
@@ -364,6 +356,20 @@
         this.recentlyTime.startTime = date.format("yyyyMMddhh")
         },
         methods: {
+          // 获取监测因子列表
+          getMonitorFactor(){
+            let params = {
+              mns: ""
+            }
+            if( this.$store.state.vuex.stationData.id ) {
+              params.mns = this.$store.state.vuex.stationData.id
+            }
+            this.$http.get("/AirAppXY-Service/map/queryStationMontFactors", {params:params}).then(res=>{
+              if( res.data.code == 200 ) {
+                this.factorList = res.data.content.info
+              }
+            })
+          },
           // 顶部菜单跳转
           goto(number){
             if( number == 1 ) {
