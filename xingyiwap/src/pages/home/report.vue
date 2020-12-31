@@ -2,7 +2,7 @@
     <div>
         <van-nav-bar left-arrow @click-left="historyBack" :fixed="true" class="common-nav-bar">
             <template #title>
-                xx站点 <span class="navBarxl" @click="$router.push('/stationListSelect')"></span>
+                {{$store.state.vuex.stationData.text}} <span class="navBarxl" @click="$router.push('/stationListSelect')"></span>
             </template>
         </van-nav-bar>
         <div class="contentAssessment">
@@ -19,19 +19,19 @@
                 <table>
                     <tr>
                         <td class="bg">当前站点</td>
-                        <td colspan="3">xx站点</td>
+                        <td colspan="3">{{$store.state.vuex.stationData.text}}</td>
                     </tr>
                     <tr>
                         <td class="bg">监测时间</td>
-                        <td>2020年12月</td>
+                        <td>{{reportData.data.spt || '--'}}</td>
                         <td class="bg">AQI指数</td>
-                        <td>38</td>
+                        <td>{{reportData.data.aqi || '--'}}</td>
                     </tr>
                     <tr>
                         <td class="bg">空气等级</td>
-                        <td><span class="level2">{{levelText[1]}}</span></td>
+                        <td><span class="level2">{{levelText[switchLevel(reportData.data.airQuality)] || '--'}}</span></td>
                         <td class="bg">首要污染物</td>
-                        <td>--</td>
+                        <td>{{reportData.primaryPollution || '--'}}</td>
                     </tr>
                 </table>
                 <h6>1、站点监测结果与分析</h6>
@@ -41,7 +41,7 @@
                 <div class="echarts" id="echarts1">
 
                 </div>
-                <p class="echartsDesc">XX站点空气综合指数趋势图</p>
+                <p class="echartsDesc">{{$store.state.vuex.stationData.text}}空气综合指数趋势图</p>
                 <h6>2、各因子监测结果及分析</h6>
                 <div class="desc">
                     <img src="../../assets/img/sy_point.png" alt="">   {{reportData.message2}}
@@ -156,7 +156,11 @@
           ],
           reportData: {
             message1: "加载中……",
-            message2: "加载中……"
+            message2: "加载中……",
+            data: {
+              airQuality: "",
+              spt: ""
+            }
           },
           reportTime: {
             startTime: "",
@@ -168,10 +172,8 @@
       },
       mounted() {
           let d = new Date()
-          this.reportTime.endTime   = d.format("yyyyMMddhh")
-          d.setTime(d.getTime()-30*24*60*60*1000);
-          this.reportTime.startTime = d.format("yyyyMMddhh")
-          this.drawLineMonthStaticTb()
+          this.reportTime.endTime   = d.format("yyyy"+(d.format("MM")-1)+"ddhh")
+          this.reportTime.startTime = d.format("yyyy"+(d.format("MM")-1)+"0100")
           this.drawLineMonthStaticTb2()
           this.drawPieFirstWaste()
       },
@@ -181,7 +183,7 @@
       beforeRouteEnter(to,from,next){
         next(vm=>{
           if( vm.$store.state.vuex.stationData.id ) {
-            this.reportTime.mns = vm.$store.state.vuex.stationData.id
+            vm.reportTime.mns = vm.$store.state.vuex.stationData.id
           }
         })
       },
@@ -189,9 +191,30 @@
         getReportInfo(){
             this.$http.get("/AirAppXY-Service/air/airStationReportData", {params: this.reportTime}).then(res=>{
               if( res.data.code == 200 ) {
+                if( !res.data.content.info.data ) {
+                  res.data.content.info.data = {}
+                  res.data.content.info.data.spt = ""
+                  res.data.content.info.data.airQuality = ""
+                }
                 this.reportData = res.data.content.info
+                this.drawLineMonthStaticTb()
               }
             })
+        },
+        switchLevel(quality){
+          if( quality.indexOf("优") != -1 ) {
+            return 0
+          } else if( quality.indexOf("良") != -1 ) {
+            return 1
+          } else if( quality.indexOf("轻度") != -1 ) {
+            return 2
+          } else if( quality.indexOf("中度") != -1 ) {
+            return 3
+          } else if( quality.indexOf("重度") != -1 ) {
+            return 4
+          } else if( quality.indexOf("严重") != -1 ) {
+            return 5
+          }
         },
         onTimeClassConfirm(value, index){
           this.timeClass = value;
@@ -310,7 +333,7 @@
                   },
                   xAxis: {
                       type: 'category',
-                      data: ["5月", "6月", "7月", "8月", "9月", "10月"],
+                      data: this.reportData.airLine.time,
                       axisLabel: {
                           show: true,
                           type: 'category',
@@ -362,7 +385,7 @@
                   },
                   series: [{
                       name: "2019年",
-                      data: [45,77,12,45,25,21],
+                      data: this.reportData.airLine.data,
                       type: 'line',
                       smooth: true,
                       symbolSize: 8,   //折线点的大小

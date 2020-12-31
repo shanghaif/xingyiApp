@@ -60,13 +60,15 @@
         .positionDisplayContent(absolute, initial, initial, -10px, initial);
         .flexDisplayContent();
         width: 100%;
-        color: #F5F5F5;
+        // color: #F5F5F5;
+        color: #1A1A1A;
         font-size: 13px;
         text-align: center;
         span{
           .setWidthAndHeight(20px, 20px);
           line-height: 20px;
           border-radius: 10px;
+          .flexDisplayContent;
           each(@colorsWaterLevels, {
             &.@{key} {
               background: @value;
@@ -176,6 +178,9 @@
               color: #fff;
               padding: 5px 10px;
               white-space: nowrap;
+              width: 50px;
+              min-height: 20px;
+              line-height: 20px;
             }
             margin-left: 20px;
             &:last-child{

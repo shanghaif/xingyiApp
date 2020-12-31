@@ -153,6 +153,7 @@
         let lat = new Date(d.format("yyyyy"),d.format("MM"), 0)
         let cout= lat.getDate()
         this.marker = []
+        let indexChoose = 0
         this.$http.get("/AirAppXY-Service/water/getWaterCalendarData", {params:this.calendarTime}).then(res=>{
           if( res.data.code == 200 ) {
             this.calendarData = res.data.content.info
@@ -162,18 +163,18 @@
                 obj.className = "level"+(Number(item.wq_tp)+1)
               }
               if( !item.hasOwnProperty("wq_tp") && this.calendarData[index-1].hasOwnProperty("wq_tp") ) {
-                console.log(item, this.calendarData[index-1])
-                this.checkLevel  = true
-                this.currentData = this.calendarData[index-1]
-                this.marker[index - 1].chooseDay = true
+                indexChoose = index - 1
               }
               this.marker.push(obj)
             })
+            this.checkLevel  = true
+            this.currentData = this.calendarData[indexChoose]
+            this.marker[indexChoose].chooseDay = true
           }
         })
       },
     },
-    activated() {
+    mounted() {
       let d    = new Date()
       let w    = new Date(d.format("yyyy"), d.format("MM"), 0)
       this.calendarTime.endTime  = d.format("yyyyMM"+w.getDate()+"hh")
@@ -189,14 +190,7 @@
         if( vm.$store.state.vuex.stationDataWater.id ) {
           vm.calendarTime.mns       = vm.$store.state.vuex.stationDataWater.id
         } else {
-          if( localStorage.getItem("stationDataWater") ) {
-            vm.$store.state.vuex.stationDataWater = JSON.parse(localStorage.getItem("stationDataWater"))
-          }
-          if( vm.$store.state.vuex.stationDataWater.id ){
-            vm.calendarTime.mns       = vm.$store.state.vuex.stationDataWater.id
-          } else {
-            vm.calendarTime.mns       = ""
-          }
+          vm.calendarTime.mns       = ""
         }
       })
     }

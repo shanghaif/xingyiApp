@@ -178,7 +178,7 @@
         }
       },
       mounted() {
-          this.stationName = JSON.parse(localStorage.getItem("stationDataWater")).text
+          this.stationName =  this.$store.state.vuex.stationDataWater.text
           let d = new Date()
           this.historyTime.endTime   = d.format("yyyy-MM-dd")
           d.setTime(d.getTime()-3*24*60*60*1000)
@@ -282,14 +282,7 @@
                 if( vm.$store.state.vuex.stationDataWater.id ) {
                     vm.historyTime.mns       = vm.$store.state.vuex.stationDataWater.id
                 } else {
-                    if( localStorage.getItem("stationDataWater") ) {
-                        vm.$store.state.vuex.stationDataWater = JSON.parse(localStorage.getItem("stationDataWater"))
-                    }
-                    if( vm.$store.state.vuex.stationDataWater.id ){
-                        vm.historyTime.mns       = vm.$store.state.vuex.stationDataWater.id
-                    } else {
-                        vm.historyTime.mns       = ""
-                    }
+                    vm.historyTime.mns       = ""
                 }
             })
         }

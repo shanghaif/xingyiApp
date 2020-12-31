@@ -8,7 +8,7 @@
                 {{$store.state.vuex.stationDataWater.text}} <span class="navBarxl" @click="$router.push('/stationListSelectWater')"></span>
             </template>
             <template #right>
-                <img src="../../assets/img/message.png" style="height: 17.5px; width: 19.5px" alt="">
+<!--                <img src="../../assets/img/message.png" style="height: 17.5px; width: 19.5px" alt="">-->
             </template>
         </van-nav-bar>
         <div class="bg_fullscreen">
@@ -39,7 +39,7 @@
                 </div>
                 <div class="aqiContent">
                     <ul class="waterContent">
-                        <li v-for="(item,index) in factorList" :key="index">{{realData.aRealData ? realData.aRealData[item.cd] : '--'}} <span class="waterFactor">{{item.monitoring_factor_nm}}</span><span class="waterLevel" :class="'level'+((realData.aRealData && (realData.aRealData[item.cd+'_level'] || realData.aRealData[item.cd+'_level']==0)) ? (realData.aRealData[item.cd+'_level'] + 1) : 7)">{{(realData.aRealData && (realData.aRealData[item.cd+'_level'] || realData.aRealData[item.cd+'_level']==0)) ? levelText[Number(realData.aRealData[item.cd+'_level'])] : '--'}}</span></li>
+                        <li v-for="(item,index) in factorList" :key="index">{{(realData.aRealData && realData.aRealData[item.cd]) ? realData.aRealData[item.cd] : '--'}} <span class="waterFactor">{{item.monitoring_factor_nm}}</span><span class="waterLevel" :class="'level'+((realData.aRealData && (realData.aRealData[item.cd+'_level'] || realData.aRealData[item.cd+'_level']==0)) ? (realData.aRealData[item.cd+'_level'] + 1) : 7)">{{(realData.aRealData && (realData.aRealData[item.cd+'_level'] || realData.aRealData[item.cd+'_level']==0)) ? levelText[Number(realData.aRealData[item.cd+'_level'])] : '--'}}</span></li>
                     </ul>
                 </div>
             </div>

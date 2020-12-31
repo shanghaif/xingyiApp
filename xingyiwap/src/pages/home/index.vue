@@ -8,7 +8,7 @@
                 {{$store.state.vuex.stationData.text || '兴义市'}}<span class="navBarxl" @click="$router.push('/stationListSelect')"></span>
             </template>
             <template #right>
-                <img src="../../assets/img/message.png" style="height: 17.5px; width: 19.5px" alt="">
+<!--                <img src="../../assets/img/message.png" style="height: 17.5px; width: 19.5px" alt="">-->
             </template>
         </van-nav-bar>
         <div class="bg_fullscreen">
@@ -34,8 +34,8 @@
                 </div>
                 <div class="svgDesc">
                     <ul>
-                        <li><span>{{realTimeData.atmp || '--'}}℃</span><span><!--晴--></span></li>
-                        <li><span><!--<img src="../../assets/img/icon/jt.png" style="width: 20px; height: 20px" alt="">&nbsp;{{realTimeData.atm || '--'}}级--></span><span><img src="../../assets/img/icon/yd.png" style="width: 11.2px; height: 14.3px" alt="">&nbsp;{{realTimeData.hum || '--'}}%</span></li>
+                        <li><span><img src="../../assets/img/tep.png" style="width: 12px; height: 16px; margin-right: 5px">{{realTimeData.atmp || '--'}}℃</span></li>
+                        <li><span><img src="../../assets/img/icon/yd.png" style="width: 11.2px; height: 14.3px; margin-right: 5px" alt="">&nbsp;{{realTimeData.hum || '--'}}%</span></li>
                     </ul>
                 </div>
             </div>
@@ -46,7 +46,7 @@
                 <div class="aqiContent">
 <!--                    <p class="aqiTitle">今日累计AQI <font>56</font>, 首页污染物 <font>PM2.5</font></p>-->
                     <ul>
-                        <li v-for="(item,index) in factorList" :key="index">{{realTimeData[item.cd] || '--'}} <span class="factor" :class="'level'+((realTimeData[item.cd+'_level'] || realTimeData[item.cd+'_level']==0) ? (realTimeData[item.cd+'_level'] + 1) : 7)">{{item.monitoring_factor_nm}}</span></li>
+                        <li v-for="(item,index) in factorList" :key="index">{{realTimeData[item.cd] || '--'}} <span class="factor" :class="'level'+(((realTimeData[item.cd+'_level'] && realTimeData[item.cd+'_level']!=-1) || realTimeData[item.cd+'_level']==0) ? (realTimeData[item.cd+'_level'] + 1) : 7)">{{item.monitoring_factor_nm}}</span></li>
                     </ul>
                 </div>
             </div>

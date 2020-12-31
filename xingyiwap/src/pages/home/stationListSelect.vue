@@ -74,6 +74,7 @@
         methods: {
             selectItem(item) {
               this.$store.state.vuex.stationData = item
+              localStorage.setItem("stationData", JSON.stringify(item))
               this.$router.push('/home')
             },
             // 获取站点列表

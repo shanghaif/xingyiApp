@@ -8,7 +8,7 @@
                 兴义市
             </template>
             <template #right>
-                <img src="../../assets/img/message.png" style="height: 17.5px; width: 19.5px" alt="">
+<!--                <img src="../../assets/img/message.png" style="height: 17.5px; width: 19.5px" alt="">-->
             </template>
         </van-nav-bar>
         <div class="top_content">
@@ -20,23 +20,23 @@
             <div class="echarts">
                 <div class="bgDom voiceDom">
                     <ul>
-                        <li>{{voiceCount.N_001+voiceCount.N_002+voiceCount.N_003}}</li>
+                        <li @click="$router.push('/stationListVoiceMap')">{{voiceCount.N_001+voiceCount.N_002+voiceCount.N_003}}</li>
                         <li>声环境点位总数（个）</li>
                     </ul>
                 </div>
             </div>
             <ul class="topItems voiceTopItems">
-                <li>
+                <li @click="$router.push('/stationListVoiceMap/N_003')">
                     <div class="polluteCount"><font style="font-size: 15px">{{voiceCount.N_003}}</font> 个</div>
                     <div class="polluteType">道路交通</div>
                     <span class="borderDom"></span>
                 </li>
-                <li>
+                <li @click="$router.push('/stationListVoiceMap/N_001')">
                     <div class="polluteCount"><font style="font-size: 15px">{{voiceCount.N_001}}</font> 个</div>
                     <div class="polluteType">城市区域</div>
                     <span class="borderDom"></span>
                 </li>
-                <li>
+                <li @click="$router.push('/stationListVoiceMap/N_002')">
                     <div class="polluteCount"><font style="font-size: 15px">{{voiceCount.N_002}}</font> 个</div>
                     <div class="polluteType">城市功能区</div>
                 </li>

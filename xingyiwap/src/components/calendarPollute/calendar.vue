@@ -212,7 +212,7 @@ export default {
     },
     clickDay: function(item, index) {
       if (item.otherMonth === "nowMonth" && !item.dayHide) {
-        this.getList(this.myDate, item.date, true, item);
+        this.getList(this.myDate, item.date, false, item);
       }
       if (item.otherMonth !== "nowMonth") {
         item.otherMonth === "preMonth"
@@ -276,7 +276,7 @@ export default {
         for (const c of markDateMore) {
           if (c.date === nowTime) {
             markClassName = c.className || "";
-            if( c.chooseDay ) {
+            if( c.chooseDay && isChosedDay ) {
               k.chooseDay = c.chooseDay
             }
           }
@@ -302,6 +302,7 @@ export default {
           k.chooseDay = true;
         }
       }
+      console.log(this.list, "1122")
       this.list = arr;
     }
   },

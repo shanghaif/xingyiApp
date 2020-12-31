@@ -8,7 +8,7 @@
                 兴义市
             </template>
             <template #right>
-                <img src="../../assets/img/message.png" style="height: 17.5px; width: 19.5px" alt="">
+<!--                <img src="../../assets/img/message.png" style="height: 17.5px; width: 19.5px" alt="">-->
             </template>
         </van-nav-bar>
         <div class="top_content">
@@ -20,29 +20,30 @@
             <div class="echarts">
                 <div class="bgDom">
                     <ul>
-                        <li>{{polluteData.nums[0]}}</li>
+                        <li @click="$router.push('/stationListPollute')">{{polluteData.nums[0]}}</li>
                         <li>污染源总数（家）</li>
                     </ul>
                 </div>
             </div>
+<!--            <img src="../../assets/img/left.png" v-if="showImg" class="loadGif" alt="">-->
             <ul class="topItems scroll">
-                <li>
+                <li @click="$router.push('/stationListPollute/fsfq')">
                     <div class="polluteCount"><font style="font-size: 15px">{{polluteData.nums[1]}}</font> 家</div>
                     <div class="polluteType"><span class="round_icon"></span>废水废气企业</div>
                 </li>
-                <li>
+                <li @click="$router.push('/stationListPollute/fs')">
                     <div class="polluteCount"><font style="font-size: 15px">{{polluteData.nums[2]}}</font> 家</div>
                     <div class="polluteType"><span class="round_icon"></span>废水企业</div>
                 </li>
-                <li>
+                <li @click="$router.push('/stationListPollute/fq')">
                     <div class="polluteCount"><font style="font-size: 15px">{{polluteData.nums[3]}}</font> 家</div>
                     <div class="polluteType"><span class="round_icon"></span>废气企业</div>
                 </li>
-                <li>
+                <li @click="$router.push('/stationListPollute/soil')">
                     <div class="polluteCount"><font style="font-size: 15px">{{polluteData.nums[4]}}</font> 家</div>
                     <div class="polluteType"><span class="round_icon"></span>土壤企业</div>
                 </li>
-                <li>
+                <li @click="$router.push('/stationListPollute/other')">
                     <div class="polluteCount"><font style="font-size: 15px">{{polluteData.nums[5]}}</font> 家</div>
                     <div class="polluteType"><span class="round_icon"></span>其他企业</div>
                 </li>
@@ -190,6 +191,7 @@
             activeClass: ["active"],
             activeNames: [],
             activeTab: 0,
+            showImg: false,
             stationClassValue: "省控重点企业",
             stationClassPicker: false,
             stationClassColumns: ["省控重点企业", "州控重点企业"],
@@ -211,6 +213,9 @@
         },
         mounted() {
             this.drawEcharts()
+          // setTimeout(()=>{
+          //   this.showImg = false
+          // }, 3000)
         },
         activated() {
             this.getPolluteNum();
@@ -354,6 +359,24 @@
 </script>
 
 <style lang="less" scoped>
+    .loadGif{
+        max-width: 50px;
+        position: absolute;
+        right: 20px;
+        bottom: 20px;
+        z-index: 500;
+        animation: spin 1s linear infinite;
+        transform: rotate(30deg);
+    }
+    @keyframes spin {
+        from {
+            transform: rotate(30deg);
+        }
+        to {
+            transform: rotate(-30deg);
+            transition: all 5s;
+        }
+    }
     .scroll{
         width: auto !important;
         overflow-x: scroll;

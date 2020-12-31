@@ -82,7 +82,7 @@
     <div class="contaminated">
       <div class="title">
         <div class="left"><img src="../../assets/img/sy_point.png" alt="">&nbsp;首要污染物：{{currentData.primaryPollution}}</div>
-        <div class="right">注：CO单位为mg/m3，其余与μg/m3</div>
+        <div class="right">注：CO单位为mg/m3，其余为μg/m3</div>
       </div>
       <div class="cont">
         <ul>
@@ -153,23 +153,25 @@
         let lat = new Date(d.format("yyyyy"),d.format("MM"), 0)
         let cout= lat.getDate()
         this.marker = []
+        let indexChoose = 0
         this.$http.get("/AirAppXY-Service/air/getAirCalendarData", {params:this.calendarTime}).then(res=>{
           if( res.data.code == 200 ) {
             this.calendarData = res.data.content.info
             this.calendarData.forEach((item,index)=>{
               let obj = { date: item.spt.slice(0,4)+"-"+item.spt.slice(4,6)+"-"+item.spt.slice(6,8), className: "level"+(item.level+1) }
               if( !item.hasOwnProperty("level") && this.calendarData[index-1].hasOwnProperty("level") ) {
-                this.checkLevel  = true
-                this.currentData = this.calendarData[index-1]
-                this.marker[index - 1].chooseDay = true
+                indexChoose = index - 1
               }
               this.marker.push(obj)
             })
+            this.checkLevel  = true
+            this.currentData = this.calendarData[indexChoose]
+            this.marker[indexChoose].chooseDay = true
           }
         })
       },
     },
-    activated() {
+    mounted() {
       let d    = new Date()
       let w    = new Date(d.format("yyyy"), d.format("MM"), 0)
       this.calendarTime.endTime  = d.format("yyyyMM"+w.getDate()+"hh")

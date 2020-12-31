@@ -2,6 +2,12 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import store from '../store';
 
+// 解决ElementUI导航栏中的vue-router在3.0版本以上重复点菜单报错问题
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
+}
+
 Vue.use(VueRouter);
 
 const router = new VueRouter({
@@ -51,7 +57,7 @@ const router = new VueRouter({
       component: () => import("@/pages/voice/index.vue")
     },
     {
-      path: "/map",
+      path: "/map/:type?/:code?",
       name: "map",
       meta: {
         tabShow: true,
@@ -96,7 +102,7 @@ const router = new VueRouter({
       name: "calendar",
       meta: {
         tabShow: false,
-        keepAlive: true,
+        keepAlive: false,
       },
       component: () => import("@/pages/home/calendar.vue")
     },
@@ -110,13 +116,53 @@ const router = new VueRouter({
       },
       component: () => import("@/pages/water/stationList.vue")
     },
+    // 污染源列表
+    {
+      path: "/stationListPollute/:type?",
+      name: "stationListPollute",
+      meta: {
+        tabShow: false,
+        keepAlive: true,
+      },
+      component: () => import("@/pages/pollute/stationList.vue")
+    },
+    // 污染源列表, 地图进入
+    {
+      path: "/stationListPolluteMap/:type?",
+      name: "stationListPolluteMap",
+      meta: {
+        tabShow: false,
+        keepAlive: true,
+      },
+      component: () => import("@/pages/pollute/stationListMap.vue")
+    },
+    // 声环境列表
+    {
+      path: "/stationListVoice/:type?",
+      name: "stationListVoice",
+      meta: {
+        tabShow: false,
+        keepAlive: true,
+      },
+      component: () => import("@/pages/voice/stationList.vue")
+    },
+    // 声环境列表, 地图进入
+    {
+      path: "/stationListVoiceMap/:type?",
+      name: "stationListVoiceMap",
+      meta: {
+        tabShow: false,
+        keepAlive: true,
+      },
+      component: () => import("@/pages/voice/stationListMap.vue")
+    },
     // 水首页污染日历
     {
       path: "/calendarWater",
       name: "calendarWater",
       meta: {
         tabShow: false,
-        keepAlive: true,
+        keepAlive: false,
       },
       component: () => import("@/pages/water/calendar.vue")
     },
@@ -263,6 +309,16 @@ router.afterEach((to,from)=>{
   if( to.meta.tabShow ) {
     store.state.vuex.activeId = to.meta.activeId
   }
+  // 初始化选择站点
+  if( localStorage.getItem("stationData") && !store.state.vuex.stationData.id ) {
+    store.state.vuex.stationData = JSON.parse(localStorage.getItem("stationData"))
+  } else if( !localStorage.getItem("stationData") && !store.state.vuex.stationData.text ) {
+    store.state.vuex.stationData = {id: null, text: "兴义市"}
+  }
+  if( localStorage.getItem("stationDataWater") && !store.state.vuex.stationDataWater.id ) {
+    store.state.vuex.stationDataWater = JSON.parse(localStorage.getItem("stationDataWater"))
+  }
   store.state.vuex.tabShow = to.meta.tabShow
 })
+
 export default router;
