@@ -134,7 +134,7 @@
                 <div class="content factor">
                     <div class="factorMaxAndMin" style="margin-top: 0; margin-bottom: 10px">
                         <ul>
-                            <li>水质达标率：{{standardData.standard*100}}%</li>
+                            <li>水质达标率：{{Number(standardData.standard) > 0 ? (Number(standardData.standard)*100 + '%') : '--'}}</li>
                             <li>目标水质：<span :class="'level'+(standardData.targetLevel+1)">{{levelText[standardData.targetLevel]}}</span></li>
                         </ul>
                     </div>
