@@ -5,7 +5,7 @@
                 空气站点列表
             </template>
             <template #right>
-                <img src="../../assets/img/search.png" style="height: 18px; width: 18px" alt="">
+<!--                <img src="../../assets/img/search.png" style="height: 18px; width: 18px" alt="">-->
             </template>
         </van-nav-bar>
         <div class="listContent">
@@ -82,15 +82,14 @@
               this.$http.get("/AirAppXY-Service/map/queryTreeW", {params: {typeCode: 'MM', basinnOrAreaOrCustom: "type"}}).then(res=>{
                 this.stationTree = res.data.content.info
                 this.stationTree.unshift({text: "区域", id: "area", children: [{ text: "兴义市", id: null, children: [] }]})
+                console.log(this.stationTree, "stattrree")
                 this.handleTree(this.stationTree)
               })
             },
             // 处理树
             handleTree(list){
-              console.log(list, "shenme")
               list.map((item, index)=>{
-                console.log(item, "null")
-                if( index > 0 ) {
+                if( item.text != "区域" ) {
                   item.id   = item.nodeId
                   item.text = item.nodeName
                   if( item.children.length > 0 ) {

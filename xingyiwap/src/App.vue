@@ -88,6 +88,7 @@ export default {
 <style lang="less">
 @import "assets/css/index.less";
 #app{
-  background: #EDF1F5;
+  // background: #EDF1F5;
+  background: #F5F5F5;
 }
 </style>

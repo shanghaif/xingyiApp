@@ -46,48 +46,33 @@
                 <div class="desc">
                     <img src="../../assets/img/sy_point.png" alt="">   {{reportData.message2}}
                 </div>
-                <div class="echarts" id="echarts2">
+                <div class="echarts" id="echarts2" style="height: 300px">
 
                 </div>
                 <div class="content">
                     <div id="echarts4">
 
                     </div>
-                    <table border="0" cellspacing="0" cellpadding="0">
+                    <table border="0" cellspacing="0" cellpadding="0" class="table1">
                         <tr>
                             <td>因子</td>
                             <td>占比</td>
                             <td>天数</td>
                         </tr>
-                        <tr>
-                            <td><span class="so2"></span>so<sub>2</sub></td>
-                            <td>50%</td>
-                            <td>50</td>
-                        </tr>
-                        <tr>
-                            <td><span class="so2"></span>so<sub>2</sub></td>
-                            <td>50%</td>
-                            <td>50</td>
-                        </tr>
-                        <tr>
-                            <td><span class="so2"></span>so<sub>2</sub></td>
-                            <td>50%</td>
-                            <td>50</td>
-                        </tr>
-                        <tr>
-                            <td><span class="so2"></span>so<sub>2</sub></td>
-                            <td>50%</td>
-                            <td>50</td>
-                        </tr>
-                        <tr>
-                            <td><span class="so2"></span>so<sub>2</sub></td>
-                            <td>50%</td>
-                            <td>50</td>
+                        <tr v-for="(item,index) in standardData.data" :key="index">
+                            <td><span :class="item.name"></span><font v-html="item.html"></font></td>
+                            <td>{{item.percent}}</td>
+                            <td>{{item.value}}</td>
                         </tr>
                     </table>
                 </div>
             </div>
         </div>
+        <van-overlay :show="showInfo" @click="showInfo = false">
+            <div class="wrapper" @click.stop>
+                <van-loading type="spinner" />
+            </div>
+        </van-overlay>
         <!--月度、季度、年度选择-->
         <van-popup v-model="timeClassSelectedPicker" position="bottom">
             <van-picker
@@ -117,6 +102,7 @@
       name: "assessment",
       data(){
         return {
+          showInfo: false,
           levelText: ["优", "良", "轻度", "中度", "重度", "严重"],
           timeClassSelectedPicker: false,
           timeClass: "月度", // 默认选中
@@ -127,6 +113,13 @@
           maxDate: new Date(),
           datePicker: false,
           currentDate: new Date(),
+          standardTime: {
+            startTime: '',
+            endTime: '',
+            mnType: 'city',
+            timeType: '日',
+            mns: ''
+          },
           tableData: [
               {
                   name: "达力堵德站",
@@ -154,6 +147,9 @@
                   isOk: 1,
               }
           ],
+          standardData: {
+            data: []
+          },
           reportData: {
             message1: "加载中……",
             message2: "加载中……",
@@ -168,27 +164,37 @@
             timeType: "月",
             mns: ""
           },
+          nameList: ["pm25", "pm10", "so2", "o3", "no2", "co"],
+          colorList: ["#FFCF3F","#5CDFD5","#D2F13C","#55DE38","#FF7840","#3E9AF7"],
+          htmls: ["PM <sub>2.5</sub>", "PM <sub>10</sub>", "SO <sub>2</sub>", "O <sub>3</sub>", "NO <sub>2</sub>", "CO"],
         }
       },
       mounted() {
           let d = new Date()
-          this.reportTime.endTime   = d.format("yyyy"+(d.format("MM")-1)+"ddhh")
-          this.reportTime.startTime = d.format("yyyy"+(d.format("MM")-1)+"0100")
-          this.drawLineMonthStaticTb2()
-          this.drawPieFirstWaste()
+          this.reportTime.endTime   = this.standardTime.endTime   = d.format("yyyy"+d.format("MM")+"ddhh")
+          this.reportTime.startTime = this.standardTime.startTime = d.format("yyyy"+d.format("MM")+"0100")
+
       },
       activated() {
         this.getReportInfo()
+        this.getStandardDays()
       },
       beforeRouteEnter(to,from,next){
         next(vm=>{
           if( vm.$store.state.vuex.stationData.id ) {
             vm.reportTime.mns = vm.$store.state.vuex.stationData.id
+            vm.standardTime.mns = vm.$store.state.vuex.stationData.id
+            vm.standardTime.mnType = "station"
+          } else {
+            vm.reportTime.mns = ""
+            vm.standardTime.mns = ""
+            vm.standardTime.mnType = "city"
           }
         })
       },
       methods: {
         getReportInfo(){
+            this.showInfo = true
             this.$http.get("/AirAppXY-Service/air/airStationReportData", {params: this.reportTime}).then(res=>{
               if( res.data.code == 200 ) {
                 if( !res.data.content.info.data ) {
@@ -198,8 +204,95 @@
                 }
                 this.reportData = res.data.content.info
                 this.drawLineMonthStaticTb()
+                this.drawLineMonthStaticTb2()
+                this.showInfo = false
               }
             })
+        },
+        // 2020年超标天数占比
+        drawPieExceedDay(){
+          let that = this
+          this.exceedDay = this.$echarts.init(document.getElementById("echarts4"))
+          // let colorList= ["#24C768","#E5CE10","#FF7E00","#FF0000","#990000","#7E0000"]
+          this.standardData.data.map((item,index)=>{
+            let obj       = {}
+            obj.value     = item
+            obj.name      = this.nameList[index]
+            obj.html      = this.htmls[index]
+            obj.itemStyle = {
+              normal: {color: this.colorList[index]}
+            }
+            this.standardData.data[index] = obj
+          })
+          let option2 = {
+            series: [
+              {
+                name: '综合指数',
+                type: 'pie',
+                radius: ['45%', '65%'],
+                avoidLabelOverlap: false,
+                selectedMode: false,
+                label: {
+                  normal: {
+                    //   formatter: '综合指数\n{a|6.133}\n同比减少1.009',
+                    //   rich: {
+                    //     a: {
+                    //       color: '#1A1A1A',
+                    //       lineHeight: 22,
+                    //       fontFamily: "PingFang SC",
+                    //       align: 'center',
+                    //       fontSize: 12
+                    //     }
+                    //   },
+                    //   textStyle: {
+                    //     color: "#666666",
+                    //     fontWeight: "normal",
+                    //     fontSize: 9
+                    //   },
+                    //   position: "center",
+                    show: false
+                  }
+                },
+                emphasis: {
+                  show: false
+                },
+                labelLine: {
+                  show: false
+                },
+                data: this.standardData.data
+              },
+              {
+                type: 'pie',
+                radius: ['45%', '65%'],
+                label: {
+                  position: 'outside',
+                  normal: {
+                    formatter: function(data){
+                      let percent = data.percent.toFixed(1)+"%";
+                      that.standardData.data[data.dataIndex].percent = percent
+                      if( data.percent > 0 ) {
+                        return percent;
+                      } else {
+                        return ""
+                      }
+                    },
+                    textStyle: {
+                      fontWeight: 'normal',
+                      fontSize: 10,
+                      color: '#666'
+                    }
+                  }
+                },
+                labelLine: {
+                  show: false,
+                  length: 1,
+                  length2: 1,
+                },
+                data: this.standardData.data
+              }
+            ]
+          }
+          this.exceedDay.setOption(option2)
         },
         switchLevel(quality){
           if( quality.indexOf("优") != -1 ) {
@@ -222,7 +315,11 @@
         },
         comfirmDateSelected(value){
           this.datePicker = false
-          this.$refs.calendar.ChoseMonth(value.format("yyyy-MM"))
+          this.reportTime.startTime = this.standardTime.startTime = value.format("yyyyMM0100")
+          let d = new Date(value.format("yyyy"), value.format("MM"), 0)
+          this.reportTime.endTime   = this.standardTime.endTime   = value.format("yyyyMM"+d.format("dd")+"23")
+          this.getReportInfo()
+          this.getStandardDays()
         },
         selectPicker(number){
           if( number == 5 ) {
@@ -231,101 +328,9 @@
             this.timeClassSelectedPicker = true
           }
         },
-        drawBarEcharts(){
-            let bar = this.$echarts.init(document.getElementById("echarts"))
-            let option  = {
-                color: "#E5CE10",
-                xAxis: {
-                    type: 'category',
-                    axisTick: {
-                        alignWithLabel: true,
-                        show: false,
-                    },
-                    axisLine: {
-                        lineStyle: {
-                            color: '#ddd', // 颜色
-                            width: 1 // 粗细
-                        },
-                    },
-                    axisLabel: {
-                        color: "#666"
-                    },
-                    data: ["Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "劣Ⅴ"]
-                },
-                tooltip: {
-                    trigger: 'axis'
-                },
-                grid: {
-                    left: 0,
-                    right: '4%',
-                    bottom: '3%',
-                    top: '10%',
-                    containLabel: true
-                },
-                yAxis: {
-                    type: 'value',
-                    axisLine: {
-                        show: false
-                    },
-                    axisTick: {
-                        show: false
-                    },
-                    splitLine:{
-                        show: true,
-                        lineStyle: {
-                            color: "#ddd"
-                        }
-                    },
-                },
-                series: [{
-                    name: 'sdata',
-                    data: [44, 89, 123, 111, 200, 111],
-                    type: 'bar',
-                    barWidth: 15,
-                    itemStyle: {
-                        normal: {
-                            //每根柱子颜色设置
-                            color: function(params) {
-                                switch (params.name) {
-                                  case "Ⅰ":
-                                    return "#CCFFFF"
-                                    break;
-                                  case "Ⅱ":
-                                    return "#00CCFF"
-                                    break;
-                                  case "Ⅲ":
-                                    return "#00FF00"
-                                    break;
-                                  case "Ⅳ":
-                                    return "#FFFF00"
-                                    break;
-                                  case "Ⅴ":
-                                    return "#FF9B00"
-                                    break;
-                                  case "劣Ⅴ":
-                                    return "#FF0000"
-                                    break;
-                                }
-                            },
-                            label: {
-                                show: true, //开启显示
-                                position: 'top', //在上方显示
-                                textStyle: { //数值样式
-                                    color: '#1A1A1A',
-                                    fontSize: 12
-                                }
-                            }
-                        }
-                    },
-                    backgroundStyle: {
-                        color: 'rgba(220, 220, 220, 0.8)'
-                    }
-                }]
-            }
-            bar.setOption(option)
-        },
           // 达标情况
         drawLineMonthStaticTb(){
+              let that = this
               let monthStatic = this.$echarts.init(document.getElementById('echarts1'))
               let option = {
                   tooltip: {
@@ -337,6 +342,7 @@
                       axisLabel: {
                           show: true,
                           type: 'category',
+                          rotate: 30,
                           boundaryGap: false,
                           textStyle: {
                               color: "#666666",
@@ -360,9 +366,9 @@
                       },
                   },
                   yAxis: {
-                      interval: 50,
+                      interval: 1,
                       min: 0,
-                      max: 100,
+                      max: 5,
                       type: 'value',
                       axisTick: {
                           show: false
@@ -370,7 +376,7 @@
                       axisLabel: {
                           color: '#666666',
                           formatter: function (value) {
-                              return value + "%"
+                              return that.levelText[Number(value)]
                           }
                       },
                       axisLine: {
@@ -380,12 +386,12 @@
                   grid: {
                       top: "16%",
                       left: "12%",
-                      bottom: "15%",
+                      bottom: "20%",
                       right: "4%"
                   },
                   series: [{
                       name: "2019年",
-                      data: this.reportData.airLine.data,
+                      data: this.reportData.airLine.level,
                       type: 'line',
                       smooth: true,
                       symbolSize: 8,   //折线点的大小
@@ -401,59 +407,22 @@
               };
               monthStatic.setOption(option);
           },
-        drawPieFirstWaste(){
-              this.firstWaste = this.$echarts.init(document.getElementById("echarts4"))
-              let option2 = {
-                  series: [
-                      {
-                          name: '综合指数',
-                          type: 'pie',
-                          radius: ['45%', '65%'],
-                          avoidLabelOverlap: false,
-                          selectedMode: false,
-                          label: {
-                              normal: {
-                                  position: "center",
-                                  show: false
-                              }
-                          },
-                          emphasis: {
-                              show: false
-                          },
-                          labelLine: {
-                              show: false
-                          },
-                          data: ['12', '16', '19']
-                      },
-                      {
-                          type: 'pie',
-                          radius: ['45%', '65%'],
-                          label: {
-                              position: 'outside',
-                              normal: {
-                                  formatter: function(data){
-                                      let percent = data.percent.toFixed(1)+"%";
-                                      return percent;
-                                  } ,
-                                  textStyle: {
-                                      fontWeight: 'normal',
-                                      fontSize: 10,
-                                      color: '#666'
-                                  }
-                              }
-                          },
-                          labelLine: {
-                              show: false,
-                              length: 0,
-                              length2: 0,
-                          },
-                          data: ['12', '16', '19']
-                      }
-                  ]
-              }
-              this.firstWaste.setOption(option2)
-          },
+        // 超标天数占比
+        getStandardDays(){
+          this.$http.get("/AirAppXY-Service/air/getAirStandardData", {params: this.standardTime}).then(res=>{
+            if( res.data.code == 200 ) {
+              let obj = res.data.content.info
+              this.standardData.data =  [obj.pm25, obj.pm10, obj.so2, obj.o3, obj.no2, obj.co]
+              // 2020年超标天数占比
+              this.drawPieExceedDay();
+            }
+          })
+        },
+        replaceWords(name){
+          return name.replace("PM2.5", "PM{sub|2.5}").replace("PM10", "PM{sub|10}").replace("SO2", "SO{sub|2}").replace("O3", "O{sub|3}").replace("NO2", "NO{sub|2}")
+        },
         drawLineMonthStaticTb2(){
+              let that = this
               let monthStatic = this.$echarts.init(document.getElementById('echarts2'))
               let option = {
                   tooltip: {
@@ -461,8 +430,9 @@
                   },
                   xAxis: {
                       type: 'category',
-                      data: ["5月", "6月", "7月", "8月", "9月", "10月"],
+                      data: this.reportData.factorLine.time,
                       axisLabel: {
+                          rotate: 30,
                           show: true,
                           type: 'category',
                           boundaryGap: false,
@@ -488,9 +458,9 @@
                       },
                   },
                   yAxis: {
-                      interval: 50,
+                      interval: 1,
                       min: 0,
-                      max: 100,
+                      max: 5,
                       type: 'value',
                       axisTick: {
                           show: false
@@ -498,7 +468,7 @@
                       axisLabel: {
                           color: '#666666',
                           formatter: function (value) {
-                              return value + "%"
+                            return that.levelText[Number(value)]
                           }
                       },
                       axisLine: {
@@ -508,24 +478,120 @@
                   grid: {
                       top: "16%",
                       left: "12%",
-                      bottom: "15%",
+                      bottom: "25%",
                       right: "4%"
                   },
-                  series: [{
-                      name: "2019年",
-                      data: [45,77,12,45,25,21],
+                  legend: {
+                    x: "center",
+                    y: "bottom",
+                    icon: "rect",
+                    itemWidth: 10,
+                    itemHeight: 10,
+                    formatter:function(name){
+                      return that.replaceWords(name);
+                    },
+                    textStyle: {
+                      rich: {
+                        // 数字下标
+                        sub: {
+                          verticalAlign: "bottom",
+                          fontSize: 8
+                        },
+                      }
+                    }
+                  },
+                  series: [
+                      {
+                          name: "PM2.5",
+                          data: this.reportData.factorLine.pm25_level,
+                          type: 'line',
+                          smooth: true,
+                          symbolSize: 8,   //折线点的大小
+                          itemStyle: {
+                              normal: {
+                                  color: '#FFCF3F', //折点颜色
+                                  lineStyle: {
+                                      color: '#FFCF3F' //折线颜色
+                                  }
+                              }
+                          }
+                      },
+                    {
+                      name: "PM10",
+                      data: this.reportData.factorLine.pm10_level,
                       type: 'line',
                       smooth: true,
                       symbolSize: 8,   //折线点的大小
                       itemStyle: {
-                          normal: {
-                              color: '#FF7017', //折点颜色
-                              lineStyle: {
-                                  color: '#FF7017' //折线颜色
-                              }
+                        normal: {
+                          color: '#5CDFD5', //折点颜色
+                          lineStyle: {
+                            color: '#5CDFD5' //折线颜色
                           }
+                        }
                       }
-                  }]
+                    },
+                    {
+                      name: "SO2",
+                      data: this.reportData.factorLine.so2_level,
+                      type: 'line',
+                      smooth: true,
+                      symbolSize: 8,   //折线点的大小
+                      itemStyle: {
+                        normal: {
+                          color: '#D2F13C', //折点颜色
+                          lineStyle: {
+                            color: '#D2F13C' //折线颜色
+                          }
+                        }
+                      }
+                    },
+                    {
+                      name: "O3",
+                      data: this.reportData.factorLine.o3_level,
+                      type: 'line',
+                      smooth: true,
+                      symbolSize: 8,   //折线点的大小
+                      itemStyle: {
+                        normal: {
+                          color: '#55DE38', //折点颜色
+                          lineStyle: {
+                            color: '#55DE38' //折线颜色
+                          }
+                        }
+                      }
+                    },
+                    {
+                      name: "NO2",
+                      data: this.reportData.factorLine.no2_level,
+                      type: 'line',
+                      smooth: true,
+                      symbolSize: 8,   //折线点的大小
+                      itemStyle: {
+                        normal: {
+                          color: '#FF7840', //折点颜色
+                          lineStyle: {
+                            color: '#FF7840' //折线颜色
+                          }
+                        }
+                      }
+                    },
+                    {
+                      name: "CO",
+                      data: this.reportData.factorLine.co_level,
+                      type: 'line',
+                      smooth: true,
+                      symbolSize: 8,   //折线点的大小
+                      itemStyle: {
+                        normal: {
+                          color: '#3E9AF7', //折点颜色
+                          lineStyle: {
+                            color: '#3E9AF7' //折线颜色
+                          }
+                        }
+                      }
+                    }
+                  ]
               };
               monthStatic.setOption(option);
           },
@@ -535,6 +601,21 @@
 
 <style lang="less" scoped>
     @import "../../assets/css/pages/assessment.less";
+    // 定义首页因子颜色值
+    @colorsYz: {
+        pm25: #FFCF3F;
+        pm10: #5CDFD5;
+        so2: #D2F13C;
+        o3: #55DE38;
+        no2: #FF7840;
+        co: #3E9AF7;
+    };
+    .wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
     .items{
         h4,h6{
             margin: 0;
@@ -568,6 +649,22 @@
             }
             table{
                 width: 45%;
+                td{
+                    &:first-child{
+                        text-align: left !important;
+                    }
+                    span{
+                        display: inline-block;
+                        width: 10px;
+                        height: 10px;
+                        padding: 0 !important;
+                        each(@colorsYz, {
+                            &.@{key}{
+                                background: @value;
+                            }
+                        })
+                    }
+                }
             }
         }
     }

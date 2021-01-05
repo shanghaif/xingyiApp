@@ -1,13 +1,28 @@
 <template>
     <div>
-        <van-nav-bar left-arrow @click-left="historyBack" :fixed="true" class="common-nav-bar">
+        <van-nav-bar v-if="!showSearch" left-arrow @click-left="historyBack" :fixed="true" class="common-nav-bar">
             <template #title>
                 污染源列表
             </template>
             <template #right>
-                <img src="../../assets/img/search.png" style="height: 18px; width: 18px" alt="">
+                <img @click="showSearch = true" src="../../assets/img/search.png" style="height: 18px; width: 18px" alt="">
             </template>
         </van-nav-bar>
+        <van-search
+                v-if="showSearch"
+                v-model="searchValue"
+                show-action
+                shape="round"
+                background="#0184FF"
+                placeholder="请输入站点名称"
+        >
+            <template #action>
+                <div class="searchBtn">
+                    <span @click="searchFun">搜索</span>
+                    <span @click="showSearch = false">取消</span>
+                </div>
+            </template>
+        </van-search>
         <div class="listContent">
             <div class="typeList">
                 <div class="type" @click="selectPicker(0)">
@@ -70,6 +85,8 @@
     export default {
         data () {
           return {
+            showSearch: false,
+            searchValue: '',
             active: 0,
             polluteType: false,
             polluteText: "污染源类别",
@@ -83,6 +100,7 @@
             levelText: ["Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "劣Ⅴ", "--"],
             stationList: [
             ],
+            initList: [],
             polluteTime: {
               pollType: "",
               type: ""
@@ -112,6 +130,7 @@
               this.$http.get("/AirAppXY-Service/pollutionSource/pollInfo", {params: this.polluteTime}).then(res=>{
                 if( res.data.code == 200 ) {
                   this.stationList = res.data.content.info
+                  this.initList    = res.data.content.info
                 }
               })
           },
@@ -141,13 +160,34 @@
             } else if( type == 1 ) {
               this.polluteTypeLx = true
             }
-          }
+          },
+            searchFun(){
+              this.stationList = JSON.parse(JSON.stringify(this.initList))
+              if( this.searchValue ) {
+                this.stationList = this.stationList.filter(item=>item.name.indexOf(this.searchValue)>=0)
+              }
+            }
         }
     }
 </script>
 
 <style lang="less" scoped>
     @import "../../assets/css/pages/list.less";
+    .van-search{
+        position: fixed;
+        top: 0;
+        height: 47px;
+        z-index: 999;
+        width: 100vw;
+    }
+    .searchBtn{
+        span{
+            color: #fff;
+            &:first-child{
+                margin-right: 10px;
+            }
+        }
+    }
     .list{
         height: calc(100vh - 107px);
         overflow-y: scroll;

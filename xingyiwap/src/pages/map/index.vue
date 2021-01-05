@@ -40,7 +40,7 @@
             </ul>
         </div>
         <baidu-map class="map" @click="hideInfo" ref="map" :center="options.center" :zoom="options.zoom" center="兴义市" @ready="initMap">
-            <bm-label v-for="(item,index) in stationList.water" :key="index" v-if="stationList.water.length > 0 && navActive == 0 && ((item.controlorLevel == 'GUO0000' && typeClass[0][0] == 'active') || (item.controlorLevel == 'SHE0000' && typeClass[0][1] == 'active') || (item.controlorLevel == 'SHI0000' && typeClass[0][2] == 'active') || (((item.monitorType == waterSgType) || (item.stationType == waterSgType)) && typeClass[0][3] == 'active'))" :content="item.aRealData ? levelText[item.aRealData.wq_tp] : '--'" :position="{lng:item.longitude,lat:item.latitude}" :labelStyle="Object.assign(label[item.aRealData ? item.aRealData.wq_tp : 6], baseStyle)" @click="showStationInfo(item,'water')" />
+            <bm-label v-for="(item,index) in stationList.water" :key="index" v-if="stationList.water.length > 0 && navActive == 0 && ((item.controlorLevel == 'GUO0000' && typeClass[0][0] == 'active') || (item.controlorLevel == 'SHE0000' && typeClass[0][1] == 'active') || (item.controlorLevel == 'SHI0000' && item.monitorType == '1' && typeClass[0][2] == 'active') || (((item.monitorType == waterSgType) || (item.stationType == waterSgType)) && typeClass[0][3] == 'active'))" :content="item.aRealData ? levelText[item.aRealData.wq_tp] : '--'" :position="{lng:item.longitude,lat:item.latitude}" :labelStyle="Object.assign(label[item.aRealData ? item.aRealData.wq_tp : 6], baseStyle)" @click="showStationInfo(item,'water')" />
             <template v-for="(item,index) in stationList.air">
                 <bm-overlay
                     pane="labelPane"
@@ -56,7 +56,7 @@
                 </bm-overlay>
             </template>
             <bm-marker v-if="stationList.noise.data.length > 0 && navActive == 2 && item.station_type_code == noiseType" v-for="(item,index) in stationList.noise.data" :key="index" :icon="{url: item.noiseLevelNum ? voiceIcons[Number(item.noiseLevelNum)] : voiceIcons[0 ], size: {width: 24, height: 28}}" :position="{lng:item.longitude,lat:item.latitude}" @click="showStationInfo(item,'noise')"></bm-marker>
-            <bml-marker-clusterer v-if="navActive == 3" :averageCenter="true" :styles="[{url: require('../../assets/img/bg_map.png'),size: {width: 30, height: 30}, textColor: '#fff'}]">
+            <bml-marker-clusterer v-if="navActive == 3 && stationList.poll.length > 0" :averageCenter="true" :styles="[{url: require('../../assets/img/bg_map.png'),size: {width: 30, height: 30}, textColor: '#fff'}]">
                 <div v-if="navActive == 3 && stationList.poll.length > 0 && typeClass[3][0] == 'active' && index<showIndex" v-for="(item,index) in stationList.poll" :key="index">
                     <bm-marker :icon="{url: require('../../assets/img/icon/wry.png'), size: {width: 26, height: 26}}" :position="{lng:item.longitude,lat:item.latitude}" @click="showStationInfo(item,'poll')"></bm-marker>
                 </div>
@@ -223,7 +223,7 @@
                 ["active"],
                 ["active"]
             ],
-            type: 0,
+            type: 2,
             factorList: [],
             showIndex: 1140,
             voiceIcons: [
@@ -279,7 +279,7 @@
               require("../../assets/img/icon/xb.png"),
             ],
             pointList: [],
-            map: {},
+            map: "",
             waterInfo: {},
             voiceCount: {
               N_001: 0,
@@ -309,21 +309,11 @@
           }
         },
         mounted() {
-          this.getTestPoint()
           this.getWaterNum()
         },
         watch: {
           navActive(newVal,oldVal) {
             this.searchValue = ""
-            if( newVal == 0 ) {
-              this.map.setZoom(10);
-            } else if( newVal == 1 ) {
-              this.map.setZoom(12);
-            } else if( newVal == 2 ) {
-              this.map.setZoom(12);
-            } else if( newVal == 3 ) {
-              this.map.setZoom(13);
-            }
           }
         },
         activated() {
@@ -332,7 +322,43 @@
             this.navActive         = type
             this.activeClass       = []
             this.activeClass[type] = "active"
-            if( type == 3 ) {
+            if( type == 0 ){
+              this.getStationList("water",()=>{
+                if( this.$route.params.code ) {
+                  let code = this.$route.params.code
+                  if( this.stationList.water.length > 0 ) {
+                    this.stationList.water.map((item,index)=>{
+                      if( item.stationCode == code ) {
+                        this.showStationInfo(item,"water",0,false)
+                        if( item.controlorLevel == "GUO0000" ) {  // 国控站
+                          this.changeType(0,0)
+                        } else if( item.controlorLevel == "SHE0000" ) { // 省控站
+                          this.changeType(1,0)
+                        } else if( item.controlorLevel == "SHI0000" && item.monitorType == "1" ) { // 省控站
+                          this.changeType(2,0)
+                        } else if( item.monitorType == "0" ) {
+                          this.changeType(3,0)
+                          this.onWaterConfirmLx(this.waterColumnsLx[0],0)
+                        }
+                      }
+                    })
+                  }
+                }
+              })
+            } else if( type == 1 ) {
+              this.getStationList("air",()=>{
+                if( this.$route.params.code ) {
+                  let code = this.$route.params.code
+                  if( this.stationList.air.length > 0 ) {
+                    this.stationList.air.map((item,index)=>{
+                      if( item.stationCode == code ) {
+                        this.showStationInfo(item,"air",0,false)
+                      }
+                    })
+                  }
+                }
+              })
+            } else if( type == 3 ) {
               this.getStationList("poll",()=>{
                 if( this.$route.params.code ) {
                   let code = this.$route.params.code
@@ -427,7 +453,7 @@
                       this.stationNum.water.gk = this.stationNum.water.gk + item.num
                     } else if( item.station_level_code == "SHE0000" ) {
                       this.stationNum.water.sek = this.stationNum.water.sek + item.num
-                    } else if( item.station_level_code == "SHI0000" ) {
+                    } else if( item.station_level_code == "SHI0000" && item.monitor_type == "1" ) {
                       this.stationNum.water.sk = this.stationNum.water.sk + item.num
                     }
                     if( item.monitor_type == "0" ) {
@@ -442,7 +468,7 @@
             },
             jumpUrl(num){
               if( this.navActive == 0 && num == 1 ) {
-                this.$router.push('/stationList')
+                this.$router.push('/stationList/'+this.type+'/'+this.waterSgType)
               }else if( this.navActive == 0 && num == 2 ) {
                 this.$router.push('/assessmentWater')
               } else if( this.navActive == 1 && num == 1 ) {
@@ -456,6 +482,9 @@
               }
             },
             changeItem(num,type){
+              if( this.$route.params.code || this.$route.params.type ) {
+                this.$router.replace("/map")
+              }
               this.activeClass      = []
               this.activeClass[num] = "active"
               this.show             = false
@@ -495,8 +524,8 @@
                 this.pointList.push(obj)
               }
             },
-            showStationInfo(info, type, index=0){
-              this.isClickState = true
+            showStationInfo(info, type, index=0, isClickState=true){
+              this.isClickState = isClickState
               if( type == "water" || type == "air" ) {
                 this.$http.get("/AirAppXY-Service/map/queryStationMontFactors", {params:{mns: info.stationCode}}).then(res=>{
                   if( res.data.code == 200 ) {
@@ -513,10 +542,13 @@
                 this.waterInfo = info
               } else if( type == "air" ) {
                 this.airInfo = info
+                this.map.setZoom(12);
               } else if( type == "noise" ) {
                 this.noiseInfo = info
+                this.map.setZoom(12);
               } else if( type == "poll" ) {
                 this.pollInfo = info
+                this.map.setZoom(13);
               }
             },
             hideInfo({type, target, point, pixel, overlay}){
@@ -567,16 +599,10 @@
                     this.stationList[type] = res.data.content.info
                     if( type == "noise" ) {
                       this.getNoiseNum()  // 获取声环境个数
-                      this.stationList[type].data.map((item,index)=>{
-                        item.lng = item.longitude
-                        item.lat = item.latitude
-                      })
-                    } else {
-                      this.stationList[type].map((item,index)=>{
-                        item.lng = item.longitude
-                        item.lat = item.latitude
-                      })
                     }
+                    setTimeout(()=>{
+                      this.setMapZoom(type)
+                    }, 500)
                     if( callback ) {
                       callback()
                     }
@@ -612,6 +638,17 @@
                   }
                 })
              //}
+          },
+          setMapZoom(type){
+              if( type == "water" ) {
+                this.map.setZoom(10);
+              } else if( type == "air" ) {
+                this.map.setZoom(12);
+              } else if( type == "noise" ) {
+                this.map.setZoom(12);
+              } else if( type == "poll" ) {
+                this.map.setZoom(13);
+              }
           },
           selectStations(){
               // this.$store.state.vuex.stationDataWater.id = this.waterInfo.stationCode

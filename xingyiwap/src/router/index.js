@@ -108,7 +108,7 @@ const router = new VueRouter({
     },
       // 水站站点列表
     {
-      path: "/stationList",
+      path: "/stationList/:index?/:type?",
       name: "stationList",
       meta: {
         tabShow: false,

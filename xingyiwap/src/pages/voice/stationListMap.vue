@@ -1,13 +1,28 @@
 <template>
     <div>
-        <van-nav-bar left-arrow @click-left="historyBack" :fixed="true" class="common-nav-bar">
+        <van-nav-bar v-if="!showSearch" left-arrow @click-left="historyBack" :fixed="true" class="common-nav-bar">
             <template #title>
                 声环境点位列表
             </template>
             <template #right>
-                <img src="../../assets/img/search.png" style="height: 18px; width: 18px" alt="">
+                <img @click="showSearch = true" src="../../assets/img/search.png" style="height: 18px; width: 18px" alt="">
             </template>
         </van-nav-bar>
+        <van-search
+                v-if="showSearch"
+                v-model="searchValue"
+                show-action
+                shape="round"
+                background="#0184FF"
+                placeholder="请输入站点名称"
+        >
+            <template #action>
+                <div class="searchBtn">
+                    <span @click="searchFun">搜索</span>
+                    <span @click="showSearch = false">取消</span>
+                </div>
+            </template>
+        </van-search>
         <div class="listContent">
             <div class="typeList">
                 <div class="type" @click="selectPicker(0)">
@@ -63,6 +78,8 @@
   export default {
     data () {
       return {
+        showSearch: false,
+        searchValue: '',
         active: 0,
         voiceType: false,
         voiceText: "站点类型",
@@ -71,11 +88,13 @@
         voiceTypeLx: false,
         voiceTextLx: "功能区等级",
         voiceColumnsLx: ["全部", "0级", "1级", "2级", "3级", "4a级", "4b级"],
-        voiceIndexLx: ["", "fsfq", "fs", "fq", "soil", "other", "4b"],
+        voiceIndexLx: ["", "0", "1", "2", "3", "4", "5"],
         keyword: "",
         levelText: ["Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "劣Ⅴ", "--"],
         stationList: [
         ],
+        initList: [],
+        initTwo: [],
         voiceTime: {
           stationType: "N_001,N_002,N_003",
         },
@@ -108,6 +127,8 @@
         this.$http.get("/AirAppXY-Service/noise/noiseRealData", {params: this.voiceTime}).then(res=>{
           if( res.data.code == 0 ) {
             this.stationList = res.data.content.info.data
+            this.initList = res.data.content.info.data
+            this.initTwo  = res.data.content.info.data
           }
         })
       },
@@ -122,13 +143,14 @@
         this.voiceType = false
       },
       onvoiceConfirmLx(value,index) {
+        this.stationList = JSON.parse(JSON.stringify(this.initList))
         if( index == 0 ) {
           this.voiceTextLx = "功能区等级"
         } else {
           this.voiceTextLx = value
+          this.stationList = this.stationList.filter(item=>item.noiseLevelNum == this.voiceIndexLx[index])
         }
-        this.voiceTime.type = this.voiceIndexLx[index]
-        this.getStationList()
+        this.initTwo     = JSON.parse(JSON.stringify(this.stationList))
         this.voiceTypeLx = false
       },
       selectPicker(type) {
@@ -136,6 +158,12 @@
           this.voiceType = true
         } else if( type == 1 ) {
           this.voiceTypeLx = true
+        }
+      },
+      searchFun(){
+        this.stationList = JSON.parse(JSON.stringify(this.initTwo))
+        if( this.searchValue ) {
+          this.stationList = this.stationList.filter(item=>item.station_name.indexOf(this.searchValue)>=0)
         }
       }
     }
@@ -149,10 +177,25 @@
         voice1: #62FA61;
         voice2: #6799FC;
         voice3: #EF7031;
-        voice4a: #FF0000;
-        voice4b: #EB22EB;
+        voice4: #FF0000;
+        voice5: #EB22EB;
         voice6: #cccccc;
     };
+    .van-search{
+        position: fixed;
+        top: 0;
+        height: 47px;
+        z-index: 999;
+        width: 100vw;
+    }
+    .searchBtn{
+        span{
+            color: #fff;
+            &:first-child{
+                margin-right: 10px;
+            }
+        }
+    }
     .list{
         height: calc(100vh - 107px);
         overflow-y: scroll;

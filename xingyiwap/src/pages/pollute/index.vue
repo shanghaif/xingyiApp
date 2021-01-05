@@ -20,30 +20,30 @@
             <div class="echarts">
                 <div class="bgDom">
                     <ul>
-                        <li @click="$router.push('/stationListPollute')">{{polluteData.nums[0]}}</li>
+                        <li @click="$router.push('/stationListPolluteMap')">{{polluteData.nums[0]}}</li>
                         <li>污染源总数（家）</li>
                     </ul>
                 </div>
             </div>
 <!--            <img src="../../assets/img/left.png" v-if="showImg" class="loadGif" alt="">-->
             <ul class="topItems scroll">
-                <li @click="$router.push('/stationListPollute/fsfq')">
+                <li @click="$router.push('/stationListPolluteMap/fsfq')">
                     <div class="polluteCount"><font style="font-size: 15px">{{polluteData.nums[1]}}</font> 家</div>
                     <div class="polluteType"><span class="round_icon"></span>废水废气企业</div>
                 </li>
-                <li @click="$router.push('/stationListPollute/fs')">
+                <li @click="$router.push('/stationListPolluteMap/fs')">
                     <div class="polluteCount"><font style="font-size: 15px">{{polluteData.nums[2]}}</font> 家</div>
                     <div class="polluteType"><span class="round_icon"></span>废水企业</div>
                 </li>
-                <li @click="$router.push('/stationListPollute/fq')">
+                <li @click="$router.push('/stationListPolluteMap/fq')">
                     <div class="polluteCount"><font style="font-size: 15px">{{polluteData.nums[3]}}</font> 家</div>
                     <div class="polluteType"><span class="round_icon"></span>废气企业</div>
                 </li>
-                <li @click="$router.push('/stationListPollute/soil')">
+                <li @click="$router.push('/stationListPolluteMap/soil')">
                     <div class="polluteCount"><font style="font-size: 15px">{{polluteData.nums[4]}}</font> 家</div>
                     <div class="polluteType"><span class="round_icon"></span>土壤企业</div>
                 </li>
-                <li @click="$router.push('/stationListPollute/other')">
+                <li @click="$router.push('/stationListPolluteMap/other')">
                     <div class="polluteCount"><font style="font-size: 15px">{{polluteData.nums[5]}}</font> 家</div>
                     <div class="polluteType"><span class="round_icon"></span>其他企业</div>
                 </li>
