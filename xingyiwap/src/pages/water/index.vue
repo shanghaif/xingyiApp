@@ -815,7 +815,7 @@
               formatter: function(value) {
                 return that.levelText[value]
               },
-              fontSize: 40,
+              fontSize: 32,
               color: "#fff",
               offsetCenter: ['0%', '40%']
             },

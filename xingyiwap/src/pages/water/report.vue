@@ -482,10 +482,11 @@
               }
             }
           },
+          // colorList: ["#FFCF3F","#5CDFD5","#D2F13C","#55DE38","#FF7840","#3E9AF7"],
           series: [
             {
-              name: "总磷",
-              data: this.reportData.factorLine.tp_level,
+              name: "高锰酸盐",
+              data: this.reportData.factorLine.codmn_level,
               type: 'line',
               smooth: true,
               symbolSize: 8,   //折线点的大小
@@ -499,8 +500,8 @@
               }
             },
             {
-              name: "总氮",
-              data: this.reportData.factorLine.tn_level,
+              name: "溶解氧",
+              data: this.reportData.factorLine.dox_level,
               type: 'line',
               smooth: true,
               symbolSize: 8,   //折线点的大小
@@ -509,6 +510,51 @@
                   color: '#5CDFD5', //折点颜色
                   lineStyle: {
                     color: '#5CDFD5' //折线颜色
+                  }
+                }
+              }
+            },
+            {
+              name: "氨氮",
+              data: this.reportData.factorLine.nh3n_level,
+              type: 'line',
+              smooth: true,
+              symbolSize: 8,   //折线点的大小
+              itemStyle: {
+                normal: {
+                  color: '#D2F13C', //折点颜色
+                  lineStyle: {
+                    color: '#D2F13C' //折线颜色
+                  }
+                }
+              }
+            },
+            {
+              name: "总氮",
+              data: this.reportData.factorLine.tn_level,
+              type: 'line',
+              smooth: true,
+              symbolSize: 8,   //折线点的大小
+              itemStyle: {
+                normal: {
+                  color: '#55DE38', //折点颜色
+                  lineStyle: {
+                    color: '#55DE38' //折线颜色
+                  }
+                }
+              }
+            },
+            {
+              name: "总磷",
+              data: this.reportData.factorLine.tp_level,
+              type: 'line',
+              smooth: true,
+              symbolSize: 8,   //折线点的大小
+              itemStyle: {
+                normal: {
+                  color: '#FF7840', //折点颜色
+                  lineStyle: {
+                    color: '#FF7840' //折线颜色
                   }
                 }
               }
