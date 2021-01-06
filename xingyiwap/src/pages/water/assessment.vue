@@ -24,18 +24,18 @@
                     <li class="level5">Ⅴ类</li>
                     <li class="level6">劣Ⅴ类</li>
                 </ul>
-                <div class="echarts" id="echarts">
+                <div class="echarts" id="echarts" style="height: 250px">
 
                 </div>
             </div>
             <div class="items">
-                <div class="title">水环境达标率</div>
-                <ul class="getGift">
-                    <li>达标率：<font>80%</font></li>
-                    <li>站点总数：<font>1140</font></li>
-                </ul>
+<!--                <div class="title">水环境达标率</div>-->
+<!--                <ul class="getGift">-->
+<!--                    <li>达标率：<font>80%</font></li>-->
+<!--                    <li>站点总数：<font>1140</font></li>-->
+<!--                </ul>-->
                 <div class="title"><span class="waterIcon"></span>水质达标变化情况</div>
-                <div class="echarts" id="echarts1">
+                <div class="echarts" id="echarts1" style="height: 240px">
 
                 </div>
                 <div class="title"><span class="waterIcon"></span>站点达标情况</div>
@@ -46,11 +46,11 @@
                         <td>目标水质</td>
                         <td>是否达标</td>
                     </tr>
-                    <tr v-for="(item,index) in tableData" :key="index">
-                        <td>{{item.name}}</td>
-                        <td><span :class="'level'+item.level">{{levelText[item.level - 1]}}类</span></td>
-                        <td><span :class="'level'+item.level">{{levelText[item.level - 1]}}类</span></td>
-                        <td>{{item.isOk == 1 ? "是" : "否"}}</td>
+                    <tr v-for="(item,index) in assessData.dataList" :key="index">
+                        <td>{{item.stationName}}</td>
+                        <td><span :class="'level'+(Number(item.wq_tp)+1)">{{levelText[item.wq_tp]}}类</span></td>
+                        <td><span :class="'level'+(Number(item.targetLevel)+1)">{{levelText[item.targetLevel]}}类</span></td>
+                        <td>{{item.standard == "1" ? "是" : "否"}}</td>
                     </tr>
                 </table>
             </div>
@@ -91,11 +91,24 @@
           timeClassSelectedPicker: false,
           timeClass: "月度", // 默认选中
           timeClassPicker: false, // 选择站点
-          timeClassColumns: ["月度","季度", "年度"], // 站点列表
+          timeClassColumns: ["月度"], // 站点列表
           minDate: new Date(2010, 0, 1),
           maxDate: new Date(),
           datePicker: false,
           currentDate: new Date(),
+          assessmentTime: {
+            startTime: "",
+            endTime: "",
+            timeType: "月",
+            mns: ""
+          },
+          assessData: {
+            dataList: [],
+            monitor: {
+              X: [],
+              Y: []
+            }
+          },
           tableData: [
               {
                   name: "达力堵德站",
@@ -125,18 +138,42 @@
           ],
         }
       },
-      mounted() {
-          this.drawBarEcharts()
-          this.drawLineMonthStaticTb()
+      activated() {
+          let d = new Date()
+          // d.setTime(d.getTime() - 30*24*60*60*1000)
+          this.assessmentTime.startTime = d.format("yyyyMM0100")
+          this.assessmentTime.endTime   = d.format("yyyyMM3000")
+          this.getAssessData()
       },
       methods: {
+        getAssessData(){
+          this.$http.get("/AirAppXY-Service/water/waterStationCheckData", {params: this.assessmentTime}).then(res=>{
+            if( res.data.code == 200 ) {
+              this.assessData = res.data.content.info
+              if( this.assessData.monitor.Y.length > 0 ) {
+                let dataArr = [[],[],[],[],[],[]]
+                this.assessData.monitor.Y.forEach((item, index)=>{
+                  item.forEach((it,ind)=>{
+                    dataArr[ind].push(it)
+                  })
+                })
+                this.assessData.monitor.Y = dataArr
+              }
+              this.drawBarEcharts()
+              this.drawLineMonthStaticTb()
+            }
+          })
+        },
         onTimeClassConfirm(value, index){
           this.timeClass = value;
           this.timeClassSelectedPicker = false;
         },
         comfirmDateSelected(value){
           this.datePicker = false
-          this.$refs.calendar.ChoseMonth(value.format("yyyy-MM"))
+          this.assessmentTime.startTime = value.format("yyyyMM0100")
+          let d = new Date(value.format("yyyy"), value.format("MM"), 0)
+          this.assessmentTime.endTime   = value.format("yyyyMM"+d.format("dd")+"23")
+          this.getAssessData()
         },
         selectPicker(number){
           if( number == 5 ) {
@@ -162,9 +199,10 @@
                         },
                     },
                     axisLabel: {
+                        rotate: 30,
                         color: "#666"
                     },
-                    data: ["Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "劣Ⅴ"]
+                    data: this.assessData.monitor.X
                 },
                 tooltip: {
                     trigger: 'axis'
@@ -177,6 +215,9 @@
                     containLabel: true
                 },
                 yAxis: {
+                    interval: 6,
+                    // min: 0,
+                    // max: 31,
                     type: 'value',
                     axisLine: {
                         show: false
@@ -191,50 +232,39 @@
                         }
                     },
                 },
-                series: [{
-                    name: 'sdata',
-                    data: [44, 89, 123, 111, 200, 111],
-                    type: 'bar',
-                    barWidth: 15,
-                    itemStyle: {
-                        normal: {
-                            //每根柱子颜色设置
-                            color: function(params) {
-                                switch (params.name) {
-                                  case "Ⅰ":
-                                    return "#CCFFFF"
-                                    break;
-                                  case "Ⅱ":
-                                    return "#00CCFF"
-                                    break;
-                                  case "Ⅲ":
-                                    return "#00FF00"
-                                    break;
-                                  case "Ⅳ":
-                                    return "#FFFF00"
-                                    break;
-                                  case "Ⅴ":
-                                    return "#FF9B00"
-                                    break;
-                                  case "劣Ⅴ":
-                                    return "#FF0000"
-                                    break;
-                                }
-                            },
-                            label: {
-                                show: true, //开启显示
-                                position: 'top', //在上方显示
-                                textStyle: { //数值样式
-                                    color: '#1A1A1A',
-                                    fontSize: 12
-                                }
-                            }
+                series: []
+            }
+            if( this.assessData.monitor.Y.length > 0 ) {
+              let colorList = ["#CCFFFF","#00CCFF","#00FF00","#FFFF00","#FF9B00","#FF0000"]
+              this.assessData.monitor.Y.forEach((item,index)=>{
+                let series = {
+                  stack: '1',
+                  name: this.levelText[index],
+                  data: item,
+                  type: 'bar',
+                  barWidth: 15,
+                  itemStyle: {
+                    normal: {
+                      //每根柱子颜色设置
+                      color: function(params) {
+                        return colorList[index];
+                      },
+                      label: {
+                        show: true, //开启显示
+                        position: 'inside', //在上方显示
+                        textStyle: { //数值样式
+                          color: '#1A1A1A',
+                          fontSize: 12
                         }
-                    },
-                    backgroundStyle: {
-                        color: 'rgba(220, 220, 220, 0.8)'
+                      }
                     }
-                }]
+                  },
+                  backgroundStyle: {
+                    color: 'rgba(220, 220, 220, 0.8)'
+                  }
+                }
+                option.series.push(series)
+              })
             }
             bar.setOption(option)
         },
@@ -247,8 +277,9 @@
                   },
                   xAxis: {
                       type: 'category',
-                      data: ["5月", "6月", "7月", "8月", "9月", "10月"],
+                      data: this.assessData.standard.time,
                       axisLabel: {
+                          rotate: 30,
                           show: true,
                           type: 'category',
                           boundaryGap: false,
@@ -274,18 +305,12 @@
                       },
                   },
                   yAxis: {
-                      interval: 50,
-                      min: 0,
-                      max: 100,
                       type: 'value',
                       axisTick: {
                           show: false
                       },
                       axisLabel: {
                           color: '#666666',
-                          formatter: function (value) {
-                              return value + "%"
-                          }
                       },
                       axisLine: {
                           show: false
@@ -299,7 +324,7 @@
                   },
                   series: [{
                       name: "2019年",
-                      data: [45,77,12,45,25,21],
+                      data: this.assessData.standard.data,
                       type: 'line',
                       smooth: true,
                       symbolSize: 8,   //折线点的大小
