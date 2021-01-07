@@ -5,7 +5,7 @@
                 水环境站点列表
             </template>
             <template #right>
-                <img src="../../assets/img/search.png" style="height: 18px; width: 18px" alt="">
+<!--                <img src="../../assets/img/search.png" style="height: 18px; width: 18px" alt="">-->
             </template>
         </van-nav-bar>
         <div class="listContent">
@@ -43,8 +43,8 @@
         data () {
           return {
             active: 0,
-            activeIndex: 0,
-            activeId: 0,
+            activeIndex: 2,
+            activeId: 2,
             levelText: ["Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "劣Ⅴ"],
             stationList: [
               {
@@ -99,7 +99,7 @@
     }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
     @import "../../assets/css/pages/list.less";
     .list{
         margin-top: 0 !important;

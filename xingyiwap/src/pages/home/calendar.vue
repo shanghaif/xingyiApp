@@ -86,12 +86,12 @@
       </div>
       <div class="cont">
         <ul>
-          <li><span>PM2.5</span><span>{{currentData.pm25 || "--"}}</span></li>
-          <li><span>PM10</span><span>{{currentData.pm10 || "--"}}</span></li>
-          <li><span>SO2</span><span>{{currentData.so2 || "--"}}</span></li>
-          <li><span>NO2</span><span>{{currentData.no2 || "--"}}</span></li>
+          <li><span>PM<sub>2.5</sub> </span><span>{{currentData.pm25 || "--"}}</span></li>
+          <li><span>PM<sub>10</sub></span><span>{{currentData.pm10 || "--"}}</span></li>
+          <li><span>SO<sub>2</sub></span><span>{{currentData.so2 || "--"}}</span></li>
+          <li><span>NO<sub>2</sub></span><span>{{currentData.no2 || "--"}}</span></li>
           <li><span>CO</span><span>{{currentData.co || "--"}}</span></li>
-          <li><span>O3</span><span>{{currentData.o3 || "--"}}</span></li>
+          <li><span>O<sub>3</sub></span><span>{{currentData.o3 || "--"}}</span></li>
         </ul>
       </div>
     </div>
@@ -385,9 +385,11 @@
           margin-top: 10px;
           display: flex;
           border-radius: 4px;
+          white-space: nowrap;
           span{
             flex: 1;
             text-align: center;
+            white-space: nowrap;
             font-size: 14px;
           }
           span:nth-child(1){

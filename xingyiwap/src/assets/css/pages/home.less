@@ -211,6 +211,11 @@
                 font-size: 13px;
                 margin-top: 5px;
                 width: 20px;
+                each(@colorsWaterLevels, {
+                  &.@{key} {
+                    background: @value;
+                  }
+                })
               }
             }
           }

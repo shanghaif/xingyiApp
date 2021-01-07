@@ -181,6 +181,9 @@
           },
             getWaterNum(callback=null){
               this.$http.get("/AirAppXY-Service/map/stationTypeStatistics",{params:{typeCode: "W"}}).then(res=>{
+                this.waterColumnsLx = ["手工站"]
+                this.waterIndexLx = ["0"]
+                this.waterTextLx = "手工站"
                 if( res.data.code == 200 || res.data.code == 0 ) {
                   this.waterTypeList = res.data.content.dataList
                   this.waterTypeList.forEach((item,index)=>{

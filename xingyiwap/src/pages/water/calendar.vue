@@ -197,9 +197,14 @@
   }
 </script>
 <style scoped lang="less">
-.van-nav-bar{
-  z-index: 0;
-}
+  @colorsWaterLevels: {
+    level1: #CCFFFF;
+    level2: #00CCFF;
+    level3: #00FF00;
+    level4: #FFFF00;
+    level5: #FF9B00;
+    level6: #FF0000;
+  };
   .calendar{
     background: white;
     .next_and_prev{
@@ -259,18 +264,11 @@
                 background: none;
                 border-radius: 0;
               }
-              &.level1{
-                background: #24C768;
-              }
-              &.level2{
-                background: #E5CE10;
-              }
-              &.level3{
-                background: #FF7E00;
-              }
-              &.level4{
-                background: #FF0000;
-              }
+              each(@colorsWaterLevels,{
+                &.@{key}{
+                  background: @value;
+                }
+              })
             }
           }
         }
@@ -323,24 +321,11 @@
                 font-size: 20px;
               }
             }
-            &.level1{
-              background: #4EDC78;
-            }
-            &.level2{
-              background: #E5CE10;
-            }
-            &.level3{
-              background: #FF7E00;
-            }
-            &.level4{
-              background: #FF0000;
-            }
-            &.level5{
-              background: #990000;
-            }
-            &.level6{
-              background: #7E0000;
-            }
+            each(@colorsWaterLevels,{
+              &.@{key}{
+                background: @value;
+              }
+            })
           }
           .first{
             width: 100%;
@@ -388,7 +373,9 @@
           margin-top: 10px;
           display: flex;
           border-radius: 4px;
+          white-space: nowrap;
           span{
+            white-space: nowrap;
             flex: 1;
             text-align: center;
             font-size: 14px;

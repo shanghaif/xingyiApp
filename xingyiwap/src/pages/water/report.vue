@@ -23,15 +23,15 @@
                     </tr>
                     <tr>
                         <td class="bg">监测时间</td>
-                        <td>{{reportData.data.spt || '--'}}</td>
+                        <td>{{reportData.data.spt ? ( reportData.data.spt.slice(0,4) + '-' + reportData.data.spt.slice(4,6) ) : '--'}}</td>
                         <td class="bg">水质综合指数</td>
-                        <td>{{reportData.data.aqi || '--'}}</td>
+                        <td>{{reportData.data.wqi || '--'}}</td>
                     </tr>
                     <tr>
                         <td class="bg">水质类别</td>
                         <td><span :class="'level'+(Number(reportData.data.wq_tp)+1)">{{levelText[reportData.data.wq_tp] || '--'}}</span></td>
-                        <td class="bg">首要污染物</td>
-                        <td>{{reportData.primaryPollution || '--'}}</td>
+                        <td class="bg">主要污染物</td>
+                        <td>{{reportData.data.primary_pollutant || '--'}}</td>
                     </tr>
                 </table>
                 <h6>1、站点监测结果与分析</h6>
@@ -41,7 +41,7 @@
                 <div class="echarts" id="echarts1">
 
                 </div>
-                <p class="echartsDesc">{{$store.state.vuex.stationData.text}}水质综合指数趋势图</p>
+                <p class="echartsDesc">{{$store.state.vuex.stationDataWater.text}}水质综合指数趋势图</p>
                 <h6>2、各因子监测结果及分析</h6>
                 <div class="desc">
                     <img src="../../assets/img/sy_point.png" alt="">   {{reportData.message2}}

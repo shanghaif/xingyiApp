@@ -82,9 +82,9 @@
       let d = new Date()
       this.peakTime.endTime = d.format("yyyyMMddhh")
       this.showTime.endTime = d.format("yyyy-MM-dd hh")
+      this.showTime.startTime = d.format("yyyy-MM-dd 00")
       d.setTime(d.getTime()-24*60*60*1000)
       this.peakTime.startTime = d.format("yyyyMMddhh")
-      this.showTime.startTime = d.format("yyyy-MM-dd hh")
       this.getPeakValueData()
       this.getRecentlyRealData()
     },
@@ -179,7 +179,9 @@
         this.lineHoursEcharts.setOption(option)
       },
       getPeakValueData(){
-        this.$http.get("/AirAppXY-Service/air/getAirPeakData",{params: this.peakTime}).then(res=>{
+        let params = JSON.parse(JSON.stringify(this.peakTime))
+        params.startTime = new Date().format("yyyyMMdd00")
+        this.$http.get("/AirAppXY-Service/air/getAirPeakData",{params: params}).then(res=>{
           if( res.data.code == 200 ) {
             this.dataList = res.data.content.info
             if( this.dataList.length > 0 ) {

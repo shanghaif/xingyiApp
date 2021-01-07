@@ -54,9 +54,9 @@
                     </tr>
                 </table>
             </div>
-            <div class="items">
-                <div class="title">空气污染贡献率</div>
-            </div>
+<!--            <div class="items">-->
+<!--                <div class="title">空气污染贡献率</div>-->
+<!--            </div>-->
         </div>
         <!--月度、季度、年度选择-->
         <van-popup v-model="timeClassSelectedPicker" position="bottom">

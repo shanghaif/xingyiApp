@@ -33,7 +33,7 @@
         </van-search>
         <div class="rightNav">
             <ul>
-                <li><img src="../../assets/img/desc.png" style="max-width: 15.5px" />说明</li>
+<!--                <li><img src="../../assets/img/desc.png" style="max-width: 15.5px" />说明</li>-->
                 <li @click="refresh"><img src="../../assets/img/refresh.png" style="max-width: 16px" />刷新</li>
                 <li @click="jumpUrl(1)"><img src="../../assets/img/station.png" style="max-width: 12.5px" /><template v-if="navActive == 3">企业</template><template v-else>站点</template><br />列表</li>
                 <li @click="jumpUrl(2)" v-if="navActive==0 || navActive==1"><img src="../../assets/img/kaohe.png" style="max-width: 11.5px" />考核<br />分析</li>
@@ -81,7 +81,7 @@
                     {{waterInfo.aRealData ? waterInfo.aRealData.spt : '--'}} &nbsp;<span class="waterIcon" :class="waterInfo.aRealData ? ( 'level' + ( waterInfo.aRealData.wq_tp + 1 ) ) : ''">{{waterInfo.aRealData ? levelText[waterInfo.aRealData.wq_tp] : '--'}}</span>
                 </div>
                 <div class="right">
-                    目标水质：<span class="waterIcon" :class="waterInfo.targetLevel ? ('level'+(waterInfo.targetLevel+1)) : 'normal'">{{waterInfo.targetLevel ? levelText[waterInfo.targetLevel] : "--"}}</span>
+                    目标水质：<span class="waterIcon" :class="waterInfo.targetLevel ? ('level'+(Number(waterInfo.targetLevel)+1)) : 'level4'">{{waterInfo.targetLevel ? levelText[Number(waterInfo.targetLevel)] : "Ⅳ"}}</span>
                 </div>
             </div>
             <ul class="fator water">
@@ -286,6 +286,8 @@
               N_002: 0,
               N_003: 0
             },
+            BMap: {},
+            initPoint: {},
             airInfo: {},
             noiseInfo: {},
             pollInfo: {},
@@ -496,6 +498,8 @@
             // 获取百度地图对象
             initMap({BMap, map}){
               this.map = map
+              this.BMap = BMap
+              this.initPoint = new this.BMap.Point(this.options.center.lng, this.options.center.lat);
             },
             getTestPoint() {
               for (let key=0; key < 50; key++) {
@@ -525,6 +529,8 @@
               }
             },
             showStationInfo(info, type, index=0, isClickState=true){
+              let point = new this.BMap.Point(info.longitude, info.latitude);
+              this.map.setCenter(point);
               this.isClickState = isClickState
               if( type == "water" || type == "air" ) {
                 this.$http.get("/AirAppXY-Service/map/queryStationMontFactors", {params:{mns: info.stationCode}}).then(res=>{
@@ -542,13 +548,10 @@
                 this.waterInfo = info
               } else if( type == "air" ) {
                 this.airInfo = info
-                this.map.setZoom(12);
               } else if( type == "noise" ) {
                 this.noiseInfo = info
-                this.map.setZoom(12);
               } else if( type == "poll" ) {
                 this.pollInfo = info
-                this.map.setZoom(13);
               }
             },
             hideInfo({type, target, point, pixel, overlay}){
@@ -641,13 +644,13 @@
           },
           setMapZoom(type){
               if( type == "water" ) {
-                this.map.setZoom(10);
+                this.map.centerAndZoom(this.initPoint, 10)
               } else if( type == "air" ) {
-                this.map.setZoom(12);
+                this.map.centerAndZoom(this.initPoint, 12)
               } else if( type == "noise" ) {
-                this.map.setZoom(12);
+                this.map.centerAndZoom(this.initPoint, 12)
               } else if( type == "poll" ) {
-                this.map.setZoom(13);
+                this.map.centerAndZoom(this.initPoint, 13)
               }
           },
           selectStations(){

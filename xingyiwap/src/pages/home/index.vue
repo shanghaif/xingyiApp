@@ -99,7 +99,7 @@
             </div>
             <div class="item">
                 <div class="title">
-                    <div class="left"><span></span> 2020年度综合指数贡献比</div>
+                    <div class="left"><span></span> {{new Date().getFullYear()}}年度综合指数贡献比</div>
                     <div class="right"><span :class="selectActive[2][0]" @click="changeItem(2,0)">本年</span> <span :class="selectActive[2][1]" @click="changeItem(2,1)">本月</span></div>
                 </div>
                 <div class="content normal">
@@ -122,7 +122,7 @@
             </div>
             <div class="item">
                 <div class="title">
-                    <div class="left"><span></span> 2020年首要污染物占比</div>
+                    <div class="left"><span></span> {{new Date().getFullYear()}}年首要污染物占比</div>
                     <div class="right"><span :class="selectActive[3][0]" @click="changeItem(3,0)">本年</span> <span :class="selectActive[3][1]" @click="changeItem(3,1)">本月</span></div>
                 </div>
                 <div class="content normal">
@@ -145,7 +145,7 @@
             </div>
             <div class="item">
                 <div class="title">
-                    <div class="left"><span></span> 2020年超标天数占比</div>
+                    <div class="left"><span></span> {{new Date().getFullYear()}}年超标天数占比</div>
                     <div class="right"><span :class="selectActive[4][0]" @click="changeItem(4,0)">本年</span> <span :class="selectActive[4][1]" @click="changeItem(4,1)">本月</span></div>
                 </div>
                 <div class="content normal">

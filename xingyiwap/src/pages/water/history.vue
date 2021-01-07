@@ -56,52 +56,54 @@
                             <span :class="'level'+(Number(scope.row.wq_tp)+1)" style="width: 40px;">{{levelText[Number(scope.row.wq_tp)]}}类</span>
                         </template>
                     </el-table-column>
-                    <el-table-column
-                            align="center"
-                            label="氨氮 (mg/L)"
-                            :render-header="renderHeader"
-                            width="80"
-                            >
-                        <template slot-scope="scope">
-                            {{scope.row.nh3n || '--'}}
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                            align="center"
-                            label="高锰酸盐 (mg/L)"
-                            :render-header="renderHeader"
-                    >
-                        <template slot-scope="scope">
-                            {{scope.row.codmn || '--'}}
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                            align="center"
-                            label="pH值 (mg/L)"
-                            :render-header="renderHeader"
-                    >
-                        <template slot-scope="scope">
-                            {{scope.row.ph || '--'}}
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                            align="center"
-                            label="总磷 (mg/L)"
-                            :render-header="renderHeader"
-                    >
-                        <template slot-scope="scope">
-                            {{scope.row.tp || '--'}}
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                            align="center"
-                            label="溶解氧 (mg/L)"
-                            :render-header="renderHeader"
-                    >
-                        <template slot-scope="scope">
-                            {{scope.row.dox || '--'}}
-                        </template>
-                    </el-table-column>
+<!--                    <el-table-column-->
+<!--                            align="center"-->
+<!--                            label="氨氮 (mg/L)"-->
+<!--                            :render-header="renderHeader"-->
+<!--                            width="80"-->
+<!--                            >-->
+<!--                        <template slot-scope="scope">-->
+<!--                            {{scope.row.nh3n || '&#45;&#45;'}}-->
+<!--                        </template>-->
+<!--                    </el-table-column>-->
+                    <template v-if="factorList.length > 0" v-for="(item,index) in factorList">
+                        <el-table-column
+                                align="center"
+                                :label="item.monitoring_factor_nm+' ('+item.monitoring_factor_dw+')'"
+                                :render-header="renderHeader"
+                        >
+                            <template slot-scope="scope">
+                                {{scope.row[item.cd] || '--'}}
+                            </template>
+                        </el-table-column>
+                    </template>
+<!--                    <el-table-column-->
+<!--                            align="center"-->
+<!--                            label="pH值 (mg/L)"-->
+<!--                            :render-header="renderHeader"-->
+<!--                    >-->
+<!--                        <template slot-scope="scope">-->
+<!--                            {{scope.row.ph || '&#45;&#45;'}}-->
+<!--                        </template>-->
+<!--                    </el-table-column>-->
+<!--                    <el-table-column-->
+<!--                            align="center"-->
+<!--                            label="总磷 (mg/L)"-->
+<!--                            :render-header="renderHeader"-->
+<!--                    >-->
+<!--                        <template slot-scope="scope">-->
+<!--                            {{scope.row.tp || '&#45;&#45;'}}-->
+<!--                        </template>-->
+<!--                    </el-table-column>-->
+<!--                    <el-table-column-->
+<!--                            align="center"-->
+<!--                            label="溶解氧 (mg/L)"-->
+<!--                            :render-header="renderHeader"-->
+<!--                    >-->
+<!--                        <template slot-scope="scope">-->
+<!--                            {{scope.row.dox || '&#45;&#45;'}}-->
+<!--                        </template>-->
+<!--                    </el-table-column>-->
                 </el-table>
                 </van-list>
             </div>
@@ -175,6 +177,7 @@
           },
           tableData: [
           ],
+          factorList: []
         }
       },
       mounted() {
@@ -186,9 +189,24 @@
           this.historyTime.startTime = d.format("yyyy-MM-dd")
       },
       activated() {
+        this.getMonitorFactor()
         this.getHistoryData()
       },
       methods: {
+        // 获取监测因子列表
+        getMonitorFactor(){
+          let params = {
+            mns: ""
+          }
+          if( this.$store.state.vuex.stationDataWater.id ) {
+            params.mns = this.$store.state.vuex.stationDataWater.id
+          }
+          this.$http.get("/AirAppXY-Service/map/queryStationMontFactors", {params:params}).then(res=>{
+            if( res.data.code == 200 ) {
+              this.factorList = res.data.content.info
+            }
+          })
+        },
         onTimeClassConfirm(value, index){
           this.timeClass = value;
           this.timeClassSelectedPicker = false;

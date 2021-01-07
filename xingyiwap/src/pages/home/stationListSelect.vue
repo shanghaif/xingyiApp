@@ -82,7 +82,6 @@
               this.$http.get("/AirAppXY-Service/map/queryTreeW", {params: {typeCode: 'MM', basinnOrAreaOrCustom: "type"}}).then(res=>{
                 this.stationTree = res.data.content.info
                 this.stationTree.unshift({text: "区域", id: "area", children: [{ text: "兴义市", id: null, children: [] }]})
-                console.log(this.stationTree, "stattrree")
                 this.handleTree(this.stationTree)
               })
             },
@@ -103,7 +102,7 @@
     }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
     @import "../../assets/css/pages/list.less";
     .list{
         margin-top: 0 !important;
