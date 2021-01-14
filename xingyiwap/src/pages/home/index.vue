@@ -434,6 +434,7 @@
                 interval: 60,
               },
               series: [{
+                name: this.recentlyTime.factor,
                 data: this.recentData.data,
                 type: 'bar',
                 barWidth: 7,

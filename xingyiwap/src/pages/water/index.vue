@@ -65,7 +65,7 @@
                             <li>{{monitorData.min}} <img src="../../assets/img/min.png" alt=""></li>
                         </ul>
                     </div>
-                    <div class="echarts" id="echarts">
+                    <div class="echarts" id="drawLineHoursDataEcharts">
 
                     </div>
                     <ul class="legend">
@@ -302,7 +302,7 @@
       this.distributionTime.endTime = d.format("yyyyMMddhh")
       this.distributionTime.startTime = d.format("yyyyMM0100")
       this.tbTime.startTime = d.format("yyyy010100")
-      this.tbTime.endTime   = d.format("yyyyMMddhh")
+      this.tbTime.endTime   = d.format("yyyy12ddhh")
       this.standardTime.endTime = d.format("yyyyMMddhh")
       this.standardTime.startTime = d.format("yyyy010100")
       d.setTime(d.getTime()-24*60*60*1000)
@@ -392,7 +392,7 @@
       // 水质监测数据
       drawLineHoursData(){
         let that = this
-        this.lineHoursEcharts = this.$echarts.init(document.getElementById("echarts"))
+        this.lineHoursEcharts = this.$echarts.init(document.getElementById("drawLineHoursDataEcharts"))
         let option  = {
           color: "#E5CE10",
           xAxis: {
@@ -502,6 +502,7 @@
             type: 'category',
             data: this.tbData.time,
             axisLabel: {
+              rotate: 30,
               show: true,
               type: 'category',
               boundaryGap: false,

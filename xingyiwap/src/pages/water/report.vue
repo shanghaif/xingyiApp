@@ -49,6 +49,7 @@
                 <div class="echarts" id="echarts2" style="height: 300px">
 
                 </div>
+                <h6>3、超标天数占比</h6>
                 <div class="content">
                     <div id="echarts4">
 
