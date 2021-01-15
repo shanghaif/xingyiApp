@@ -6,7 +6,7 @@ const timeout = 10000
 
 // 设置请求服务ip
 // const baseUrl = "http://192.168.171.34:30133"
-const baseUrl = "http://192.168.171.42:30233"
+const baseUrl = "http://222.244.144.69:30233"
 
 // 获取本地token
 // const token   = localStorage.getItem("token")
