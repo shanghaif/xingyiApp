@@ -137,8 +137,6 @@
                 color: "#ddd"
               }
             },
-            max: 300,
-            interval: 60,
           },
           series: [{
             data: this.recentData.data,

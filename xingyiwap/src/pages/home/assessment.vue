@@ -48,9 +48,9 @@
                     </tr>
                     <tr v-for="(item,index) in assessData.dataList" :key="index">
                         <td>{{item.stationName}}</td>
-                        <td><span style="width: 30px; display: inline-block" :class="'level'+(switchLevel(item.airQuality)+1)">{{levelText[switchLevel(item.airQuality)]}}</span></td>
+                        <td><span style="width: 30px; display: inline-block" :class="'level'+(switchLevel(item.airQuality)+1)">{{item.airQuality ? levelText[switchLevel(item.airQuality)] : '--'}}</span></td>
                         <td><span :class="item.targetLevel ? 'level'+(switchLevel(item.targetLevel)+1) : ''"><font v-if="item.targetLevel">{{levelText[switchLevel(item.targetLevel)]}}</font><font v-else style="color: #1a1a1a">--</font></span></td>
-                        <td>{{item.standard == "1" ? "是" : "否"}}</td>
+                        <td>{{item.standard ? ( item.standard == "1" ? "是" : "否" ) : '--'}}</td>
                     </tr>
                 </table>
             </div>
@@ -166,6 +166,9 @@
         })
       },
       switchLevel(quality){
+          if( !quality ) {
+              return 6;
+          }
         if( quality.indexOf("优") != -1 ) {
           return 0
         } else if( quality.indexOf("良") != -1 ) {

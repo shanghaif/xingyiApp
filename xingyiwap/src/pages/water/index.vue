@@ -22,7 +22,7 @@
                     <li @click="goto(1)"><img src="../../assets/img/home/wrrl.png" style="width: 43.2px; height: 43.8px" alt=""><br>污染日历</li>
 <!--                    <li @click="goto(2)"><img src="../../assets/img/home/jrdb.png" style="width: 43.2px; height: 43.8px" alt=""><br>达标分析</li>-->
                     <li @click="goto(3)"><img src="../../assets/img/home/jrfz.png" style="width: 43.2px; height: 43.8px" alt=""><br>历史数据</li>
-                    <li @click="goto(4)"><img src="../../assets/img/home/jrbj.png" style="width: 43.2px; height: 43.8px" alt=""><br>报表分析</li>
+<!--                    <li @click="goto(4)"><img src="../../assets/img/home/jrbj.png" style="width: 43.2px; height: 43.8px" alt=""><br>报表分析</li>-->
                 </ul>
             </div>
             <div class="svgCanvas" style="width: 70%; margin: 0 15%">
@@ -443,6 +443,27 @@
             data: this.monitorData.data,
             type: 'bar',
             barWidth: 7,
+            markLine: {
+                  symbol: ['none', 'none'],//去掉箭头
+                  itemStyle: {
+                      normal: {
+                          lineStyle: {
+                              width: 2,
+                              type: 'solid',
+                              color:'#E6A23C'
+                          },
+                          label: {
+                              color:'#F56C6C',
+                              show: true,
+                              position:'end',
+                              marginRight: '20',
+                          }
+                      }
+                  },
+                  data: [{
+                      yAxis: that.monitorData.standardLimit
+                  }]
+              },
             itemStyle: {
               normal: {
                 //每根柱子颜色设置

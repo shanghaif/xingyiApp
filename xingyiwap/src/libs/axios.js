@@ -5,8 +5,11 @@ import Router from '@/router/index'
 const timeout = 10000
 
 // 设置请求服务ip
-// const baseUrl = "http://192.168.171.34:30133"
-const baseUrl = "http://222.244.144.69:30233"
+// const baseUrl = "http://192.168.171.42:30233"
+// const baseUrl = "http://222.244.144.69:30233"
+const baseUrl = "http://10.48.12.4:30233"
+
+const baseUrl1 = "http://10.48.12.4:21008"
 
 // 获取本地token
 // const token   = localStorage.getItem("token")
@@ -23,6 +26,14 @@ const serve   = axios.create({
 serve.interceptors.request.use(
   config => {
       let token = localStorage.getItem("token")
+      if( !token ) {
+        if( Router.currentRoute.path !== "/login" ) {
+          Router.push({path: "/login"})
+        }
+      }
+      if( config.url.indexOf("/identify") !== -1 ) {
+        config.baseURL = baseUrl1
+      }
       // if( token ) {
       //   // 带token请求数据
       //   config.headers['Authorization'] = `Bearer ${token}`;

@@ -292,6 +292,16 @@ const router = new VueRouter({
       component: () => import('@/pages/mine/changePassword.vue')
     },
     {
+      path: "/login",
+      name: "login",
+      meta: {
+        tabShow: false,
+        activeId: 0,
+        keepAlive: false
+      },
+      component: () => import("@/pages/login/login.vue")
+    },
+    {
       path: '/qrcode',
       name: 'qrcode',
       meta: {
@@ -301,6 +311,13 @@ const router = new VueRouter({
       component: () => import('@/pages/mine/qrcode.vue')
     }
   ]
+})
+router.beforeEach((to,form,next)=>{
+  if( to.path != "/login" && !localStorage.getItem('token') ) {
+    next("/login")
+  } else {
+    next()
+  }
 })
 router.afterEach((to,from)=>{
   document.body.scrollTop = 0

@@ -1,6 +1,6 @@
 const path = require('path')
 const webpack = require("webpack")
-const baseUrl = "http://222.244.144.69:30233"
+const baseUrl = "http://192.168.171.42:30233"
 module.exports = {
   publicPath: './',
   outputDir: '../www',  // 生成静态文件路径

@@ -1,136 +1,154 @@
-<style scoped>
-@media screen and (min-width: 460px) {
-  .wh_item_date:hover {
-    background: #71c7a5;
-    cursor: pointer;
+<style lang="less" scoped>
+  @colorsAirLevels: {
+    level1: #00E400;
+    level2: #FFFF00;
+    level3: #FF7E00;
+    level4: #FF0000;
+    level5: #99004C;
+    level6: #7E0023;
+    level7: #cccccc;
+  };
+  @media screen and (min-width: 460px) {
+    .wh_item_date:hover {
+      background: #fff;
+      cursor: pointer;
+    }
   }
-}
-* {
-  margin: 0;
-  padding: 0;
-}
+  * {
+    margin: 0;
+    padding: 0;
+  }
 
-.wh_container {
-  max-width: 410px;
-  margin: auto;
-}
+  .wh_container {
+    max-width: 410px;
+    margin: auto;
+  }
 
-li {
-  list-style-type: none;
-}
-.wh_top_changge {
-  display: flex;
-}
+  li {
+    list-style-type: none;
+  }
+  .wh_top_changge {
+    display: flex;
+  }
 
-.wh_top_changge li {
-  cursor: pointer;
-  display: flex;
-  color: #fff;
-  font-size: 18px;
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-  height: 47px;
-}
+  .wh_top_changge li {
+    cursor: pointer;
+    display: flex;
+    color: #fff;
+    font-size: 18px;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    height: 47px;
+  }
 
-.wh_top_changge .wh_content_li {
-  cursor: auto;
-  flex: 2.5;
-}
-.wh_content_all {
-  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
+  .wh_top_changge .wh_content_li {
+    cursor: auto;
+    flex: 2.5;
+  }
+  .wh_content_all {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
     "Helvetica Neue", STHeiti, "Microsoft Yahei", Tahoma, Simsun, sans-serif;
-  background-color: #0fc37c;
-  width: 100%;
-  overflow: hidden;
-  padding-bottom: 8px;
-}
+    background-color: #fff;
+    width: 100%;
+    overflow: hidden;
+    padding-bottom: 8px;
+  }
 
-.wh_content {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 0 3% 0 3%;
-  width: 100%;
-}
+  .wh_content {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 3% 0 3%;
+    width: 100%;
+  }
 
-.wh_content:first-child .wh_content_item_tag,
-.wh_content:first-child .wh_content_item {
-  color: #ddd;
-  font-size: 16px;
-}
+  .wh_content:first-child .wh_content_item_tag,
+  .wh_content:first-child .wh_content_item {
+    color: #ddd;
+    font-size: 16px;
+  }
 
-.wh_content_item,
-wh_content_item_tag {
-  font-size: 15px;
-  width: 13.4%;
-  text-align: center;
-  color: #fff;
-  position: relative;
-}
-.wh_content_item {
-  height: 40px;
-}
+  .wh_content_item,
+  wh_content_item_tag {
+    font-size: 15px;
+    width: 13.4%;
+    text-align: center;
+    color: #fff;
+    position: relative;
+  }
+  .wh_content_item {
+    height: 28px;
+    margin: 2px 0;
+  }
 
-.wh_top_tag {
-  width: 40px;
-  height: 40px;
-  line-height: 40px;
-  margin: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+  .wh_top_tag {
+    width: 40px;
+    height: 28px;
+    line-height: 28px;
+    font-size: 13px;
+    margin: auto;
+    color: #1A1A1A;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-.wh_item_date {
-  width: 40px;
-  height: 40px;
-  line-height: 40px;
-  margin: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+  .wh_item_date {
+    width: 40px;
+    height: 28px;
+    line-height: 28px;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #1a1a1a;
+    each(@colorsAirLevels, {
+      &.@{key} {
+        background: @value;
+        color: #fff;
+      }
+    })
+  }
 
-.wh_jiantou1 {
-  width: 12px;
-  height: 12px;
-  border-top: 2px solid #ffffff;
-  border-left: 2px solid #ffffff;
-  transform: rotate(-45deg);
-}
+  .wh_jiantou1 {
+    width: 12px;
+    height: 12px;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    transform: rotate(-45deg);
+  }
 
-.wh_jiantou1:active,
-.wh_jiantou2:active {
-  border-color: #ddd;
-}
+  .wh_jiantou1:active,
+  .wh_jiantou2:active {
+    border-color: #ddd;
+  }
 
-.wh_jiantou2 {
-  width: 12px;
-  height: 12px;
-  border-top: 2px solid #ffffff;
-  border-right: 2px solid #ffffff;
-  transform: rotate(45deg);
-}
-.wh_content_item > .wh_isMark {
-  margin: auto;
-  border-radius: 100px;
-  background: blue;
-  z-index: 2;
-}
-.wh_content_item .wh_other_dayhide {
-  color: #bfbfbf;
-}
-.wh_content_item .wh_want_dayhide {
-  color: #bfbfbf;
-}
-.wh_content_item .wh_isToday {
-  background: yellow;
-  border-radius: 100px;
-}
-.wh_content_item .wh_chose_day {
-  background: green;
-  border-radius: 100px;
-}
+  .wh_jiantou2 {
+    width: 12px;
+    height: 12px;
+    border-top: 2px solid #ffffff;
+    border-right: 2px solid #ffffff;
+    transform: rotate(45deg);
+  }
+  .wh_content_item > .wh_isMark {
+    margin: auto;
+    background: blue;
+    z-index: 2;
+  }
+  .wh_content_item .wh_other_dayhide {
+    color: #bfbfbf;
+    background: transparent !important;
+    display: none;
+  }
+  .wh_content_item .wh_want_dayhide {
+    color: #bfbfbf;
+  }
+  .wh_content_item .wh_isToday {
+    background: yellow;
+  }
+  .wh_content_item .wh_chose_day {
+
+  }
 </style>
 <template>
   <section class="wh_container">

@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <van-nav-bar left-arrow @click-left="historyBack" class="common-nav-bar" title="我的">
+  <div class="content">
+    <van-nav-bar left-arrow fixed @click-left="historyBack" class="common-nav-bar" title="我的">
       <template #right>
         <img src="../../assets/img/mine/right.png" style="width: 20px; height: 17px" alt="">
       </template>
@@ -9,11 +9,11 @@
       <div class="content-info">
         <img class="avatar" src="../../assets/img/avatar.png"/>
         <div class="info-container">
-<!--          <p class="name">{{user.userName}}</p>-->
-            <p class="name">兴义管理员</p>
+          <!--          <p class="name">{{user.userName}}</p>-->
+          <p class="name">兴义管理员</p>
           <div>
-<!--            <span class="post">运维工程师</span>-->
-<!--            <span class="department">技术研发部</span>-->
+            <!--            <span class="post">运维工程师</span>-->
+            <!--            <span class="department">技术研发部</span>-->
           </div>
         </div>
       </div>
@@ -24,7 +24,7 @@
       <van-cell title="新消息通知" size="large"  :icon="require('../../assets/img/mine/zxtz.png')" is-link />
       <van-cell title="关于" size="large"  :icon="require('../../assets/img/mine/gy.png')" is-link />
     </div>
-<!--    第二组功能列表-->
+    <!--    第二组功能列表-->
     <div class="menu-list">
       <van-cell title="分享应用" size="large" @click="goto(4)"  :icon="require('../../assets/img/mine/fxyy.png')" is-link />
       <van-cell title="帮助中心" size="large"  :icon="require('../../assets/img/mine/bzzx.png')" is-link />
@@ -32,6 +32,7 @@
     </div>
 
     <div class="exit-btn" @click="exitBtnClick">退出登录</div>
+    <div class="clear"></div>
   </div>
 </template>
 
@@ -69,7 +70,10 @@
           title: '提示',
           message: '确定退出登录？'
         }).then(() => {
-          this.exitRequest()
+          localStorage.removeItem("token")
+          localStorage.removeItem("userInfo")
+          this.$router.push("/login")
+          // this.exitRequest()
         }).catch(() => {
 
         })
@@ -93,11 +97,14 @@
 <style scoped lang="less">
   @import '../../assets/css/index.less';
   .common-nav-bar{
-    margin-bottom: -1px;
     background: url("../../assets/img/mine/top_bg.png") no-repeat top;
     background-size: 100%;
   }
+  [class*=van-hairline]::after{
+    content: none;
+  }
   .basic-info {
+    margin-top: 46px;
     height: 150px;
     background: url("../../assets/img/mine/top_bg.png") no-repeat bottom;
     background-size: 100%;
@@ -116,7 +123,7 @@
         margin-left: 12px;
         .name {
           color: #ffffff;
-          font-size: @font-size-eighteen;
+          font-size: 18px;
         }
         .post {
           color: #D4EAFF;
@@ -137,6 +144,12 @@
 
   .menu-list {
     margin-top: 10px;
+    /deep/ .van-cell{
+      font-size: 13px;
+      .van-cell__title{
+        font-size: 13px;
+      }
+    }
   }
   .exit-btn {
     margin-top: 10px;
@@ -145,6 +158,10 @@
     line-height: 44px;
     text-align: center;
     color: #216CD5;
-    font-size: @font-size-sixteen;
+    font-size: 16px;
+  }
+  .content{
+    background: #EDF1F5;
+    min-height: calc(100vh - 50px);
   }
 </style>

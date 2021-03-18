@@ -743,7 +743,7 @@
         background: #fff;
         border-radius: 4px;
         width: calc(100% - 40px);
-        height: 120px;
+        height: auto;
         padding: 10px;
         .title{
             display: flex;
@@ -826,7 +826,7 @@
             justify-content: space-around;
             flex-wrap: wrap;
             li{
-                width: 16%;
+                width: 25%;
                 font-size: 14px;
                 white-space: nowrap;
                 text-align: center;
@@ -836,18 +836,15 @@
             &.water{
                 justify-content: flex-start;
                 width: 100%;
-                overflow-x: scroll;
-                flex-wrap: nowrap;
+                /*overflow-x: scroll;*/
+                /*flex-wrap: nowrap;*/
                 li{
                     display: flex;
                     flex-direction: column;
-                    width: 100px;
-                    margin-left: 20px;
+                    // width: 100px;
+                   // margin-left: 20px;
                     .desc{
                         margin-top: 10px;
-                    }
-                    &:last-child{
-                        padding-right: 20px;
                     }
                 }
             }

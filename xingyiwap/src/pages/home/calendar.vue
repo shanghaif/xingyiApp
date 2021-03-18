@@ -251,7 +251,7 @@
               }
               &.wh_chose_day{
                 color: white;
-                background: none;
+                // background: none;
                 border-radius: 0;
               }
               &.wh_isToday{

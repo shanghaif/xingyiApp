@@ -29,7 +29,7 @@
                     </tr>
                     <tr>
                         <td class="bg">空气等级</td>
-                        <td><span class="level2">{{levelText[switchLevel(reportData.data.airQuality)] || '--'}}</span></td>
+                        <td><span :class="'level'+(switchLevel(reportData.data.airQuality)+1)">{{levelText[switchLevel(reportData.data.airQuality)] || '--'}}</span></td>
                         <td class="bg">首要污染物</td>
                         <td>{{reportData.primaryPollution || '--'}}</td>
                     </tr>
@@ -296,6 +296,9 @@
           this.exceedDay.setOption(option2)
         },
         switchLevel(quality){
+            if( !quality ) {
+                return 6
+            }
           if( quality.indexOf("优") != -1 ) {
             return 0
           } else if( quality.indexOf("良") != -1 ) {
